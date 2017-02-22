@@ -1,0 +1,11 @@
+*.o
+Makefile
+config.h
+config.log
+config.status
+icb/Makefile
+icb/icb
+icb/tcl_connected.string
+icb/tcl_init.string
+stamp-h
+
