@@ -1,0 +1,6 @@
+default		default.icb.net 7326
+chime		chime.icb.net 7326
+bitmines	bitmines.icb.net 7326
+bossanova	bossanova.icb.net 7326
+# evolve used to be the default.
+evolve		chime.icb.net 7326

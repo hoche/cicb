@@ -1,0 +1,40 @@
+
+Trigger API.
+
+Tcl functions (usually loaded from your .icbrc file)
+
+===========================================================================
+proc Trig_personalmsg {person} {
+	global theMessage
+	...
+}
+
+	This function gets called when a personal message (/m) gets sent
+to you.  Trig_personalmsg gets the sender's nickname passed in $person,
+and a read-only copy of the message body text lives in $theMessage.
+
+	
+===========================================================================
+proc Trig_beepmsg {person} { ... }
+
+	This function gets the nickname of the person that beeped you sent
+in via $person.
+
+
+
+===========================================================================
+proc Trig_dropmsg {} { ... }
+proc Trig_errormsg {} { ... }
+proc Trig_importantmsg {} { ... }
+
+	No arguments are passed to these functions currently. The dropmsg
+gets called when the server sends you [=Drop=] warning that you're about to
+be knocked off the system.   errormsg/importantmsg don't seem terribly
+useful, but it doesn't seem to hurt anything to have hooks available.
+
+
+===========================================================================
+proc Trig_invitemsg {person group} { ... }
+
+	This gets the person that invited you in $person, and the group
+that you've been invited to in $group.

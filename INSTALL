@@ -1,0 +1,242 @@
+Basic Installation
+==================
+
+   These are generic installation instructions.
+
+   The `configure' shell script attempts to guess correct values for
+various system-dependent variables used during compilation.  It uses
+those values to create a `Makefile' in each directory of the package.
+It may also create one or more `.h' files containing system-dependent
+definitions.  Finally, it creates a shell script `config.status' that
+you can run in the future to recreate the current configuration, a file
+`config.cache' that saves the results of its tests to speed up
+reconfiguring, and a file `config.log' containing compiler output
+(useful mainly for debugging `configure').
+
+   If you need to do unusual things to compile the package, please try
+to figure out how `configure' could check whether to do them, and mail
+diffs or instructions to the address given in the `README' so they can
+be considered for the next release.  If at some point `config.cache'
+contains results you don't want to keep, you may remove or edit it.
+
+   The file `configure.in' is used to create `configure' by a program
+called `autoconf'.  You only need `configure.in' if you want to change
+it or regenerate `configure' using a newer version of `autoconf'.
+
+The simplest way to compile this package is:
+
+  1. Make sure you have TCL and readline installed on your system. (See
+     below)
+
+  2. `cd' to the directory containing the package's source code and type
+     `./configure' to configure the package for your system.  If you're
+     using `csh' on an old version of System V, you might need to type
+     `sh ./configure' instead to prevent `csh' from trying to execute
+     `configure' itself.
+
+     Running `configure' takes awhile.  While running, it prints some
+     messages telling which features it is checking for.
+
+  3. Type `make' to compile the package.
+
+  4. Type `make install' to install the programs and any data files and
+     documentation.
+
+  5. You can remove the program binaries and object files from the
+     source code directory by typing `make clean'.  To also remove the
+     files that `configure' created (so you can compile the package for
+     a different kind of computer), type `make distclean'.
+
+IMPORTANT:
+==========
+
+Under certain conditions, if you have both Tcl8.0 and Tcl8.3 installed on 
+your system, it is possible that your new icb client may hang at startup 
+when attempting to source your .icb/icbrc file.  If this happens, edit 
+icb/Makefile and replace -ltcl8.3 with -ltcl8.0, then 'make' and 'make 
+install' again.  This should eliminate the problem.
+
+
+Compilers and Options
+=====================
+
+   Some systems require unusual options for compilation or linking that
+the `configure' script does not know about.  You can give `configure'
+initial values for variables by setting them in the environment.  Using
+a Bourne-compatible shell, you can do that on the command line like
+this:
+     CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
+
+Or on systems that have the `env' program, you can do it like this:
+     env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+
+
+Compiling For Multiple Architectures
+====================================
+
+   You can compile the package for more than one kind of computer at the
+same time, by placing the object files for each architecture in their
+own directory.  To do this, you must use a version of `make' that
+supports the `VPATH' variable, such as GNU `make'.  `cd' to the
+directory where you want the object files and executables to go and run
+the `configure' script.  `configure' automatically checks for the
+source code in the directory that `configure' is in and in `..'.
+
+   If you have to use a `make' that does not supports the `VPATH'
+variable, you have to compile the package for one architecture at a time
+in the source code directory.  After you have installed the package for
+one architecture, use `make distclean' before reconfiguring for another
+architecture.
+
+
+Installation Names
+==================
+
+   By default, `make install' will install the package's files in
+`/usr/local/bin', `/usr/local/man', etc.  You can specify an
+installation prefix other than `/usr/local' by giving `configure' the
+option `--prefix=PATH'.
+
+   You can specify separate installation prefixes for
+architecture-specific files and architecture-independent files.  If you
+give `configure' the option `--exec-prefix=PATH', the package will use
+PATH as the prefix for installing programs and libraries.
+Documentation and other data files will still use the regular prefix.
+
+   If the package supports it, you can cause programs to be installed
+with an extra prefix or suffix on their names by giving `configure' the
+option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'
+
+
+Sharing Defaults
+================
+
+   If you want to set default values for `configure' scripts to share,
+you can create a site shell script called `config.site' that gives
+default values for variables like `CC', `cache_file', and `prefix'.
+`configure' looks for `PREFIX/share/config.site' if it exists, then
+`PREFIX/etc/config.site' if it exists.  Or, you can set the
+`CONFIG_SITE' environment variable to the location of the site script.
+A warning: not all `configure' scripts look for a site script.
+
+
+Basic `Configure' Operation Controls
+==================================
+
+   `configure' recognizes the following options to control how it
+operates.
+
+`--cache-file=FILE'
+     Use and save the results of the tests in FILE instead of
+     `./config.cache'.  Set FILE to `/dev/null' to disable caching, for
+     debugging `configure'.
+
+`--help'
+     Print a summary of the options to `configure', and exit.
+
+`--quiet'
+`--silent'
+`-q'
+     Do not print messages saying which checks are being made.
+
+`--srcdir=DIR'
+     Look for the package's source code in directory DIR.  Usually
+     `configure' can determine that directory automatically.
+
+`--version'
+     Print the version of Autoconf used to generate the `configure'
+     script, and exit.
+
+In addition to these and the options described below, `configure' 
+also accepts some other, not widely useful, options.
+
+
+Getting TCL
+===========
+
+	TCL is scripting language and interpreter released under a
+    license very similar to the BSD license. cicb uses it to allow
+    you to extend your client by writing scripts that you can embed
+    in your .icbrc.
+
+	Get it from ftp://ftp.scriptics.com/pub/tcl.
+
+	We've tested against tcl7.6b1, tcl8.0, and tcl8.3.
+
+	If `configure' has problems finding your Tcl installation, or if
+    Tcl has been installed in a non-standard location, you can use the
+    following options to `configure' to tell it where to look for the
+    components.
+
+`--with-tclinclude=DIR'
+      Directory where tcl headers are. 
+      (Example: "--with-tclinclude=/home/emf/src/tcl7.6/generic")
+
+`--with-tcllib=DIR'
+      Directory where the tcl library is. The Tcl library version MUST
+      match the header file version.
+      (Example: "--with-tcllib=/home/emf/src/tcl7.6/unix")
+
+
+Getting Readline
+================
+
+	Readline is library provided by GNU which facilitates getting
+    user input from a command line.
+
+	Get it from ftp://ftp.gnu.org/gnu/readline.
+	
+	We've tested against readline 2.1, 2.2.1, 4.0, and 4.1.
+
+	If `configure' has problems finding your readline installation, or if
+    readline has been installed in a non-standard location, you can use 
+    the following options to `configure' to tell it where to look for the
+    components.
+
+`--with-readlineinclude=DIR'
+      Directory where readline headers are.
+      (Example: "--with-readlineinclude=/home/emf/local/readline-4.1/include")
+
+`--with-readlinelib=DIR'
+      Directory where the readline library is. The readline library version
+      MUST match the header file version.
+      (Example: "--with-readlinelib=/home/emf/local/readline-4.1/lib")
+
+    Note: some platforms (most notably NetBSD and OpenBSD) come with an 
+    incomplete readline package. If you get compile errors about not being 
+    able to find history.h, then your system is probably one of those. Do 
+    yourself a favor and install a recent readline from scratch.
+
+    If you are going to use your own readline instead of one that your
+    systems administrator has installed, you need to configure it with
+    --prefix= and "make install", as it won't work right from the 
+    readline build directory.  
+    (Example: "./configure --prefix=/home/emf/local/readline-4.1 ; make;
+     make install")
+
+
+Default ICB Server Options
+==========================
+
+    To change the default server and port for cicb, use the following
+    `configure' options.
+
+`--with-default_host="HOST"'
+      Default icb server. Use double quotes around the hostname.
+
+`--with-default_port=PORT'
+      Default port to connect to.
+
+
+Building A Statically-Linked Binary
+===================================
+
+     By default, cicb is built as a dynamically-linked executable. If you want
+     to build a statically-linked one, you can use the following option to
+     `configure'.
+
+`--enable-static[=ARG]'
+
+
+
+$Id: INSTALL,v 1.7 2003/05/08 09:04:12 hoche Exp $

@@ -1,0 +1,47 @@
+#
+#	$Id: Makefile.in,v 1.10 2009/03/23 07:06:53 hoche Exp $
+#
+#	Master makefile for the "ICB" Internet chat system.
+
+#	"make"         - compile the sources.
+#	"make install" - compile sources, install binaries and man pages.
+#	"make clean"   - delete most things that "make" generates.
+#	"make clobber" - delete config settings too.
+#	"make depend"  - regenerate dependency lists.
+
+# if we're lucky and have gnu make, we can do srcdir!=objdir
+VPATH=@srcdir@
+srcdir=@srcdir@
+
+# While we shouldn't have to do this, some makes are broken.
+SHELL=	/bin/sh
+
+
+#	Directories to do a make in.
+DIRS 		= icb
+
+#	Files to be removed from top level with "make clean".
+CONFIGCLEAN = config.cache config.local config.h config.status \
+	config.log stamp-h Makefile icb/Makefile
+
+
+default all depend: configure
+	@for dir in $(DIRS); do \
+	  echo "Making $@ in $$dir"; \
+	  ( cd $$dir; $(MAKE) $@ ) \
+	done
+
+clean install lint:
+	@for dir in $(DIRS); do \
+	  echo "Making $@ in $$dir"; \
+	  ( cd $$dir; $(MAKE) $@ ) \
+	done
+
+distclean:
+	make clean
+	-rm -f $(CONFIGCLEAN)
+
+config:
+	sh $(srcdir)/configure
+
+

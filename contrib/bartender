@@ -1,0 +1,180 @@
+# this is the development icb barkeepers tcl commands package
+# not warrantied to work at any time, nor is there any liability to the
+# author for any inebriation resulting. 8-) george
+#
+# written by George William Herbert    gwh@ocf.berkeley.edu   [maniac]
+
+## barkeep commands
+
+# bouncer procedure
+proc bounce nick {
+s_beep $nick
+s_send [format "The bouncer picks %s up and escorts them to the door." $nick]
+print [format "The bouncer picks %s up and escorts them to the door." $nick]
+print \n
+s_group remove $nick
+}
+c_usage add bounce c "nick" "have a patron removed from the bar"
+
+# make bar
+proc bar barname {
+s_send [format "The bar '%s' is now open!" $barname]
+s_group create $barname
+s_group status p
+s_group topic {The Bar is Open}
+}
+c_usage add bar c "barname" "Open the bar for service"
+
+# send beer
+proc beer nick {
+s_person $nick "Have a Beer!"
+s_send [format "The Bartender passes %s a beer" $nick]
+print [format "The Bartender passes %s a beer" $nick]
+print \n
+}
+c_usage add beer c "nick" "Give \[nick\] a beer"
+
+# send glass of water
+proc water nick {
+s_person $nick "Have some cold water!"
+s_send [format "The Bartender passes %s a glass of water" $nick]
+print [format "The Bartender passes %s a glass of water" $nick]
+print \n
+}
+c_usage add water c "nick" "Give \[nick\] some water"
+
+# send user some Coke (Coke Classic!)
+proc coke nick {
+s_person $nick "Have some Coke!"
+s_send [format "The Bartender passes %s a Coke" $nick]
+print [format "The Bartender passes %s a Coke" $nick]
+print \n
+}
+c_usage add coke c "nick" "Give \[nick\] a Coke"
+
+# give everyone a beer
+proc ball {} {
+s_send [format "The Barkeep gives everyone a beer!"]
+print [format "The Barkeep gives everyone a beer!"]
+print \n
+}
+c_usage add ball c "" "Give everyone a beer"
+
+# round of drinks
+proc round {} {
+s_send [format "The Barkeeper sends all a round of drinks"]
+print [format "The Barkeeper sends all a round of drinks"]
+print \n
+}
+c_usage add round c "" "GIve the group a round of drinks"
+
+# the following two commands, pref and usual, don't work at this point due to 
+# problems with 'global'.  if you can make them work then more power to you.
+
+# set favorite drink for customer
+proc pref {nick drink} {
+global drinkslist
+set newname $nick/$drink
+concat $newname $drinkslist
+}
+c_usage add pref c "nick" "add \[nick\]'s favorite drink to your list..."
+
+# give user their favorite drink
+proc usual nick {
+# global drinkslist
+# ^^commented out due to failure to interpret global
+
+# for testing
+set drinkslist [list {maniac/beer} {evil/Vodka} ]
+
+foreach drink $drinkslist {
+	if { [string match $nick [file $drink dirname]] } then {
+		s_send [format "The Barkeep gives %s his usual, a %s" \
+		$nick [file $drink tail] ]
+		print [format "The Barkeep gives %s his usual, a %s" \
+		$nick [file $drink tail] ]
+		print \n
+		break 
+		}
+	}
+}
+c_usage add usual c "nick" "Give \[nick\] their usual, from your drinks list"
+
+# welcome a user to the bar
+proc welcome nick {
+s_send [format "Welcome to the Bar, %s" $nick]
+print [format "Welcome to the Bar, %s" $nick]
+print \n
+}
+c_usage add welcome c "nick" "Welcome \[nick\] to the bar"
+
+# send random drink
+proc drink nick {
+set drinks [list 10 {Beer} {Bloody Mary} {Gin&Tonic} {Rum Straight} \
+{'151 on the Rocks'} {Black Russian} {Madori Sour} {Rum&Coke} {Vodka} \
+{White Wine} ]
+
+        set cnum [index $drinks 0]
+        set target [c_rand $cnum]
+        set drinkstring [index $drinks $target]
+        s_personal $nick "Have a " $drinkstring
+	s_send [format "The Barkeeper hands %s a %s" $nick $drinkstring]
+	print [format "The Barkeeper hands %s a %s" $nick $drinkstring]
+	print \n
+}
+c_usage add drink c "nick" "give a random drink to \[nick\]"
+
+# restrict the bar's patrons
+proc private {} {
+s_group status r
+s_send [format "The Bar is now open to invited parties only"]
+print [format "The Bar is now open to invited parties only"]
+print \n
+}
+c_usage add private c "" "Close the doors to uninvited users"
+
+# explain how fbar came to be
+proc history {} {
+print "Hi, this is an explanation of how the bartending commands for"
+print \n
+print "forumnet got written.  It all started long ago, in a bar called"
+print \n
+print "Munden's.  Maniac decided to install some commands to make "
+print \n
+print "barkeeping more easy.  It didn't work well, however...  it was"
+print \n
+print "still the days of c-only clients, [0.8], when things were hard"
+print \n
+print "and took time.  Maniac did some work, but eventually school"
+print \n
+print "came back, so maniac forgot.  Then, the 0.10 client came out"
+print \n
+print "and maniac started playing with TCL (because he thought it was"
+print \n
+print "neat...) and writing things.  He sent some in to sean, who saw"
+print \n
+print "them and said 'neat! now if we only had the bartending"
+print \n
+print "functions in TCL...' .  So maniac looked embarrased and said"
+print \n
+print "to sean 'ok, i'll transfer what i have over from c as soon as"
+print \n
+print "I can.'  and he did..."
+print \n
+print \n
+print "This is the result.  It isn't finished.  By difinition, since"
+print \n
+print "it's a user-customizeable set of commands...but there are more"
+print \n
+print "commands to come, and some to be debugged. eventually there"
+print \n
+print "will be a full set of bartending commands, once some minor"
+print \n
+print "difficulties are overcome."
+print \n
+print \n
+print "version 1.1 George William Herbert (maniac) 5-10-1990"
+print \n
+print "changes to 1.1:  commands now echo back to sender, /coke and /water added"
+print \n
+}

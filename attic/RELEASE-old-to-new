@@ -1,0 +1,135 @@
+This file summarizes the differences between pre-5.0 ICB clients and
+5.0.5.  For additional features added after 5.0.5, see the release notes
+for the later releases (RELEASE-version).
+
+In no particular order:
+
+	1. backward compatibility to fn.  For a startup file, it looks
+	   first for .icbrc, then .tclrc, then .fnrc.  It checks the
+	   environment for FORUMNAME if it can't find ICBNAME, etc.
+
+	2. incorporation of the GNU readline library.  This allows input
+	   editing and history using vi or emacs keystrokes (/oset editmode
+	  "vi" or "emacs" to select), a-la ksh, tcsh, bash, etc.  
+
+	3. parses the .whateverrc file after connecting to the server, to
+	   allow stuff like /echoback to be put in there.
+
+	4. allows arbitrary-length messages to be entered.  It will split
+	   them into separate packets and send them along to the server.
+	   (with enough intelligence to split up a /m into mutliple /m's.
+	    It's not smart enough for some things, for example a long
+	    /m server write message will be split up into multiple /m's
+	   to the server, but none of them after the first will include
+	   the "write nickname")
+
+	5. /m is no longer a special case; it's a TCL front-end procedure
+	   to s_personal.  This means you can alter its behaviour by
+	   redefining the proc.
+
+	6. all outgoing messages, regardless of type or source, go into the
+	   buffer and the log.  whether you do /m or s_personal (like
+	   from a /hug) or s_send or beep or whatever, it's logged.
+
+	7. nicknames can be selectively deleted from the tab history via
+	   /hdel nick.
+
+	8. If you /oset autodel true, nicknames that generate a "not signed
+	   on" error will be automatically deleted from the tab history.
+	   (This is a server-dependent feature, since changing the text
+	    of the error message breaks the feature.  However, it supports
+	    both the current VMS and Unix servers, so I figure the utility is 
+	    worth it)
+
+	9. The c_replay command (/display or /replay) takes options to
+	   limit its output to personal messages and/or messages to and
+	   from a given user.  You can also send the output to the log.
+	   (If you /oset logreplay true, it goes to the log by default.)
+
+       10. You can, if you wish, disable the cutesy messages that you get
+	    when you hit return on a blank line (/oset cute false).
+
+       11. Mostly for purposes of the personalto variable (see below),
+	   I added a /ounset command.  For ints and nonnegs, /ounset
+	   var is equivalent to /oset var 0.  For booleans, it's
+	   equivalent to /oset var false.  For strings, it's
+	   equivalent to /tcl oset var "".
+
+       12. There is a "permanent" personal message mode.  If you /oset
+	   personalto nick, unadorned messages will go to that nick
+	   instead of to the group.  /ounset personalto restores the
+	   default behaviour.  /m -personal user text... will send 
+	   text to user and set personalto.  /m -clear (with optional
+	   user and text) will unset personalto.  s_send obeys the
+	   value of personalto; s_open will force an open message.
+	   
+       13. /oset tabreply true will cause the source nicknames of incoming
+	   personal messages to be added to the tab history.
+
+       14. I altered the command line format to use multicharacter options,
+	   and added some new options, as follows:
+
+		Usage: icb [switches]
+		 Switches may be abbreviated.  They are:
+		  -nickname nick	sign on with nickname nick.
+		  -password pass	set password to pass.
+		  -password -		prompt for password.
+		  -group group		sign on into group group.
+		  -server name		connect to server named name.
+		  -host host		connect to server on host host.
+		  -port port		try to connect to port port.
+		  -list			list known servers, in order.
+		  -clear		wipe args from command line.
+		  -who			see who's on; don't sign on.
+		  -restricted		restricted mode
+		  -help			display this message.
+		 Note: specifying a password on the command line implies -clear.
+	   
+	   -N works as a synonym for -server.
+
+	   I added some special case code so that '-nnick', '-ggroup', etc.,
+	   without the space, will still work (as long as you're not trying to
+	   sign on into "roup" or with name "ick". :-)
+
+
+       15. Bug fixes.  I assume these are in 4a, but I'm listing them  here
+	   anyway:
+
+	   a. /log works as a toggle, as intended.
+	   b. /hclear doesn't generate the "Error: command returned bad code"
+	   c. /m<space><return> doesn't cause a coredump.
+
+       16. Whoever installs the client creates a global server list file.
+	   If a user has a .icbservrc file, it is checked first, followed 
+	   by the global file.
+
+       17.  The client displays a "Trying to connect to port <number> of host
+	    <address>" message on each server connection attempt.  Useful
+	    for figuring out what it's actually doing.
+
+	   The files are in a pretty flexible format.  One entry per line,
+	   consisting of an optional server name, optionally enclosed in
+	   double quotation marks, a host name, and an optional port number.
+	   So the following are all valid:
+		remus.rutgers.edu
+		remus.rutgers.edu 7326
+		alt remus.rutgers.edu
+		alt remus.rutgers.edu  7326
+		"alt" remus.rutgers.edu 
+		"alt" remus.rutgers.edu 7326
+
+	18. The client now passes along unknown commands to the server.
+
+	19. "/oset alert all" will cause icb to send a beep before incoming
+	    messages.  "/oset alert personal" will limit the beeps to 
+	    personal messages. "/oset alert none" will turn off the beeps.
+
+See the release notes for 5.0.7
+	20. The command "s_register" (or just "register") prompts the user for
+	    a password and then sends it to the server as a registration
+	    request. (VMS Server Only)
+
+	21. "/oset autoregter true" will cause the client to invoke the
+	    s_register command automatically whenever the server sends a
+	    "[=Register=] Please send password to register nick" message.
+	    (VMS Server Only).

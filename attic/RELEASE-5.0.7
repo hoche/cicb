@@ -1,0 +1,84 @@
+Release Notes - ICB C Client Revision 5.0.7
+
+
+These release notes cover the changes between 5.0.5 and 5.0.7.  Version 5.0.6
+was a limited release that never made it completely public.
+
+
+Bugs Fixed:
+
+	ICB-BUG-5.0.5-1: sometimes initial characters are echoed twice
+
+	ICB-BUG-5.0.5-3: fall-through server commands are ignored or cause
+		         coredump when invoked with no arguments
+
+	ICB-BUG-5.0.5-4: long (>255 characters) /write messages don't get sent
+			  at all
+
+	ICB-BUG-5.0.5-5: sample.icbrc contains invalid comment syntax
+
+	ICB-BUG-5.0.5-6: outbound personal messages appear twice in log file
+
+	ICB-BUG-5.0.5-9: fails to compile on Linux
+
+	ICB-BUG-5.0.5-10: compiles but generates warning messages under gcc
+		on SunOS 4.x and Linux
+
+
+Features Added:
+		
+	ICB-FEATURE-5.0.5-1: <tab> key should provide completion functions
+
+	    Description:
+
+		When pressed at the end the second word on the command line,
+		the <tab> key will search your tab history for a nickname 
+		beginning with the characters of that word typed thus far;
+		it will complete the nickname up to the limit of the uniqueness
+		of the prefix.  In all other contexts, the behavior of the tab
+		key is unchanged.
+
+
+	ICB-FEATURE-5.0.5-2: setup should be more intelligent about directory
+		locations.
+
+	    Description:
+		setup will change the default "man" and "lib" directories to
+		match the user-supplied "bin" directory.
+
+
+	ICB-FEATURE-5.0.5-3: use of server registration features should not
+		require entering or logging of visible passwords
+
+	    Description:
+
+		/bump and /cp will now prompt you for your password (in the
+		case of /cp, your old and new passswords) if they
+		are not specified on the command line.  These passwords
+		are not echoed to the screen nor logged in the replay buffer 
+		or log file.
+
+		A new command, /register, has been added.  This will prompt for
+		your password as above and register your nickname (e.g. /m
+		server p password).
+
+		A new variable, autoreg, has been added.  If this variable is 
+		set to true (it defaults to false), then the receipt of 
+		a "Send password to register nick" message from the server will
+		cause the client to automatically invoke the /register command
+		and register your nick.
+
+
+
+Known Bugs Remaining:
+
+	ICB-BUG-5.0.5-2: Under Solaris 2.x, /display -n (error) followed by
+		/display -nick sometimes causes coredump (not reproducible by
+		author)
+
+	ICB-BUG-5.0.5-7: Under Irix, the pagesize variable is intermittently
+		reset to 0; eventually, paging fails to operate even with
+		nonzero value of pagesize.
+
+	ICB-BUG-5.0.5-8: Under Ultrix, output to the log file is only rarely
+		flushed.

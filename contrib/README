@@ -1,0 +1,6 @@
+These are contributed ICB TCL procedures. I don't test these extensively,
+although I will accept fixes for them.
+
+...Except for system.icbrc, which is a nice systemwide set of defaults to
+get a user online and using the client with a minimum of effort.
+

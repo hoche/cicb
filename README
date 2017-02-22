@@ -1,0 +1,276 @@
+                           INTRODUCTION TO ICB
+                           -------------------
+
+ICB (International CB) is a teleconferencing system that allows Internet
+users to participate in realtime online discussions. This package builds a
+client program (called, strangely enough, "icb") that is used to access
+ICB.
+
+ICB is based on Sean Casey's ForumNet ("forum" or "fn") 0.10, with his
+permission.  The new name was devised by Mark Giaquinto and John Atwood
+DeVries.  The actual code here is based on release 5.0.9 of the Tcl C-Icb
+client.  It has been severely modified by a loose knit group of users who
+can't seem to part with the traditional client code.
+
+
+                       COPYRIGHT AND REDISTRIBUTION
+                       ----------------------------
+
+The parts of the code that are left over from ForumNet are Copyright (c)
+1990 by Carrick Sean Casey.
+
+The parts of the code that are left over from icb 5.0.9 is Copyright (c)
+1993 by Mark J. Reed.
+
+That said, cicb 5.1 is nearly a complete rewrite of the original code by
+the cicb-workers committee, which includes, but is not limited to: Erik
+Fichtner, Phil Stracchino, Michel Hoche-Mong, and Felix Lee.
+
+This code has been placed under the GNU Public License with Mark Reed's
+blessing.  Please see the file "COPYING" for further information.
+
+
+                           SYSTEM REQUIREMENTS
+                           -------------------
+
+ICB runs on Internet Unix systems with Berkeley compatable TCP/IP and
+select(). It has been successfully compiled and run on several systems,
+including FreeBSD, OpenBSD, NetBSD, Solaris, Irix, OSX 10.4 and 10.5,
+and several popular distributions of Linux. ICB requires a POSIX system
+with an ANSI C compiler, a relatively recent version of TCL, and the GNU
+readline library.
+
+
+                               INSTALLING
+                               ----------
+
+cicb now uses the gnu configure utility to try to figure out the correct
+settings for your system. See the file "INSTALL" for details on building
+the executable.
+
+
+                           CHANGES SINCE 5.1.0
+                           -------------------
+
+Startup:
+
+	The 5.1.1 release uses a changed initialization procedure using a
+shared system.icbrc file to enable providing all users with a sane,
+working startup environment containing the minimum set of predefined
+macros needed to make sure common command primitives work as expected.  
+To facilitate this new startup procedure, the default .rc file for cicb
+has been changed.  Additionally, since cicb-5.1.0 and later use the system
+Tcl libraries instead of the old embedded Tcl-3.6 interpreter, cicb will
+no longer read .tclrc or .fnrc files, which can be expected to contain
+outdated Tcl code that no longer works with Tcl7.6 and Tcl8.x as installed
+on most systems.  The .cicbrc file is also ignored, as it is now obsolete 
+since colors are set using the /color command.
+
+	The new startup procedure is as follows:*
+
+    1.	The client reads /usr/local/share/icb/system.icbrc to set up a
+	sane environment with working default commands.
+    2.	The client checks to see whether $HOME/.icb/icbrc exists.  If it
+	exists, it is loaded and executed.  $HOME/.icb/icbrc may 
+	source any additional files desired.
+    3.  Existing $HOME/.icbrc, $HOME/.cicbrc, $HOME/.tclrc and $HOME/.fnrc 
+	files are ignored.
+
+*  This description assumes cicb is configured with --prefix=/usr/local
+   --datadir=/usr/local/share/icb
+
+
+SIGWINCH handling:
+
+	Open and personal message wrapping now adjusts the wrap point 
+properly in response to changes in the size of the icb window when running 
+in an Xterm or other terminal window.
+
+Keepalives:
+
+	TCP keepalives are enabled by default now. In addition, a high-level
+keepalive functionality has been added that sends ICB "ping" messages to
+the server at a user defined interval. This is set and cleared by "/oset
+keepalive".
+
+SSL support:
+
+	SSL support has been added to the client to maintain an encrypted
+connection to the server. Unfortunately, no known server currently supports
+this.
+
+
+OSX support:
+
+	The readline that ships with OSX is broken. This will not compile
+with that version, nor is there any plan to make it work. Instead, it is
+recommended that you get a *real* version of readline and install that.
+If you use fink, it will likely try to install it in /sw, and that is OK.
+configure will search there before looking in /usr for it.
+
+
+
+                          NEW FEATURES IN 5.1.0
+                          ---------------------
+
+Triggers:
+
+	When the client receives messages from the server, it can now feed
+that event into the tcl interpreter by calling a "trigger function", if
+that function has been defined in your ".icbrc" file.  With this
+functionality and minimal exposure to the TCL scripting language, you can
+craft an autopilot for your client or whatever strikes your fancy.  Read
+the file "TRIGGERS" for an introduction to the trigger API.
+
+
+Global Variables:
+
+	The cicb client now provides four global Tcl variables for your 
+use in scripts, to allow you to customize cicb's behavior depending on 
+which server you're connected to, what nick you're using, or even which 
+group you're in.
+	The first two variables will remain constant throughout your icb 
+session:
+
+	myServer	Contains the icbserverdb name of the server
+			you're connected to.  Even if you didn't specify a
+			server, this SHOULD never be NULL.
+	myHost		Contains the fully quialified domain name of the
+			server you're connected to.
+
+	The second two will update dynamically as you change your nick and 
+group:
+
+	myNick		Contains your current nick
+	myGroup		Contains the name of the group you're in.
+
+	Trivial examples of using these variables may be found in the 
+system.icbrc file.
+
+
+Asynchronous I/O:
+
+	The client can now display messages to you while you're in the
+middle of typing the current line.  Just "/oset asyncread true" to enable
+this behavior.  Also, whether you're displaying async or not, the client
+can now be busy doing things in the background while you're typing.
+
+
+Color:
+
+	You can now adjust the colorization of the client's messages on
+the fly.  See the file "README.COLOR" for documentation of the new color
+parser.
+
+
+Message Highlighting:
+
+	For important people in your busy ICB lifestyle, the client offers
+personal (/m) message highlighting.  This is provided through a TCL
+string; "personalhilite" containing the nicknames of those people you wish
+to highlight, and it has its own color code values.  This is stored as a
+TCL variable to allow ease of modification of the highlight list from
+built-in trigger functions.
+
+
+Timestamping:
+
+	The client is now able to optionally timestamp its output, which
+can be handy for those that can't watch their client at all times.  To use
+this, just "/oset timestamp true".  It too has its own color code.
+
+	
+ICB Servers:
+
+	Most of the icb servers out there have been listed for some time
+now under the icb.net domain name.  More recently evolve.com, home of the
+west coast primary server (icb.evolve.com or evolve.icb.net) changed its
+name to chime.com for reasons involving large amounts of folding green
+stuff.  The west coast default server is now icb.chime.com, aka
+chime.icb.net.  To allow for future changes, chime.icb.net is also aliased
+as default.icb.net.  The evolve.icb.net address will continue to work for
+now, but Jon Luini, owner of evolve -- er, of chime.com wishes everyone to
+switch from evolve.icb.net to chime.icb.net or default.icb.net.  So, this
+is the new default host, and the icbserverdb file has been updated to
+reflect the new DNS domain.
+
+
+                         MODIFYING THE PROGRAM
+                         ---------------------
+
+Guidelines and tips for messing with the source code are in the file
+"Modifying". I'm always interested in getting patches from people that
+have extended icb's functionality.
+
+In addition, see the file "README.autoconf" for information on modifying
+the configuration process.
+
+
+                              DEVELOPMENT
+                              -----------
+
+The files in the attic subdirectory, most notably "HISTORY" provide
+information regarding program development.  One can also examine the log
+messages in the cvs repository.
+
+Anonymous, read-only, CVS access to the latest source code can be obtained
+via the following:
+    $ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/cicb login
+    CVS Password: [return]
+    $ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/cicb checkout cicb 
+
+which will check out the latest source code into a directory "cicb". 
+
+                         ---------------------
+
+Please use the support services at http://sourceforge.net/projects/cicb
+for logging bug reports, fixes, and suggestions for improvements.
+
+
+                               KNOWN BUGS
+                               ----------
+
+	When using readline 2.x, SIGWINCH is not handled properly.  If you 
+run into screen redraw problems when changing window sizes, try using 
+readline 4.x instead.
+
+	NetBSD and OpenBSD both ship with a native readline library that is
+based on ancient history, and we do not support it.
+
+	OSX ships with a native readline library that is crippled, and
+we do not support it.
+
+	TCL 8.1.x has caused us some problems with the client.
+
+	Under certain contitions, if both Tcl8.0 and Tcl8.3 are installed,
+the client may hang at startup when attempting to source the .icb/icbrc 
+file.  Replacing -ltcl8.3 with -ltcl8.0 in icb/Makefile seems to be an 
+effective workaround for now.
+
+	When using asynchronous I/O mode and [=More=] pagebreaks, logging
+to the replay log does not happen. 
+
+	The "personalhilite" string is a case-insensitive substring match
+and can cause unexpected things at times.
+
+
+                            ACKNOWLEDGEMENTS
+                            ----------------
+
+Thanks to Sean Casey for starting this whole thing, and to Mark
+Giaquinto and John Atwood DeVries for making sure it continued past
+ForumNet's untimely end.
+
+Thanks to Mark J. Reed for the original 5.0 client and all the effort
+therein. 
+
+Kudos for ideas, bugfixes and previous effort go to Aashi Deacon, 
+Rich Dellaripa, Thomas Krueger, Bill Fenner, Bill Wisner, Brian Kendig, 
+Dan Chaney, David Herron, Eric Lechner, Eric Scott, Eric Zamost, 
+George Herbert, Glenn Stone, Jessica Koeppel, Jim Griffith, Jim Lai, 
+Joel Abbott, John deVries, Kris Cox, Lisa Hamilton, Mark Hopkins, 
+Paul Callahan, Stephen Chappell, Thomas Kunselman, Thomas Krueger, 
+Katrina Werpetinski, Keith Graham, Rich Dellaripa, Greg Williams, 
+and others too numerous to mention.
+
+$Id: README,v 1.12 2009/04/03 21:37:46 hoche Exp $

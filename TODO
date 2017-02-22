@@ -1,0 +1,42 @@
+5.1.1: 
+
+NetBSD is stupid.  It doesn't default to having /usr/pkg/lib in its
+ld.so.conf, so it needs LD_LIBRARY_PATH if you compile dynamically,
+and if you try to compile statically, libc and libresolv fight and
+its poor little linker can't figure it out.  removing -lresolv 
+works, but to make ./configure figure this out takes a lot of
+senseless rearranging.  Perhaps trying to actually link something
+statically, or some kinda "if NetBSD-Sucks" test... 
+
+logging should continue to happen when we pause for [=more=] if asyncread
+is true (reported by synk)
+
+personalhilite is case-insensitive now, but probably still should get
+tweaked to make sure that nicks are matched only against whole tokens from
+personalhilite.  (At present, it's a case-insensitive substring match.)
+
+Timestamps should be built into the replay log instead of logged as text
+to the replay log.  It would just make more sense that way.
+
+implement a no-frills mode in cases where we have to fall back completely
+due to lack of readline and/or tcl. 
+
+support bizzare native OpenBSD and NetBSD readlines
+
+internal icb functions (like s_who) need to behave like tcl procs so you 
+can do things with them in the tcl interpreter...  or at least provide 
+copies that do the right thing...
+
+Trig_invitemsg needs some reworking of statusmsg() in msgs.c so that we
+can extract the group name as well as the username from the invite string.
+I think we can also pull out the dependancy on the VMS server here. :)
+
+5.2: 
+
+is there a way we can support a split-screen mode and the user being in
+multiple groups?  (this may require a coordinated server hack).  I dunno.
+It's something to think about.. I see lots of users starting up multiple
+clients with different nicks so they can be in multiple groups..  It
+strikes me as a very IRCish behavior, though.  I dunno. 
+
+

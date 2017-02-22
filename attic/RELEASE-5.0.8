@@ -1,0 +1,61 @@
+Release Notes - ICB C Client Revision 5.0.8 - 11 Apr 1994
+
+5.0.8 is a bugfix release.  Three problems that caused coredumps with varying
+frequency on different systems have been corrected.  There is one small new
+feature: the 'version' command has been modified to show the client version as
+well as that of the server; you may also choose to view only one or the other.
+
+There are two additional features documented below; these were present in 
+5.0.7 but omitted from the 5.0.7 release notes.
+
+Bugs Fixed:
+
+	ICB-BUG-5.0.7-1: /write nick<RETURN> causes core dump
+
+	ICB-BUG-5.0.7-2: parts of split messages end in garbage
+
+	ICB-BUG-5.0.7-3: frequent coredumps under AIX 3.2.5 and Irix
+
+	ICB-BUG-5.0.7-4: s_open has incorrect usage message
+
+
+Features added:
+
+[The first two features were actually present in 5.0.7, but were not 
+ mentioned in the 5.0.7 release notes]
+
+	ICB-FEATURE-5.0.5-4: <tab> key behavior should be extended to commands
+		other than /m
+
+	    Description:
+
+		When pressed at the beginning of a blank line, the behavior of
+		the tab key is unchanged - <cmdchar>m <nickname><space> is
+		inserted, where <nickname> is the nickname at the top of your
+		tab history.
+		
+		When pressed anywhere else on a line that begins with the
+		command character, the second word of the line is changed
+		to the nickname at the top of your tab history; the rest of
+		the line, including the command, is unchanged; in this 	
+		way you my use the tab history on commands other than /m.
+
+
+	ICB-FEATURE-5.0.5-5: idle times should not lose resolution after one
+		hour
+
+	Description
+		Times in the "idle" column of the /who output are now displayed
+		to the minute, even when the idle time is over an hour.  The
+		format is "HHhMMm"; the 'HHh' is omitted for idle times under
+		an hour.
+
+
+	ICB-FEATURE-5.0.7-1: the /version command should display the client
+		version
+
+	Description
+		The /version command now displays the current client version
+		as well as the server version.  Optionally, the output may
+		be restricted to just the client or server versions by 
+		specifying -c or -s, respectively.

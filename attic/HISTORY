@@ -1,0 +1,142 @@
+5.0.7	Big fix - long /write messages now work, along with long commands in
+		general.  Centralized and cleaned up the packet-wrap code.
+	Big feature - new commands for registering (/register),
+		changing your password (/cp), and bumping users (/bump) that
+		prompt for your password and don't echo or log it.
+	autoreg variable - if set, client prompts for password automatically on
+		receipt of "send password to register nick" message from
+		server
+	Fixed minor problem with spurious echo of initial characters
+	Tab key now does nickname completion from your tab history 
+		(only if pressed in the middle of the second word of the line)
+	Fixed behaviour of server commands so "/command" with no args works
+	   the same as "/m server command".
+	Added -nopersonal switch to /m as opposite of -personal.
+	Fixed sample.icbrc - removed invalid comments.
+	Fixed logging so outbound /m's only show up once
+	Made setup a little more intelligent about directory locations.
+	Ported to Linux
+	Cleaned up so that compiles with no warnings under gcc (on SunOS and
+		Linux, at least)
+	
+5.0.6 	limited release; mostly a beta for the features in 5.0.7.
+
+5.0.5   a few changes to make it compile under NeXTStep 2.0.
+	commented out tokens after #else and #endif to satisfy picky
+	   preprocessors.
+	changed the makefiles to handle creating the destination directories
+           a little better.
+
+5.0.4   incorporated changes that were going on in parallel with development
+	   of 5.0.1 through 5.0.3, including removal of a possible coredump-
+	   causing bug and making message formats consistent.
+	ported to IRIX.
+	also modified icb/msgs.c so that invitation messages from the Unix
+	   server are understood and invites from hushed nicknames don't
+	   affect the tab history.
+	
+5.0.3   modified icb/msgs.c so that the RSVP/invite works properly for
+           for the VMS server, which is far more utilized than the Unix
+           ones.
+
+5.0.2   modified icb/send.c to fix insertion of typed messages into the
+           reply log.
+        modified icb/readline.c to fix the client hanging on backspacing
+           over a typed in line.
+        modified murgil/contoport.c to set the client to be nonblocking
+           I/O, as the server already had been.
+
+5.0.1	made changes necessary to port to HP-UX
+
+5.0.0    - see the CHANGES file for details
+	client passes unknown commands along to the server
+	changed "fn" to "icb" everywhere.
+	changed ".fnrc" to ".icbrc"; looks for "ICBNAME"; etc.
+	changed the "fset" command to "oset" (option-set).
+	original names still work for backward compatibility.
+	incorporated GNU readline library; added "editmode" variable
+	delayed processing of startup file until after server connect
+	removed length limitation on input messages
+	removed specia-case parsing of /m; added proc m to call s_personal
+	moved buffer/log addition of outgoing messages from parse to lower level
+	   so all messages go in regardless of source. beeps and invites go
+	   in as well.
+	/hdel nick removes nick from tab history.
+	/oset autodel true causes automatic deletion of bad nicknames
+	added replay -personal, -[no]log, -[no]screen, -nickname 
+	/oset cute false turns off the cute messages
+	/ounset var unsets an oset variable
+	added "personalto" variable and "/m -personal, -clear"
+	/oset tabreply true will add incoming nicknames to the tab history
+		(incoming personals, invites, and beeps)
+	changed command-line options to multicharacter
+	fixed /log so it works as a toggle
+	fixed /hclear so it doesn't return a bad code
+	/m<space><return> doesn't dump core
+	added global server list file and optional user override ".icbservrc"
+
+0.10	
+	echoback for open group messages
+	/hclear clears the history buffer
+	/who now shows moderators
+	status now tells you everything about the group
+	arglist can be cleared
+	time output now controlled by time variable
+	bindings moved to bindings file
+	added input section to help
+	help output is now pageable
+	help generator now breaks help into sentence strings
+	function checking support added to fnsetup
+	doubled commandchar now means literal
+	tab expansion improved
+	Added AIX option to systems.
+	added paging to the display routine
+	restricted mode available as fset var and as "fn -r"
+	tilde expansion now done in session logging pathname
+	session logging restored
+	added random number generator primitive
+	fnsetup now saves default answers
+	added hush primitive
+	added replay buffer
+	stomped null loginid bug once and for all
+	changed namelist code into generalized string list code
+	fn now reads the editing chars from the tty struct 
+	added /who [group] [.]
+	fset spaceonshell to request a space upon return from shell command
+	fset verifyquit to verify exit on /q
+	fset cmdchar to set command char
+	added fset primitive
+	fnsetup asks for numeric address as default
+	murgil getaddr module written to handle numeric addresses
+	lib/* modules separated and moved into separate directories
+	moved murgil calls to ipcf.c
+	misc de-linting of code
+	functypes.h to provide "sort of" prototypes for pcc compilers
+	shell command now works with "/!"  "/!command" "/!  command" etc.
+	shell command now looks at SHELL variable and executes command under it 
+	.fnrc file now parsed by TCL
+	started moving unix dependent stuff to unix.c
+	commands moved from cmds.c to serparate files
+	line buffering now set on session log
+	fnset now tries to detect if ask compiled for wrong machine
+	included "Modifying" text
+	default bindings now built from ascii file by perl script
+	include files cleaned up somewhat
+	unnecessary LIBDIR definitions removed from fn/Make.
+	default gcc options trimmed down
+	"-traditional" added to default gcc options
+	"Installing" added to dist files
+	response field eliminated from client
+	group output changed a little
+	online help system installed
+	"makehelp" man page formatter script removed
+	tcl support added
+
+0.9	17-Feb-90
+	help disabled
+	client name changed to "fn"
+	now uses .fnrc instead of .forumrc
+	removed tree code
+	new script based installation procedure
+	group printing in client slightly changed
+	code now runs under gcc with extra error checking

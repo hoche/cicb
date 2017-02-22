@@ -1,0 +1,12 @@
+# send random confusing message
+# George William Herbert (maniac)
+proc confuse nick {
+set confuselist [list 4 {Wakka Wakka} {Watch them Strawberries, Burt.} \
+{Don't look now, your shirt is on fire.} {OhmyGOD, you're TYPING on me!}  ]
+
+	set cnum [index $confuselist 0]
+	set target [c_rand $cnum]
+	set confusestring [index $confuselist $target]
+	s_personal $nick "\[=CONFUSE=\] " $confusestring
+}
+c_usage add confuse c "nick" "send a random confusing message"

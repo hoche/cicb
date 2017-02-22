@@ -1,0 +1,25 @@
+Release Notes - ICB C Client Revision 5.0.9c1.0 - 25 Jan 1995
+
+This is a significant patch which adds ANSI color support to the ICB 
+client.  There are a few minor bugs which were introduced with the 
+addition of color capability; most of these, hopefully, will be fixed as 
+they are found.  (There are a few which aren't yet fully understood.)
+
+The original color-ICB permitted color to be disabled only by removing 
+the .cicbrc file, and had a .cicbrc file format which, although 
+technically human-readable, was distinctly not human-legible.  This was 
+later replaced by a much more readily readable .cicbrc file format, and a 
+switch to disable color was added.  In this release, version 5.0.9c1.0, 
+the sense of the color switch has been reversed, so that color OFF is now 
+the default.  To enable color, the -color switch (which can be 
+abbreviated to -co) must be used.  This allows full backward 
+compatibility with the non-color client, and allows all macros that 
+worked with the non-color client to also work without modification on the 
+color client.  With this change, there is no longer a need to maintain 
+separate source for the color and non-color clients.
+
+For easy invocation of color or non-color clients at will, it is 
+suggested that the following alias be created:
+
+	alias cicb='icb -co'
+

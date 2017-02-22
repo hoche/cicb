@@ -1,0 +1,346 @@
+# $Id: system.icbrc,v 1.5 2009/03/23 07:42:06 hoche Exp $
+
+#=============================================================================#
+# Exported TCL global variables
+#=============================================================================#
+
+# These two will remain constant throughout your icb session.
+
+global myServer
+global myHost
+
+# These two will update dynamically as you change your nick and group.
+
+global myGroup
+global myNick
+
+#=============================================================================#
+# options
+#=============================================================================#
+puts "Setting global options..."
+oset tabreply true
+	# set to "true" to put the source nicks of incoming 
+	# /m's into tab history
+
+oset autodel true
+	# set to "true" to have nicks that generate an "error - 
+	# so-and-so not signed on" removed from tab history 
+
+oset alert personal
+	# 'all' means beep on incoming public or private messages.
+	# 'personal' means beep on incoming private messages.
+	# 'none' (default) means don't beep.
+
+oset editmode emacs
+	# valid edit modes are emacs or vi
+
+#oset timestamp true
+        # to have ICB traffic timestamped
+
+#oset keepalive 1
+
+oset timedisplay military
+oset bufferlines 1000
+oset history 25
+
+#echoback on
+	# uncomment to see your own public messages
+
+#oset asyncread true
+	# set to true to see messages from the server while you're typing.
+
+set personalhilite [list 4 {techs} {hoche} {alaric} {flee} ]
+
+#oset pagesize 24
+    # number of lines to display before showing a [=More=] prompt. leave
+    # unset or set to a value less that 0 to using dynamic resizing. Set
+    # to 0 to have no paging at all.
+
+oset logreplay true
+    # make "/log; /replay" do the expected thing and log the replay
+
+#oset cute false
+    # turn off cute messages when you hit enter on an empty line
+
+oset beeps true
+    # set to false to disable beeps altogether
+
+#==============================================================================#
+# Set up colors
+#==============================================================================#
+puts "Setting up colors..."
+c_color normal cyan
+c_color notice higreen
+c_color warning himagenta
+c_color error hired
+c_color nickname magenta
+c_color address hiyellow
+c_color persfrom hicyan blue
+c_color personal hiblue
+c_color beep red
+c_color pershilite black yellow 
+c_color persfromhilite black yellow
+c_color timestamp hired
+
+#==============================================================================#
+# Provide unambiguous abbreviations
+#==============================================================================#
+puts -nonewline "Installing local command extensions..."
+proc . {args}		{s_who long .}
+proc b {args}		{eval beep $args}
+proc c {args}		{commands}
+proc d {args}		{eval display $args}
+proc h {args}		{c_help $args}
+proc i {args}		{foreach nick $args {s_personal server invite $nick}}
+proc n {nick}		{s_user nick $nick}
+proc s {args}		{s_group status $args}
+proc to {args}		{s_group topic $args}
+proc t {args}		{c_time}
+proc v {}		{version}
+proc w {args} {
+    if {$args == {}} {
+	s_who long
+    } else {
+	foreach group $args {
+	    s_who long $group
+	}
+    }
+}
+
+puts -nonewline "short..."
+#==============================================================================#
+# Document the VMS server add-ons      
+#==============================================================================#
+c_usage add mess c "" "display message from server"
+c_usage add ping c "" "display round-trip time between you and the server"
+c_usage add shuttime c "" "display time until server shutdown"
+
+# since /hush is interpreted locally, add a proc to force server-level.
+proc s_hush {args} {s_personal server hush $args}
+c_usage add s_hush c "\[-n nick\]|\[-s pattern\]" "hush someone at the server level"
+
+c_usage add unhush c "string" "undo a s_hush"
+c_usage add bcount c "" "display count of bytes sent and recieved"
+c_usage add write c "nick message" "leave a message for someone"
+c_usage add p c "password" "set your server password and register"
+c_usage add cp c "oldpass newpass" "change your server password"
+c_usage add secure c "" "set secure mode (must send password to register)"
+c_usage add nosecure c "" "unset secure mode (autoregistration from registered address"
+c_usage add whois c "nickname" "lookup nickname in server database"
+c_usage add delete c "password nickname" "delete entry from server database"
+c_usage add phone c "number" "enter your phone number into database"
+c_usage add text c "string" "enter interesting text into database"
+c_usage add rname c "real name" "enter your real name into database"
+c_usage add addr c "line1|line2|line3" "enter your street address"
+
+puts -nonewline "VMS..."
+
+#==============================================================================#
+# dole out punishment for annoying actions or bad puns :-)
+#==============================================================================#
+
+proc news {{n {}}}	{m server news $n}
+c_usage add news c "number" "read a news bulletin, or all bulletins."
+
+proc btth {nick}  {
+	s_personal $nick "\[*WHACK!*\] Boot to the head!";
+	s_send "\[=Status=\] $nick has received a boot to the head."
+}
+c_usage add btth c "nick" "send someone a boot to the head."
+
+proc acme {nick} {
+	s_personal $nick "\[*CLANG!*\] An anvil has fallen on you.";
+	s_send "\[=Status=\] $nick has just had an anvil fall on 'em."
+}
+c_usage add acme c "nick" "drop an anvil on someone"
+
+#==============================================================================#
+# send someone (or several someones) a net.hug
+#==============================================================================#
+proc hug {args} {
+	foreach nick $args 
+	{
+		s_personal $nick "\[*HUG*\] Oh god....you've been hugged...AGAIN."
+	}
+}
+c_usage add hug c "nick..." "send someone or several someones a net.hug"
+
+puts -nonewline "cute..."
+
+#==============================================================================#
+# send a /m to several people - separate nicks with commas, stick a \ in front
+# of a , in a nickname  (you can change this to 'proc m' to replace /m)
+# Note that this doesn't need its own split function any more, because the new
+# tcl split function replaces it directly and with more versatility
+#==============================================================================#
+proc mm {nicks args} {
+	set nicks [split $nicks {,}]
+	foreach nick $nicks {s_personal $nick $args}
+}
+c_usage add mm c "nick,..,nick message" "send a message to multiple people."
+
+proc fortune {} {
+	echolines [exec expand < [exec fortune -s]]
+}
+c_usage add fortune c " " "send a fortune to ICB"
+
+# Show someone what a command does. 
+proc show {person args} {
+	echolinespers $person [exec expand < [exec /bin/sh -c $args]]
+}
+c_usage add show c "person command" "echo command to person"
+
+# Send a file to ICB. 
+# Contributed by Paul Callahan.
+#
+# DANGER! DANGER WILL ROBINSON!
+#
+# Use this one with discretion, lest you break the rules, and make me
+# do something mean like installing an input rate limiter. I mean it!
+# Don't abuse it. -Sean
+
+proc echofile fname {
+	echolines [exec expand < [exec cat $fname]]
+}
+
+c_usage add echofile c "filename" "send a file to ICB"
+
+proc mechofile {person fname} {
+	echolinespers $person [exec expand < [exec cat $fname]]
+}
+
+c_usage add mechofile c "person filename" "send a file to person"
+
+proc echolines bigstring {
+  set pat [format "\n"]
+  set more 1
+  for {set rest [format "%s\n" $bigstring]} {$more} {} {
+    set newline [string first $pat $rest] 
+    if {$newline==0} then {set line [format " "]} else {
+    set line [string range $rest 0 [expr {$newline-1}]]}
+    if {[string length $rest]> [expr {$newline+1}]} then { 
+       set rest [string range $rest [expr {$newline+1}] end]
+       s_send [format "%s" $line]
+    } else {
+       set more 0}
+    }
+}
+
+proc echolinespers {person bigstring} {
+  set pat [format "\n"]
+  set more 1
+  for {set rest [format "%s\n" $bigstring]
+    } {$more
+    } {} {
+    set newline [string first $pat $rest] 
+    if {$newline==0} then {set line [format " "]} else {
+    set line [string range $rest 0 [expr {$newline-1}]]}
+    if {[string length $rest]> [expr {$newline+1}]} then { 
+       set rest [string range $rest [expr {$newline+1}] end]
+       s_personal $person [format "%s" $line]
+    } else {
+       set more 0}
+    }
+}
+
+# The server implements away in a way that techs doesn't like, so with this
+# you can use "/away" with no args to replace "/noaway".  It also sets the
+# client behavior while away.
+proc away {args} {
+	# this is a global so the triggers could play with it, if they wanted to.
+        global awaymsg 
+        set awaymsg $args
+        if { [ llength $awaymsg ] == 0} then {
+                set awaymsg ""
+		oset timestamp off
+		s_personal server noaway
+        } else {
+		oset timestamp on
+		s_personal server away $awaymsg
+        }
+}
+
+puts -nonewline "system..."
+#=============================================================================#
+# Trigger Functions, yay!
+# These triggers have been disabled by default, and are presented only as
+# examples.
+#=============================================================================#
+
+#proc Trig_personalmsg {person} {
+#        global awaymsg
+#        if {$awaymsg!=""} then {
+#                s_personal $person $awaymsg
+#		set d [exec date "+%m/%d %H:%M"]
+#		puts $awayfile "$d <*$person*> $theMessage"
+#		flush $awayfile
+#        }
+#}
+
+#proc Trig_beepmsg {person} {
+#        global awaymsg
+#        if {$awaymsg!=""} then {
+#                s_personal $person $awaymsg
+#        }
+#}
+
+#proc Trig_URL {url} {
+#        if {![regexp {://} $url]} then \
+#        {
+#               regsub -nocase {^} $url {http://} url
+#        }
+#        exec netscape $url &
+#}
+
+#oset urlgrab true
+
+# NOTE: it is considered impolite to use an anti-idling client
+# on servers which enforce idle timeouts. Consult your server
+# administrator before activating this trigger.
+#proc Trig_dropmsg {} {
+#	s_who long .
+#}
+
+# NOTE:  Use this trigger CAREFULLY!  It is POTENTIALLY DANGEROUS!
+#        Always test the nick against your own as shown, to make sure
+#        you don't get caught in an infinite loop responding to your
+#        own filter's output.
+#
+#proc Trig_openmsg {person} {
+#    global theMessage
+#    global myNick
+#    if {[string compare $person $myNick]} then \
+#    {
+#        if {![string compare [string tolower $theMessage] bah]} then \
+#        {
+#            puts humbug!
+#            s_send humbug!
+#        }
+#    }
+#}
+
+#proc Trig_arrivemsg {person} {}
+#proc Trig_errormsg {} {}
+#proc Trig_importantmsg {} {}
+#proc Trig_invitemsg {} {}
+
+#=============================================================================#
+# Source user .icb/icbrc file
+#=============================================================================#
+
+if [ file exists [glob -nocomplain "~/.icb/icbrc"] ] {
+	puts "Found personal ~/.icb/icbrc file; loading it."
+	source ~/.icb/icbrc
+	return
+}
+
+#=============================================================================#
+## Gratuitous startup commands if no user icbrc is found
+##=============================================================================#
+
+puts "No .icb/icbrc found. Initializing generic environment..."
+# This is just an ugly example of a notify. 
+s_personal server notify -n $myNick
+s_personal server status b 0
+s_personal server status # 10
+

@@ -1,0 +1,30 @@
+Release Notes - ICB C Client Revision 5.0.9 - 13 Jul 1994
+
+This is a small but important patch, fixing a major bug that has been causing
+coredumps since 5.0.5.
+
+Bugs Fixed:
+
+	ICB-BUG-5.0.5-2: ICB dumps core a variable amount of time after any
+		erroneous /display command.  (Original abstract limiting
+		behavior to Solaris 2.x was incorrect.)
+
+	Description:
+		Any time the "usage" message from the c_replay command
+		is displayed, part of the TCL command list is overwritten.
+		As soon as TCL attempts to traverse the command list past that
+		point, the client dumps core.  (Typing a nonexistent command
+		is will force the traversal.)
+
+
+Features Added: none
+
+
+Known Bugs Remaining:
+
+	ICB-BUG-5.0.5-7: Under Irix, the pagesize variable is intermittently
+		reset to 0; eventually, paging fails to operate even with
+		nonzero value of pagesize.
+
+	ICB-BUG-5.0.5-8: Under Ultrix, output to the log file is only rarely
+		flushed.
