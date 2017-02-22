@@ -131,7 +131,7 @@ int getc_or_dispatch (FILE* fp);
 
 /* getline.c */
 void eat_server (void);
-char *getline (char *prompt);
+char *__getline (char *prompt);
 
 /* history.c */
 void histclear (void);

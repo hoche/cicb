@@ -198,7 +198,7 @@ getc_or_dispatch (FILE* fp)
 
 
 char*
-getline (char *prompt)
+__getline (char *prompt)
 {
     char *line = NULL;
     int eofcount = 0;
@@ -231,7 +231,7 @@ getline (char *prompt)
 
 #ifdef HAVE_READLINE_HISTORY_H
     if (*line != '\0') {
-	add_history (line);
+	    add_history (line);
     }
 #endif
 

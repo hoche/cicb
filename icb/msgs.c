@@ -707,7 +707,7 @@ char *num;
 {
 	int seconds = atoi(num);
 	static char idletime[7];
-	int days, hours, minutes;
+	int days, hours, minutes, years;
 
 	if (seconds < 60)
 		sprintf(idletime, "%6s", "-");
@@ -715,11 +715,12 @@ char *num;
 		sprintf(idletime, "%5dm", seconds / 60); 
 	else
 	{
+        minutes = seconds/60;
 		hours = seconds/3600;
         days = hours/24;
         years = days/365;
+
         if (hours < 24) {
-               minutes = (seconds - hours * 3600)/60;
                sprintf(idletime, "%2dh%2dm", hours, minutes);
         }
         else if (days < 100)

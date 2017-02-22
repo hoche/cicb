@@ -230,9 +230,8 @@ server_connect (char * host_name, int port_number, char * bind_host)
 	return -1;
     }
 
-    /* insert hostname into address */
-    memset (&saddr, 0, sizeof saddr);
-    memcpy (&saddr.sin_addr, addr, sizeof *addr);
+    memset(&saddr, 0, sizeof(saddr));
+    saddr.sin_addr.s_addr = addr->s_addr;
 
     /* fill in socket domain and port number */
     saddr.sin_family = AF_INET;
@@ -253,8 +252,8 @@ server_connect (char * host_name, int port_number, char * bind_host)
 	}
 
 	/* insert bind_host hostname into address */
-	memset (&bind_saddr, '\0', sizeof bind_saddr);
-	memcpy (&bind_saddr.sin_addr, addr, sizeof addr);
+	memset(&bind_saddr, '\0', sizeof(bind_saddr));
+    bind_saddr.sin_addr.s_addr = addr->s_addr;
 
 	/* fill in socket domain */
 	bind_saddr.sin_family = AF_INET;

@@ -69,7 +69,7 @@ main_loop (void)
 	char prompt[1];
 	
 	prompt[0] = 0;
-	while ((line = getline ((char *)&prompt)) != NULL) {
+	while ((line = __getline ((char *)&prompt)) != NULL) {
 		parse (line);
 		free (line);
 	}

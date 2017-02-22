@@ -24,7 +24,6 @@ getswitch(int argc, char **argv, char **switchv)
     char *retswitch;
     char *arg;
     int length;
-    int found;
     int switcherr = 1;
 
     if (switchind >= argc)
@@ -40,7 +39,6 @@ getswitch(int argc, char **argv, char **switchv)
 
     thisswitch = NULL;
     retswitch = NULL;
-    found = 0;
     while (switchv && *switchv) {
 	if (thisswitch != retswitch)
             free(thisswitch);
