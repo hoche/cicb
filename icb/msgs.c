@@ -566,7 +566,7 @@ char *pkt;
 		    
 		/* body of a who listing */ 
 		sprintf(mbuf,
-			"  %s%s%-12s%s %s%s%s   %s%s%s  %s%s@%s%s %s%s",
+            "  %s%s%-10s%s %s%9s%s   %s%s%s  %s%s@%s%s %s%s",
 			mbuf2,
 			printcolor(ColNICKNAME, ColSANE),
 			fields[2],
@@ -706,8 +706,8 @@ idlestr(num)
 char *num;
 {
 	int seconds = atoi(num);
-	static char idletime[8];
-	int hours, minutes;
+	static char idletime[7];
+	int days, hours, minutes;
 
 	if (seconds < 60)
 		sprintf(idletime, "%6s", "-");
@@ -716,8 +716,23 @@ char *num;
 	else
 	{
 		hours = seconds/3600;
-		minutes = (seconds - hours * 3600)/60;
-		sprintf(idletime, "%2dh%2dm", hours, minutes);
+        days = hours/24;
+        years = days/365;
+        if (hours < 24) {
+               minutes = (seconds - hours * 3600)/60;
+               sprintf(idletime, "%2dh%2dm", hours, minutes);
+        }
+        else if (days < 100)
+               sprintf(idletime, "%2dd%2dh", days, hours % 24);
+        else if (days < 365)
+               sprintf(idletime, "%5dd", days);
+        else if (years < 100)
+               sprintf(idletime, "%2dy%2dd", years, days % 365);
+        else if (years < 100000)
+               sprintf(idletime, "%5dy", years);
+        else
+               // I'm impressed
+               strcpy(idletime, "  ages");
 	}
 	return idletime;
 }
