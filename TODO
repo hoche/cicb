@@ -1,3 +1,47 @@
+5.2: 
+
+* rewrite every function to get rid of old K&R style
+* fix flee's problem with the TCL parser
+* add capability to have choice of TCL, python, javascript, lua parser
+* revive old icb's readline? use libgetline? free version of readline?
+  * use linenoise: https://github.com/antirez/linenoise
+* rewrite the damn thing in C++, or at least use some better encapsulation.
+* add ipv6 support
+
+* the main requirement for scripting is to
+  a) set variables to change the general behavior: "oset asyncread",
+     "oset colorize", etc
+  b) add in new outbound functions that do custom things: "/btth"
+     etc
+  c) optionally, have triggers that happen on inbound things
+
+---------
+
+Fix the case where Tcl can't figure out what you're trying to do so
+it throws an error:
+/vfg
+[=Tcl Error=] invoked "continue" outside of a loop
+
+In parse.c, do_command() invokes the TclInterp with "icb_command_v1",
+passing the typed in text ("vfg" here) to it. "icb_command_v1" is
+defined in tcl_init.tcl. When it can't match the command to one
+of the internal commands, it does "return -code continue". This is
+supposed to indicated to do_command() that the message is not a 
+local command and needs to be sent to the server, but instead it
+just causes a Tcl error.
+
+Maybe we can have an oset/ounset happen in the Tcl code to indicate
+that it was handled, and then pick that up with a mapped variable
+on the C side?
+
+-------
+
+is there a way we can support a split-screen mode and the user being in
+multiple groups?  (this may require a coordinated server hack).  I dunno.
+It's something to think about.. I see lots of users starting up multiple
+clients with different nicks so they can be in multiple groups..  It
+strikes me as a very IRCish behavior, though.  I dunno. 
+
 5.1.1: 
 
 NetBSD is stupid.  It doesn't default to having /usr/pkg/lib in its
@@ -30,13 +74,5 @@ copies that do the right thing...
 Trig_invitemsg needs some reworking of statusmsg() in msgs.c so that we
 can extract the group name as well as the username from the invite string.
 I think we can also pull out the dependancy on the VMS server here. :)
-
-5.2: 
-
-is there a way we can support a split-screen mode and the user being in
-multiple groups?  (this may require a coordinated server hack).  I dunno.
-It's something to think about.. I see lots of users starting up multiple
-clients with different nicks so they can be in multiple groups..  It
-strikes me as a very IRCish behavior, though.  I dunno. 
 
 
