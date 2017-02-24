@@ -78,15 +78,17 @@ dnl
 dnl Readline Stuff
 dnl
 
-dnl ICB_AC_PATH_READLINEH finds the readline headers and does three things:
-dnl      1) it sets CPPFLAGS to include the directory with the readline headers.
-dnl      2) it checks to see if there's a history.h file available in the
+dnl ICB_AC_PATH_READLINEH finds the readline headers and does four things:
+dnl      1) it sets HAVE_READLINE if readline is found
+dnl      2) it sets CPPFLAGS to include the directory with the readline headers.
+dnl      3) it checks to see if there's a history.h file available in the
 dnl         same directory as readline.h, and sets HAVE_READLINE_HISTORY_H
 dnl         if so.
-dnl      3) it sets HAVE_READLINE_2 if the readline 2 API is detected. (After 
+dnl      4) it sets HAVE_READLINE_2 if the readline 2 API is detected. (After 
 dnl         readline 2, several functions were added, and an extra parameter 
 dnl         was added to many of the calls).
 dnl
+AH_TEMPLATE([HAVE_READLINE], [Defined if readline.h is available.])
 AH_TEMPLATE([HAVE_READLINE_HISTORY_H], [Defined if readline/history.h is available.])
 AC_DEFUN(ICB_AC_PATH_READLINEH, [
 
@@ -229,6 +231,7 @@ dnl pointless, but it might come in handy later.  an accidental feature.
 				  /usr/pkg/lib \
 				  /usr/local/lib \
 				  /usr/lib \
+				  /usr/lib64 \
 				  ; do
 			  for j in ${i} \
 					   `ls -dr ${i}/readline[[0-9]]* 2>/dev/null`  \
@@ -347,6 +350,7 @@ dnl pointless, but it might come in handy later.  an accidental feature.
 
   AC_PROVIDE([$0])
   AC_SUBST(READLINELIB)
+  AC_DEFINE(HAVE_READLINE)
 ])
 
 
@@ -365,6 +369,7 @@ dnl
 dnl ICB_AC_PATH_TCLH finds the Tcl headers and sets CPPFLAGS to include the 
 dnl proper directory.
 dnl
+AH_TEMPLATE([HAVE_TCL], [Defined if TCL is available.])
 AC_DEFUN(ICB_AC_PATH_TCLH, [
   #
   # Ok, lets find the tcl include trees so we can use the headers
@@ -548,6 +553,7 @@ AC_DEFUN(ICB_AC_PATH_TCLLIB, [
 				  /usr/pkg/lib \
 				  /usr/local/lib \
 				  /usr/lib \
+				  /usr/lib64 \
 				  ; do
 			  for j in ${i} \
 					   `ls -dr ${i}/tcl[[0-9]]* 2>/dev/null`  \
@@ -606,6 +612,7 @@ AC_DEFUN(ICB_AC_PATH_TCLLIB, [
 	else
 	  TCLLIB=${icb_ac_cv_tcllib}
 	  AC_MSG_RESULT(found $TCLLIB)
+      AC_DEFINE(HAVE_TCL)
 	  no_tcl=
 	fi
   fi
