@@ -2,5 +2,5 @@
 
 /* version information */
 
-#define WHAT_VERSION	"@(#) ColorICB Client Version 5.1.1-b2"
+#define WHAT_VERSION	"@(#) ColorICB Client Version 5.2.0-b1"
 #define	PROTO_LEVEL	1
