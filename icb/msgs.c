@@ -54,8 +54,7 @@ run_trigger (char* msg, char* proc, char* arg)
 /* open message */
 
 void
-copenmsg(pkt)
-char *pkt;
+copenmsg(char *pkt)
 {
 	char nick[MAX_NICKLEN+1];
 
@@ -92,8 +91,7 @@ char *pkt;
 /* personal message */
 
 void
-cpersonalmsg(pkt)
-char *pkt;
+cpersonalmsg(char *pkt)
 {
 	char nick[MAX_NICKLEN+1];
 
@@ -134,8 +132,7 @@ char *pkt;
 /* the url grabber function */
 
 void
-grab_url(msg)
-char *msg;
+grab_url(char *msg)
 {
   char *msgbuf = NULL, *purl = NULL, *p = NULL;
   struct urlinfo infobuf, *puinfo;
@@ -234,10 +231,7 @@ char *msg;
 */
 
 void
-find_url(s, p, b)
-char *s;
-char *p;
-struct urlinfo *b;
+find_url(char *s, char *p, struct urlinfo *b)
 {
   char *c = p;
   char *e = p;
@@ -256,8 +250,7 @@ struct urlinfo *b;
 	 /* beep message */
 
 void
-beep(pkt)
-char *pkt;
+beep(char *pkt)
 {
 	char nick[MAX_NICKLEN+1];
 
@@ -326,8 +319,7 @@ exitmsg()
 /* protocol version message */
 
 void
-protomsg(pkt)
-char *pkt;
+protomsg(char *pkt)
 {
 	char *p;
 	int proto_level;
@@ -390,8 +382,7 @@ loginokmsg (char* pkt)
 /* system status update message */
 
 void
-statusmsg(pkt)
-char *pkt;
+statusmsg(char *pkt)
 {
 	if (split(pkt) != 2) {
 		sprintf(mbuf, "%s[=Error=] got bad status message packet%s",
@@ -548,8 +539,7 @@ char *pkt;
 /* this should eventually parse things according to command requested */
 
 void
-cmdoutmsg(pkt)
-char *pkt;
+cmdoutmsg(char *pkt)
 {
 	char *idlestr(), *response(), *ampm();
 	char mbuf2[512];
@@ -641,8 +631,7 @@ char *pkt;
 /* error message */
 
 void
-errormsg(pkt)
-char *pkt;
+errormsg(char *pkt)
 {
 	char nick[MAX_NICKLEN+1];
 	int index;
@@ -676,8 +665,7 @@ char *pkt;
 /* important system message */
 
 void
-importantmsg(pkt)
-char *pkt;
+importantmsg(char *pkt)
 {
 	if (split(pkt) != 2) {
 		sprintf(mbuf,
@@ -702,8 +690,7 @@ char *pkt;
 /* return a string indicating idle time */
 
 char *
-idlestr(num)
-char *num;
+idlestr(char *num)
 {
 	int seconds = atoi(num);
 	static char idletime[7];
@@ -742,8 +729,7 @@ char *num;
 /* return a string indicating response time */
 
 char *
-response(num)
-char *num;
+response(char *num)
 {
 	int secs = atoi(num);
 	static char rtime[8];
@@ -759,9 +745,7 @@ char *num;
 
 
 char *
-ampm(secs, style)
-time_t secs;
-int style;
+ampm(time_t secs, int style)
 {
 	struct tm *t, *localtime();
 	static char timestr[8];

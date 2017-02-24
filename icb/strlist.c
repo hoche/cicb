@@ -21,8 +21,7 @@ strmakenode(int len)
 /* link node s to the head of the list */
 
 void
-strlinkhead(s, head, tail)
-STRLIST *s, **head, **tail;
+strlinkhead(STRLIST *s, STRLIST **head, STRLIST **tail)
 {
 	if (*tail == 0) {
 		s->prev = s->next = 0;
@@ -39,8 +38,7 @@ STRLIST *s, **head, **tail;
 /* link node s to the tail of the list */
 
 void
-strlinktail(s, head, tail)
-STRLIST *s, **head, **tail;
+strlinktail(STRLIST *s, STRLIST **head, STRLIST **tail)
 {
 	if (*head == 0) {
 		s->prev = s->next = 0;
@@ -58,8 +56,7 @@ STRLIST *s, **head, **tail;
 /* node i must be defined */
 
 void
-strlinkafter(s, i, head, tail)
-STRLIST *s, *i, **head, **tail;
+strlinkafter(STRLIST *s, STRLIST *i, STRLIST **head, STRLIST **tail)
 {
 	s->prev = i;
 	s->next = i->next;
@@ -75,8 +72,7 @@ STRLIST *s, *i, **head, **tail;
 /* node i must be defined */
 
 void
-strlinkbefore(s, i, head, tail)
-STRLIST *s, *i, **head, **tail;
+strlinkbefore(STRLIST *s, STRLIST *i, STRLIST **head, STRLIST **tail)
 {
 	s->prev = i->prev;
 	s->next = i;
@@ -88,8 +84,7 @@ STRLIST *s, *i, **head, **tail;
 /* unlink node s */
 
 void
-strunlink(s, head, tail)
-STRLIST *s, **head, **tail;
+strunlink(STRLIST *s, STRLIST **head, STRLIST **tail)
 {
 	if (s->prev == 0)
 		if (s->next) {
@@ -113,9 +108,7 @@ STRLIST *s, **head, **tail;
 /* if caseindep != 0, it is done case independently */
 
 void
-strlinkalpha(s, head, tail, caseindep)
-STRLIST *s, **head, **tail;
-int caseindep;
+strlinkalpha(STRLIST *s, STRLIST **head, STRLIST **tail, int caseindep)
 {
 	STRLIST *i;
 
@@ -152,10 +145,7 @@ int caseindep;
 /* returns pointer on success, 0 on failure */
 
 STRLIST *
-strgetnode(str, head, caseindep)
-char *str;
-STRLIST *head;
-int caseindep;
+strgetnode(char *str, STRLIST *head, int caseindep)
 {
 	STRLIST *p;
 

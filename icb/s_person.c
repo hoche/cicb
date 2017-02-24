@@ -77,10 +77,7 @@ s_personal (ARGV_TCL)
 
 
 void
-sendpersonal(nick, text, echoflag)
-char *nick;
-char *text;
-int echoflag;
+sendpersonal(char *nick, char *text, int echoflag)
 {
 	char *buf;
 	int pl_flags;

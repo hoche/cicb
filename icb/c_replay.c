@@ -20,8 +20,7 @@ static enum { BUF_UNKNOWN, BUF_PUBLIC, BUF_PERSONAL } buftype;
 /* add a line of text to the replay buffer */
 
 void
-bufferadd(text)
-char *text;
+bufferadd(char *text)
 {
 	STRLIST *bp;
 	char *timestamp = NULL;
@@ -62,8 +61,7 @@ char *text;
 
 
 void
-bufparse(str)
-char *str;
+bufparse(char *str)
 {
 	char cc;
 	char cleaned_str[MESSAGE_BUF_SIZE];
@@ -106,7 +104,7 @@ char *str;
 
 
 int
-bufmatch(str)
+bufmatch(char *str)
 {
 	bufparse(str);
 	if (nickptr && strcasecmp(bufnick,nickptr))
@@ -122,8 +120,7 @@ bufmatch(str)
 /* list some or all of the replay buffer */
 
 void
-bufferlist(lines)
-int lines;
+bufferlist(int lines)
 {
 	int pl_flags;
 	STRLIST *bp;

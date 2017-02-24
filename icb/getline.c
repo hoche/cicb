@@ -256,12 +256,7 @@ static int n_spaces = sizeof (spaces) - 1 - 1;
 
 
 void
-pauseprompt(prompt, Erase, c, unget, except)
-char *prompt;
-int Erase;
-int c;
-int unget;
-char* except;
+pauseprompt(char *prompt, int Erase, int c, int unget, char* except)
 {
 	extern int _rl_meta_flag; /* XXX private var, sigh. */
 	char uc;
@@ -322,9 +317,7 @@ char* except;
  *  keystroke handler for tab key
  */
 void
-handletab(count, c)
-int count;
-char c;
+handletab(int count, char c)
 {
 	char mpref[256];
 	int ppoint;

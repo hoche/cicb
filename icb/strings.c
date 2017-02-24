@@ -11,8 +11,7 @@ extern char *charmap;
 /* replace illegal characters in a nickname */
 
 void
-filternickname(txt)
-char *txt;
+filternickname(char *txt)
 {
 	for (; *txt != '\0'; txt++) {
 		if ((*txt >= 'A' && *txt <= 'Z') ||
@@ -32,8 +31,7 @@ char *txt;
 /* replace illegal characters in a regular line of text */
 
 void
-filtertext(s)
-char *s;
+filtertext(char *s)
 {
 	for (;*s != '\0'; s++)
 		if (!(*s >= ' ' && *s < '\177'))
@@ -43,8 +41,7 @@ char *s;
 /* replace illegal characters from a groupname */
 
 void
-filtergroupname(txt)
-char *txt;
+filtergroupname(char *txt)
 {
 	for (; *txt != '\0'; txt++) {
 		if ((*txt >= 'A' && *txt <= 'Z') ||
@@ -62,20 +59,8 @@ char *txt;
 /* return 1 if a string is a number */
 /* else return 0 */
 
-/*
-numeric(txt)
-char *txt;
-{
-	for (;*txt != '\0'; txt++)
-		if (!(*txt >= '0' && *txt <= '9'))
-			return(0);
-	return(1);
-}
-*/
-
 char *
-findspace(s)
-char *s;
+findspace(char *s)
 {
 	/* find EOS or whitespace */
 	while (*s != '\0' && *s != ' ' && *s != '\t') s++;
@@ -92,8 +77,7 @@ char *s;
 
 /* convert a string to lower case */
 void
-lcaseit(s)
-char *s;
+lcaseit(char *s)
 {
 	for (; *s; s++)
 		if (*s >= 'A' && *s <= 'Z')
@@ -108,8 +92,7 @@ char *s;
 char *special = "{}[]\";$\\";
 
 void
-quoteify(a, b)
-char *a, *b;
+quoteify(char *a, char *b)
 {
 	while (*a != '\0') {
 		if (strchr(special, *a)) {
@@ -126,8 +109,7 @@ char *a, *b;
 static char *catargsbuf = NULL;
 
 char *
-catargs(argv)
-char **argv;
+catargs(char **argv)
 {
 	char *s, **ap, *p;
 	int len = 0;
@@ -160,7 +142,7 @@ char **argv;
 
 
 void
-mbreakprint (int per, char* from, char* s)
+mbreakprint(int per, char* from, char* s)
 {
     int width;
     char** pieces;
@@ -196,9 +178,7 @@ mbreakprint (int per, char* from, char* s)
 
 
 void
-mprint(per, from, s)
-int per;
-char *from, *s;
+mprint(int per, char *from, char *s)
 {
 
 /*	In here, we want to test for the existance of from in the tcl
@@ -244,8 +224,7 @@ char *from, *s;
 }
 
 int
-wordcmp(s1, s2)
-char *s1, *s2;
+wordcmp(char *s1, char *s2)
 {
 	while(*s1 == *s2++)
 		if (*s1 == '\0' || *s1 == ' ' || *s1++ == '\t')
@@ -256,8 +235,7 @@ char *s1, *s2;
 }
 
 char *
-getword(s)
-char *s;
+getword(char *s)
 {
 	static char word[64];
 	char *w = word;
@@ -273,8 +251,7 @@ char *s;
 char *fields[MAX_FIELDS];
 
 int
-split(s)
-char *s;
+split(char *s)
 {
 	char *p = s;
 	int i = 0;

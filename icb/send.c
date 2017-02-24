@@ -66,8 +66,7 @@ send_packet (char* pkt)
 /* send normal open group message to the server */
 
 void
-csendopen(txt)
-char *txt;
+csendopen(char *txt)
 {
 	char **p;
 	int i;
@@ -99,8 +98,7 @@ char *txt;
 /* send a login packet */
 
 void
-sendlogin(id, nick, group, command, passwd)
-char *id, *nick, *group, *command, *passwd;
+sendlogin(char *id, char *nick, char *group, char *command, char *passwd)
 {
 
 	sprintf(pbuf, "%c%s\001%s\001%s\001%s\001%s",
@@ -121,8 +119,7 @@ sendpong()
 /* send a command to the server */
 
 void
-sendcmd(cmd, args)
-char *cmd, *args;
+sendcmd(char *cmd, char *args)
 {
 	char *nick;
 	char **p;

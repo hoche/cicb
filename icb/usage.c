@@ -20,8 +20,7 @@ struct Types {
 USAGE *usagehead = 0, *usagetail = 0;	/* master pointers to list */
 
 void
-listusage(name)
-char *name;
+listusage(char *name)
 {
 	USAGE *u;
 	int i, p;
@@ -41,8 +40,7 @@ char *name;
 }
 
 void
-uline(u)
-USAGE *u;
+uline(USAGE *u)
 {
 	sprintf(mbuf, "  %-8s %-20s %s", u->name, u->args, u->usage);
 	putl(mbuf, PL_SCR);
@@ -52,11 +50,7 @@ USAGE *u;
 /* returns zero on success, -1 on failure */
 
 int
-addusage(name, type, args, usage)
-char *name;
-char type;
-char *args;
-char *usage;
+addusage(char *name, int type, char *args, char *usage)
 {
 	USAGE *u;
 
@@ -76,8 +70,7 @@ char *usage;
 /* returns zero on success, -1 on failure */
 
 int
-deleteusage(name)
-char *name;
+deleteusage(char *name)
 {
 	/* XXX no code? */
 	return 0;
@@ -85,8 +78,7 @@ char *name;
 
 
 void
-usagelinkin(u)
-USAGE *u;
+usagelinkin(USAGE *u)
 {
 	USAGE *i;
 
@@ -116,8 +108,7 @@ USAGE *u;
 /* call with addresses of first and last pointers */
 
 void
-usagelinkhead(u, first, last)
-USAGE *u, **first, **last;
+usagelinkhead(USAGE *u, USAGE **first, USAGE **last)
 {
 	if (*first == 0) {
 		u->prev = u->next = 0;
@@ -134,8 +125,7 @@ USAGE *u, **first, **last;
 /* call with addresses of first and last pointers */
 
 void
-usagelinktail(u, first, last)
-USAGE *u, **first, **last;
+usagelinktail(USAGE *u, USAGE **first, USAGE **last)
 {
 	if (*first == 0) {
 		u->prev = u->next = 0;
@@ -152,8 +142,7 @@ USAGE *u, **first, **last;
 /* call with addresses of first and last pointers */
 
 void
-gunlink(u, first, last)
-USAGE *u, **first, **last;
+gunlink(USAGE *u, USAGE **first, USAGE **last)
 {
 	if (u->prev == 0)
 		if (u->next) {
@@ -178,8 +167,7 @@ USAGE *u, **first, **last;
 /* IMPORTANT - node i must be defined */
 
 void
-usagelinkafter(u, i, first, last)
-USAGE *u, *i, **first, **last;
+usagelinkafter(USAGE *u, USAGE *i, USAGE **first, USAGE **last)
 {
 	u->prev = i;
 	u->next = i->next;
@@ -194,8 +182,7 @@ USAGE *u, *i, **first, **last;
 /* IMPORTANT - node i and i->prev must be defined */
 
 void
-usagelinkbefore(u, i, first, last)
-USAGE *u, *i, **first, **last;
+usagelinkbefore(USAGE *u, USAGE *i, USAGE **first, USAGE **last)
 {
 	u->prev = i->prev;
 	u->next = i;

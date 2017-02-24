@@ -40,8 +40,7 @@ helptoc()
 /* returns -1 if no help for given subject */
 
 int
-helpme(subject)
-char *subject;
+helpme(char *subject)
 {
 	int x;
 	char **text;

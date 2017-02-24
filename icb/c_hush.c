@@ -7,9 +7,7 @@
 STRLIST *hushhead = NULL, *hushtail = NULL;
 
 int
-hushadd(interp, nick)
-Tcl_Interp *interp;
-char *nick;
+hushadd(Tcl_Interp *interp, char *nick)
 {
 	STRLIST *hp;
 
@@ -42,9 +40,7 @@ char *nick;
 }
 
 int
-hushdelete(interp, nick)
-Tcl_Interp *interp;
-char *nick;
+hushdelete(Tcl_Interp *interp, char *nick)
 {
 	STRLIST *s;
 
@@ -97,8 +93,7 @@ hushlist()
 }
 
 int
-ishushed(nick)
-char *nick;
+ishushed(char* nick)
 {
 	STRLIST *p;
 

@@ -5,8 +5,7 @@
 
 /* colortoken takes a string and turns it into a color value */
 static int
-colortoken(token)
-char *token;
+colortoken(char *token)
 {
   char *p;
   int hi = 0;
@@ -73,8 +72,7 @@ char *token;
 
 /* whichcolor takes a string and turns it into a color type */
 static int
-whichcolor(token)
-char *token;
+whichcolor(char *token)
 {
   char *p;
   int ret = -1;
@@ -183,8 +181,7 @@ char *token;
 
 /* setcolor function sets a specific color */
 int
-setcolor(colortype,fg,bg)
-int colortype; int fg; int bg;
+setcolor(int colortype, int fg, int bg)
 {
 	char cbuf[12]; 	
 
@@ -212,9 +209,8 @@ int colortype; int fg; int bg;
 
 /* printcolor returns an ansi sequence based on the selected color */
 /* suitable for use in a printf if that color is marked as defined */
-char *printcolor(primary, fallback)
-int primary;
-int fallback;
+char *
+printcolor(int primary, int fallback)
 {
 	if (colortable[primary].defined && gv.colorize)
 		return colortable[primary].color;

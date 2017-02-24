@@ -5,8 +5,7 @@
 #include "icb.h"
 
 void
-dispatch(pkt)
-char *pkt;
+dispatch(char *pkt)
 {
 	switch(*pkt) {
 

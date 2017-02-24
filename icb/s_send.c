@@ -18,9 +18,7 @@ s_send (ARGV_TCL)
 }
 
 void
-send_default(text,echoflag)
-char *text;
-int echoflag;
+send_default(char *text, int echoflag)
 {
 	if (gv.personalto && *gv.personalto)
 		sendpersonal(gv.personalto, text, echoflag);

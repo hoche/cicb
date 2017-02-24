@@ -15,8 +15,7 @@ static STRLIST *hp = (STRLIST *) 0;	/* user current location in history list */
 /* called whenever a user sends a personal message to another */
 
 void
-histput(nick)
-char *nick;
+histput(char *nick)
 {
 	STRLIST *sp;
 

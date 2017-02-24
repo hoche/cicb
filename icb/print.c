@@ -4,8 +4,6 @@
 
 #include "icb.h"
 
-#include <readline/readline.h>
-
 
 extern FILE *logfp;
 
@@ -20,9 +18,7 @@ extern FILE *logfp;
  */
 
 void
-putl(s, flags)
-char *s;
-int flags;
+putl(char *s, int flags)
 {
 	char printbuf[128];
 	char *timestamp = NULL;

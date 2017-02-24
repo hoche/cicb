@@ -71,8 +71,7 @@ getloginid()
 
 
 char *
-tildexpand(s)
-char *s;
+tildexpand(char *s)
 {
 	struct passwd *pw;
 	char login[17];
@@ -102,9 +101,7 @@ char *s;
 }
 
 void
-clearargs(argc,argv)
-int argc;
-char *argv[];
+clearargs(int argc, char *argv[])
 {
 	int x;
 	char *cp;

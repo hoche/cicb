@@ -113,10 +113,7 @@ oset (ARGV_TCL)
 
 
 void
-printvar(name, type, address)
-char *name;
-int type;
-char *address;
+printvar(char *name, int type, char *address)
 {
 	int ival;
 
@@ -148,8 +145,7 @@ char *address;
 
 
 int
-listvars(name)
-char *name;
+listvars(char *name)
 {
 	int x;
 
@@ -218,10 +214,7 @@ varsanity()
 }
 
 int
-unsetvar(interp, type, address)
-Tcl_Interp *interp;
-int type;
-char *address;
+unsetvar(Tcl_Interp *interp, int type, char *address)
 {
 	switch(type) {
 	case V_CHAR:
@@ -284,11 +277,7 @@ ounset (ARGV_TCL)
 
 
 int
-setvar(interp, type, address, s)
-Tcl_Interp *interp;
-int type;
-char *address;
-char *s;
+setvar(Tcl_Interp *interp, int type, char *address, char *s)
 {
 	int tmp;
 	char *p;

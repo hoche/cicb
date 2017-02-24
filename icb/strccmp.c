@@ -110,8 +110,7 @@ ccasecmp(int c1, int c2)
  *
  * Adapted for strcasestr and commented by Michel Hoche-Mong, hoche@grok.com. 
  * Other than the blurb below, there were no comments in this code before I 
- * got my hands on it. Not commenting your code, for whatever reason, is 
- * just plain LAME.
+ * got my hands on it.
  */
 
 /* 
@@ -175,7 +174,7 @@ strcasestr (phaystack, pneedle)
 
 		/* ok, we found a spot where the haystack might match the needle */
 		/* needle. if the needle's only one char long, we're done. otherwise */
-		/* look at the next char of the needle and ump into the middle of */
+		/* look at the next char of the needle and jump into the middle of */
 		/* our loop. */
 		c = *++needle;
 		if (c == '\0')
