@@ -296,23 +296,6 @@ char *s;
 	}
 }
 
-char *basename(path)
-char *path;
-{
-char *comp;
-
-comp=path;
-while (*path)
-{
-	if (*path++=='/')
-		comp=path;
-}
-
-return comp;
-}
-
-
-
 /* malloc a new string copy of the N chars starting at S,
    possibly adding a '-' if HYPHEN is nonzero */
 

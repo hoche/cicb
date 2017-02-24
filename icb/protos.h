@@ -188,7 +188,6 @@ void listservers(void);
 int ccasecmp (int c1, int c2);
 
 /* strings.c */
-char* basename (char* path);
 char** msplit (char* string, int soft, int hard);
 void msplit_free (char** frags);
 
