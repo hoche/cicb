@@ -63,9 +63,6 @@ proc beep nick {s_beep $nick}
 
 c_usage add boot m "nick" "kick someone out of your group"
 
-c_usage add bug g "" "send mail to the author"
-proc bug {} {c_shell "mail cicb_workers@obfuscation.org"}
-
 c_usage add cancel m "nick" "cancel an invitation"
 
 c_usage add commands i "" "list commands"
