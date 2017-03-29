@@ -1,4 +1,4 @@
-/* $Id: parse.c,v 1.20 2009/03/23 06:51:53 hoche Exp $ */
+/* $Id: parse.c,v 1.21 2013/07/05 06:16:27 hoche Exp $ */
 
 /* parse a line from the user */
 
@@ -7,6 +7,9 @@
 #include <stdarg.h>
 
 #define ARRAY_SIZE(x) (sizeof (x) / sizeof (x[0]))
+
+#define TCL_CONTINUE_ERROR_MSG "invoked \"continue\" outside of a loop"
+#define TCL_IGNORE 666
 
 /* This is similar to Tcl_VarEval, but it treats each string as a separate
    list element, rather than concat-ing the strings together and then
@@ -75,6 +78,14 @@ static int do_command(Tcl_Interp * interp, char *line)
     if (status == TCL_CONTINUE) {
         send_command(cmd, args);
         status = TCL_OK;
+    } else if (status == TCL_ERROR) {
+
+        /* handle the dreaded "invoked continue" message */
+        char *errmsg = (char*)Tcl_GetStringResult (interp);
+        if (strcmp(errmsg, TCL_CONTINUE_ERROR_MSG) == 0) {
+            send_command (cmd, args);
+            status = TCL_IGNORE;
+        }
     }
 
     return status;
@@ -116,6 +127,9 @@ void parse(char *line)
         }
         error_mode = 0;
 
+    } else if (status == TCL_IGNORE) {
+        /* do nothing */
+        error_mode = 0;
     } else {
         /* Report an error. */
         char *errmsg = "";
