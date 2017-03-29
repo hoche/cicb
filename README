@@ -27,7 +27,7 @@ the cicb-workers committee, which includes, but is not limited to: Erik
 Fichtner, Phil Stracchino, Michel Hoche-Mong, and Felix Lee.
 
 This code has been placed under the GNU Public License with Mark Reed's
-blessing.  Please see the file "COPYING" for further information.
+blessing.  Please see the file "LICENSE" for further information.
 
 
                            SYSTEM REQUIREMENTS
@@ -47,6 +47,24 @@ readline library.
 cicb now uses the gnu configure utility to try to figure out the correct
 settings for your system. See the file "INSTALL" for details on building
 the executable.
+
+
+                           CHANGES SINCE 5.1.1
+                           -------------------
+
+    The 5.2.0 release is currently in long-term development. A bunch
+of code cleanup has been started, including de-K&Ring most of the code.
+The intent is to isolate the TCL engine from the main handling and make
+it so that alternate (modern) scripting languages may be substituted.
+
+Repository:
+    Sourceforge has become untenable, so the code has been moved to github.
+
+Bugfixes:
+
+    Fix bug in /w messages where overly-long idle times would cause a buffer
+    overrun. patch contributed by tris, modified by hoche.
+
 
 
                            CHANGES SINCE 5.1.0
@@ -206,26 +224,6 @@ In addition, see the file "README.autoconf" for information on modifying
 the configuration process.
 
 
-                              DEVELOPMENT
-                              -----------
-
-The files in the attic subdirectory, most notably "HISTORY" provide
-information regarding program development.  One can also examine the log
-messages in the cvs repository.
-
-Anonymous, read-only, CVS access to the latest source code can be obtained
-via the following:
-    $ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/cicb login
-    CVS Password: [return]
-    $ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/cicb checkout cicb 
-
-which will check out the latest source code into a directory "cicb". 
-
-                         ---------------------
-
-Please use the support services at http://sourceforge.net/projects/cicb
-for logging bug reports, fixes, and suggestions for improvements.
-
 
                                KNOWN BUGS
                                ----------
@@ -272,5 +270,3 @@ Joel Abbott, John deVries, Kris Cox, Lisa Hamilton, Mark Hopkins,
 Paul Callahan, Stephen Chappell, Thomas Kunselman, Thomas Krueger, 
 Katrina Werpetinski, Keith Graham, Rich Dellaripa, Greg Williams, 
 and others too numerous to mention.
-
-$Id: README,v 1.12 2009/04/03 21:37:46 hoche Exp $
