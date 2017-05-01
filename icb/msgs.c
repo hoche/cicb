@@ -702,7 +702,7 @@ idlestr(char *num)
 		sprintf(idletime, "%5dm", seconds / 60); 
 	else
 	{
-        minutes = seconds/60;
+        minutes = (seconds/60)%60;
 		hours = seconds/3600;
         days = hours/24;
         years = days/365;
