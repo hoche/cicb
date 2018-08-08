@@ -33,6 +33,7 @@ dnl
 dnl standard type checking
 dnl
 AC_TYPE_SIGNAL
+AC_CHECK_HEADERS([libgen.h])
 AC_CHECK_FUNCS(strstr lrand48)
 
 dnl
