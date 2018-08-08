@@ -15,16 +15,14 @@ hushadd(Tcl_Interp *interp, char *nick)
 	while (*nick == ' ' || *nick == '\t') nick++;
 
 	if (*nick == '\0') {
-		strcpy(TRET, "c_hush: can't hush a null nickname");
-		return(-1);
+		TRETURNERR("c_hush: can't hush a null nickname");
 	}
 
 	if (strlen(nick) > MAX_NICKLEN)
 		*(nick + MAX_NICKLEN) = '\0';
 
 	if ((hp = strmakenode(strlen(nick))) == NULL) {
-		strcpy(TRET, "c_hush: out of memory");
-		return(-1);
+		TRETURNERR("c_hush: out of memory");
 	}
 	strcpy(hp->str, nick);
 	strlinkalpha(hp, &hushhead, &hushtail, 1);
@@ -45,8 +43,9 @@ hushdelete(Tcl_Interp *interp, char *nick)
 	STRLIST *s;
 
 	if ((s = strgetnode(nick, hushhead, 1)) == NULL) {
-		sprintf(TRET, "c_hush: %s is not being hushed", nick);
-		return(-1);
+		char buf[BUFSIZ];
+		snprintf(buf, BUFSIZ, "c_hush: %s is not being hushed", nick);
+		TRETURNERR(buf);
 	}
 	sprintf(mbuf, 
 		"%s[=Hush=] %s%s%s deleted from hush list.%s",
@@ -67,12 +66,12 @@ hushlist()
 	STRLIST *p;
 	char *s, *t;
 
-	if (hushhead)
-		putl("Hushed nicknames:", PL_SCR);
-	else {
+	if (hushhead) {
 		putl("[=Hush=] You are not currently hushing anyone.", PL_SCR);
 		return;
 	}
+
+	putl("Hushed nicknames:", PL_SCR);
 
 	s = mbuf;
 	for (p = hushhead; p; p = p->next) {
@@ -108,16 +107,14 @@ c_hush (ARGV_TCL)
 {
 	/* static char *usage = "usage: c_hush [nick]"; */
 
-	if (argc == 1 || !*argv[1])
+	if (argc == 1 || !*argv[1]) {
 		hushlist();
-	else
-		if (!ishushed(argv[1])) {
-			if (hushadd(interp, argv[1]) < 0)
-				return(TCL_ERROR);
-		} else 
-			if (hushdelete(interp, argv[1]) < 0)
-				return(TCL_ERROR);
-	return(TCL_OK);
+		return(TCL_OK);
+	}
+	if (!ishushed(argv[1])) {
+		return hushadd(interp, argv[1]);
+	}
+	return hushdelete(interp, argv[1]);
 }
 
 

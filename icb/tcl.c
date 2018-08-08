@@ -105,7 +105,6 @@ tcl_init()
 	Tcl_CreateCommand (interp, tc->tc_name, (Tcl_CmdProc*)tc->tc_func, NULL, NULL);
     }
 
-    /* FIXME: tcl wants arg 2 to be a writable string, sigh */
     Tcl_LinkVar (interp, "personalhilite", (char*) &personalhilite,
 		 TCL_LINK_STRING);
 

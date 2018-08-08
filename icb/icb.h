@@ -89,10 +89,6 @@ typedef struct Strlist {
 
 /* useful defs for modules using TCL code */
 
-/* This is deprecated */
-#define TRET	interp->result
-
-/* This is also deprecated */
 #define TRETURNERR(x) { Tcl_ResetResult(interp); Tcl_SetResult(interp, x, TCL_VOLATILE); return TCL_ERROR; }
 
 /* most functions get interp as an arg.  some need global interp, sigh. */

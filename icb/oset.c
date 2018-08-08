@@ -94,17 +94,18 @@ oset (ARGV_TCL)
 
 	for (x = 0; vars[x].name != NULL; x++) {
 		if (strcmp(argv[1], vars[x].name) == 0) {
-			if (setvar(interp, vars[x].type,
-			vars[x].address, mbuf) < 0)
-				return(TCL_ERROR);
+			int ret = setvar(interp, vars[x].type, vars[x].address, mbuf);
+			if (ret != TCL_OK)
+				return(ret);
 			else
 				break;
 		}
 	}
 
 	if (vars[x].name == NULL) {
-		sprintf(TRET, "oset: no such variable \"%s\"", argv[1]);
-		return(TCL_ERROR);
+		char buf[BUFSIZ];
+		snprintf(buf, BUFSIZ, "oset: no such variable \"%s\"", argv[1]);
+		TRETURNERR(buf);
 	}
 
 	return(TCL_OK);
@@ -182,10 +183,11 @@ varsanity()
 
 	if (gv.keepalive > 0) {
 		/* less than 60 second is too low */
-		if (gv.keepalive < 60)
+		if (gv.keepalive < 60) {
 			putl("Minimum value is 60 seconds. Setting to 60.", PL_SCR);
 			gv.keepalive = 60;
-			/* set the timer */
+		}
+		/* set the timer */
 		alarm(gv.keepalive);
 	}
 
@@ -236,7 +238,7 @@ unsetvar(Tcl_Interp *interp, int type, char *address)
 		break;
 	}
 	varsanity();
-	return(0);
+	return(TCL_OK);
 }
 
 int
@@ -245,8 +247,7 @@ ounset (ARGV_TCL)
 	static char *usage = "usage: ounset var";
 	int x;
 
-	if (argc != 2)
-	{
+	if (argc != 2) {
 		TRETURNERR(usage);
 	}
 
@@ -260,7 +261,8 @@ ounset (ARGV_TCL)
 
 	for (x = 0; vars[x].name != NULL; x++) {
 		if (strcmp(argv[1], vars[x].name) == 0) {
-			if (unsetvar(interp, vars[x].type, vars[x].address) < 0)
+			int ret = unsetvar(interp, vars[x].type, vars[x].address);
+			if (ret != TCL_OK)
 				return(TCL_ERROR);
 			else
 				break;
@@ -268,8 +270,9 @@ ounset (ARGV_TCL)
 	}
 
 	if (vars[x].name == NULL) {
-		sprintf(TRET, "ounset: no such variable \"%s\"", argv[1]);
-		return(TCL_ERROR);
+		char buf[BUFSIZ];
+		snprintf(buf, BUFSIZ, "ounset: no such variable \"%s\"", argv[1]);
+		TRETURNERR(buf);
 	}
 
 	return(TCL_OK);
@@ -293,8 +296,7 @@ setvar(Tcl_Interp *interp, int type, char *address, char *s)
 	case V_NONNEG:
 		tmp = atoi(s);
 		if (tmp < 0) {
-			strcpy(TRET, "oset: only non-negative values allowed");
-			return(-1);
+			TRETURNERR("oset: only non-negative values allowed");
 		}
 		memcpy (address, &tmp, sizeof(int));
 		break;
@@ -314,20 +316,18 @@ setvar(Tcl_Interp *interp, int type, char *address, char *s)
 			*i_addr = (int)0;
 			}
 		else {
-			strcpy(TRET, "oset: only boolean values allowed");
-			return(-1);
+			TRETURNERR("oset: only boolean values allowed");
 		}
 		break;
 	case V_STRING:
 		tmp = strlen(s) + 1;
 		if ((p = malloc(tmp)) == NULL) {
-			strcpy(TRET, "oset: not enough memory to set string");
-			return(-1);
+			TRETURNERR("oset: not enough memory to set string");
 		}
 		memcpy (p, s, tmp);
 		memcpy (address, &p, sizeof (p));
 		break;
 	}
 	varsanity();
-	return(0);
+	return(TCL_OK);
 }

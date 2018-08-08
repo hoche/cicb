@@ -14,6 +14,7 @@ int
 startsessionlog (Tcl_Interp* interp, char* path)
 {
 	char *aptr, *ampm();
+	char buf[BUFSIZ];
 	time_t time();
 	struct tm *t, *localtime();
 	time_t clock;
@@ -29,24 +30,23 @@ startsessionlog (Tcl_Interp* interp, char* path)
 	/* expand a tilde style path */
 	if (*path == '~')
 		if ((path = tildexpand(path)) == NULL) {
-			strcpy(TRET, "c_log: bad login id in path");
-			return(-1);
+			TRETURNERR("c_log: bad login id in path");
 		}
 	
 	/* open the session log */
 	if ((logfp = fopen(path, "a")) == NULL) {
-		sprintf(TRET,
+		snprintf(buf, BUFSIZ,
 			"c_log: can't open \"%s\": %s", path, strerror(errno));
-		return(-1);
+		TRETURNERR(buf);
 	}
 
 	/* protect the logfile against others */
 	if (fchmod((int)(fileno(logfp)), 0600) != 0) {
-		sprintf(TRET,
+		snprintf(buf, BUFSIZ,
 			"c_log: can't fchmod \"%s\": %s", path, strerror(errno));
 		fclose(logfp);
 		logfp = NULL;
-		return(-1);
+		TRETURNERR(buf);
 	}
 
 	/* get the time so we can timestamp it */
@@ -114,23 +114,19 @@ c_log (ARGV_TCL)
 {
 	/* disallow use in restricted mode */
 	if (gv.restricted)
-		TRETURNERR("c_log: logging not allowed in restricted mode")
+		TRETURNERR("c_log: logging not allowed in restricted mode");
 
 	if (argc == 1 || !argv[1]) {
-		if (logging())
-			closesessionlog();
-		else
-			if (startsessionlog(interp, 0) < 0)
-				return(TCL_ERROR);
-	} else {
 		if (logging()) {
-			sprintf(TRET, "c_log: session logging already on");
-			return(TCL_ERROR);
-		} else
-			if (startsessionlog(interp, argv[1]) < 0)
-				return(TCL_ERROR);
+			closesessionlog();
+			return(TCL_OK);
+		}
+		return startsessionlog(interp, 0);
 	}
-	return(TCL_OK);
+	if (logging()) {
+		TRETURNERR("c_log: session logging already on");
+	}
+	return startsessionlog(interp, argv[1]);
 
 }
 
