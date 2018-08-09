@@ -6,22 +6,22 @@
 #include "icb.h"
 
 int
-s_send (ARGV_TCL)
+s_send(ARGV_TCL)
 {
-	static char *usage = "usage: s_send text ...";
+    static char *usage = "usage: s_send text ...";
 
-	if (argc < 2 || !*argv[1])
-		TRETURNERR(usage)
+    if (argc < 2 || !*argv[1])
+        TRETURNERR(usage);
 
-	send_default(catargs(&argv[1]),0);
-	return(TCL_OK);
+    send_default(catargs(&argv[1]), 0);
+    return (TCL_OK);
 }
 
 void
 send_default(char *text, int echoflag)
 {
-	if (gv.personalto && *gv.personalto)
-		sendpersonal(gv.personalto, text, echoflag);
-	else
-		csendopen(text);
+    if (gv.personalto && *gv.personalto)
+        sendpersonal(gv.personalto, text, echoflag);
+    else
+        csendopen(text);
 }

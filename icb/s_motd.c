@@ -5,15 +5,14 @@
 #include "icb.h"
 
 int
-s_motd (ARGV_TCL)
+s_motd(ARGV_TCL)
 {
-	static char *usage = "usage: s_motd";
+    static char *usage = "usage: s_motd";
 
-	/* check the arg count */
-	if (argc != 1)
-		TRETURNERR(usage)
+    /* check the arg count */
+    if (argc != 1)
+        TRETURNERR(usage);
 
-	sendcmd("motd", "");
-	return(TCL_OK);
+    sendcmd("motd", "");
+    return (TCL_OK);
 }
-

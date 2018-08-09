@@ -4,7 +4,6 @@
 
 #include "icb.h"
 
-
 extern FILE *logfp;
 
 /* write a message to various output devices
@@ -20,62 +19,62 @@ extern FILE *logfp;
 void
 putl(char *s, int flags)
 {
-	char printbuf[128];
-	char *timestamp = NULL;
-	int pagesize = 0;
+    char printbuf[128];
+    char *timestamp = NULL;
+    int pagesize = 0;
 
-	if (continued) {
-		linenumber = 0;
-		continued = 0;
-	}
+    if (continued) {
+        linenumber = 0;
+        continued = 0;
+    }
 
-	if (gv.timestamp)
-		timestamp = gettimestamp();
+    if (gv.timestamp)
+        timestamp = gettimestamp();
 
-	if (flags & PL_SCR) {
-		/* if paging in effect, do paging */
+    if (flags & PL_SCR) {
+        /* if paging in effect, do paging */
 
-		/* zero or a positive number for gv.pagesize indicates that
-		 * the user set it explicity via "oset pagesize".
-		 * zero indicates that paging is off.
-		 * negative number indicates that we're using SIGWINCH and
-		 * and ioctl to dynamically detect the screensize.
-		 * either way, we have to set it back to positive to use it
-		 * here.
-		 */
-		if (gv.pagesize >= 0 )
-			pagesize = gv.pagesize;
-		else 
-			pagesize = -gv.pagesize;
+        /* zero or a positive number for gv.pagesize indicates that
+         * the user set it explicity via "oset pagesize".
+         * zero indicates that paging is off.
+         * negative number indicates that we're using SIGWINCH and
+         * and ioctl to dynamically detect the screensize.
+         * either way, we have to set it back to positive to use it
+         * here.
+         */
+        if (gv.pagesize >= 0)
+            pagesize = gv.pagesize;
+        else
+            pagesize = -gv.pagesize;
 
-		if (pagesize > 0 && (++linenumber >= (pagesize-1) )) {
-			sprintf(printbuf,
-				"%s[=More=]%s",
-				printcolor(ColMORE, ColNOTICE),
-				printcolor(ColSANE, ColSANE)); /*COLOR*/
-			pauseprompt(printbuf, 1, 0, 1, " ");
-			linenumber = 0;
-		}
+        if (pagesize > 0 && (++linenumber >= (pagesize - 1))) {
+            sprintf(printbuf,
+                    "%s[=More=]%s",
+                    printcolor(ColMORE, ColNOTICE),
+                    printcolor(ColSANE, ColSANE));
+            /*COLOR*/ pauseprompt(printbuf, 1, 0, 1, " ");
+            linenumber = 0;
+        }
 
-		/* write to the screen */
-		if (gv.timestamp && (flags & PL_TS))
-			write(1, timestamp, strlen(timestamp));
-		write(1, s, strlen(s));
-		write(1, "\r\n", 2);
-	}
+        /* write to the screen */
+        if (gv.timestamp && (flags & PL_TS))
+            write(1, timestamp, strlen(timestamp));
+        write(1, s, strlen(s));
+        write(1, "\r\n", 2);
+    }
 
-	/* put line into session log */
-	if ((flags & PL_LOG) && logfp != NULL) {
-		if (gv.timestamp && (flags & PL_TS))
-			fputs(timestamp, logfp);
-		fputs(s, logfp);
-		putc('\n', logfp);
-		fflush(logfp);
-	}
+    /* put line into session log */
+    if ((flags & PL_LOG) && logfp != NULL) {
+        if (gv.timestamp && (flags & PL_TS))
+            fputs(timestamp, logfp);
+        fputs(s, logfp);
+        putc('\n', logfp);
+        fflush(logfp);
+    }
 
-	/* add to review buffer */
-	if ((flags & PL_BUF) && gv.bufferlines)
-		bufferadd(s);
+    /* add to review buffer */
+    if ((flags & PL_BUF) && gv.bufferlines)
+        bufferadd(s);
 }
 
 /*

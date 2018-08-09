@@ -5,20 +5,20 @@
 #include "icb.h"
 
 int
-c_quit (ARGV_TCL)
+c_quit(ARGV_TCL)
 {
-	static char *usage = "usage: c_quit";
+    static char *usage = "usage: c_quit";
 
-	if (argc != 1) {
-		/* if args are wrong, print usage but still quit */
-		putl(usage, PL_SCR);
-	}
-	if (gv.verifyquit) {
-		askquit();
-		return(TCL_OK);
-	}
-		
-	icbexit();
-	/* NOTREACHED */
-	return 0;
+    if (argc != 1) {
+        /* if args are wrong, print usage but still quit */
+        putl(usage, PL_SCR);
+    }
+    if (gv.verifyquit) {
+        askquit();
+        return (TCL_OK);
+    }
+
+    icbexit();
+    /* NOTREACHED */
+    return 0;
 }

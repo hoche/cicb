@@ -6,79 +6,77 @@
 #include <sys/wait.h>
 
 int
-c_shell (ARGV_TCL)
+c_shell(ARGV_TCL)
 {
-	static char *usage = "usage: c_shell [command]";
-	int w, pid;
-	int shellout = 0;
-	char mbuf2[512];
+    static char *usage = "usage: c_shell [command]";
+    int w, pid;
+    int shellout = 0;
+    char mbuf2[512];
 #ifdef HAVE_UNION_WAIT
-	union wait status;
+    union wait status;
 #else
-	int status; 
+    int status;
 #endif
-	char *shell, *getenv();
-	
-	/* disallow use if restricted mode set */
-	if (gv.restricted)
-		TRETURNERR("c_shell: no shell commands in restricted mode")
+    char *shell, *getenv();
 
-	/* is this a shellout or a command? */
-	if (argc == 1 || !*argv[1])
-		shellout++;
+    /* disallow use if restricted mode set */
+    if (gv.restricted)
+        TRETURNERR("c_shell: no shell commands in restricted mode");
 
-	/* get shell to use */
-	if ((shell = getenv("SHELL")) == NULL)
-		shell = "/bin/sh";
+    /* is this a shellout or a command? */
+    if (argc == 1 || !*argv[1])
+        shellout++;
 
-	/* announce what we are doing */
-	if (shellout) {
-		sprintf(mbuf, "[%s]\r\n", shell);
-		putl(mbuf, PL_SCR);
-	} else {
-		sprintf(mbuf, "%s", catargs(&argv[1]));
-		sprintf(mbuf2, "[%s]\r\n", mbuf);
-		putl(mbuf2, PL_SCR);
-	}
+    /* get shell to use */
+    if ((shell = getenv("SHELL")) == NULL)
+        shell = "/bin/sh";
 
-	if ((pid = fork()) == 0) {
-		if (shellout)
-			execlp(shell, shell, NULL);
-		else
-			execlp(shell, shell, "-c", mbuf, NULL);
+    /* announce what we are doing */
+    if (shellout) {
+        sprintf(mbuf, "[%s]\r\n", shell);
+        putl(mbuf, PL_SCR);
+    } else {
+        sprintf(mbuf, "%s", catargs(&argv[1]));
+        sprintf(mbuf2, "[%s]\r\n", mbuf);
+        putl(mbuf2, PL_SCR);
+    }
 
-		/* exec failed if we make it here */
-		sprintf(mbuf, "c_shell: can't run shell \"%s\"", shell);
-		putl(mbuf, PL_SL);
-		putl(usage, PL_SCR);
-		exit(-1);
-	}
+    if ((pid = fork()) == 0) {
+        if (shellout)
+            execlp(shell, shell, NULL);
+        else
+            execlp(shell, shell, "-c", mbuf, NULL);
+
+        /* exec failed if we make it here */
+        sprintf(mbuf, "c_shell: can't run shell \"%s\"", shell);
+        putl(mbuf, PL_SL);
+        putl(usage, PL_SCR);
+        exit(-1);
+    }
+#if 0
+    /* trap signals that might mess ICB */
+    signal(SIGINT, SIG_IGN);
+    signal(SIGQUIT, SIG_IGN);
+#endif
+
+    /* wait for the child(ren) to die */
+
+    while ((w = wait(&status)) != pid && w != -1) ;
 
 #if 0
-	/* trap signals that might mess ICB */
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
+    /* restore signal processing */
+    signal(SIGINT, handle_intr);
+    signal(SIGQUIT, SIG_DFL);
 #endif
 
-	/* wait for the child(ren) to die */
+    /* clean up a little */
+    if (shellout) {
+        write(1, "\r", 1);
+    }
 
-	while ((w = wait(&status)) != pid && w != -1);
-
-#if 0
-	/* restore signal processing */
-	signal(SIGINT, handle_intr);
-	signal(SIGQUIT, SIG_DFL);
-#endif
-
-	/* clean up a little */
-	if (shellout)
-	{
-		write(1, "\r", 1);
-	}
-
-	if (gv.pauseonshell) {
-		pauseprompt("[=Hit return to continue=]", 0, '\n', 0, 0);
-	} else
-		puts("[=returning to icb=]");
-	return(TCL_OK);
+    if (gv.pauseonshell) {
+        pauseprompt("[=Hit return to continue=]", 0, '\n', 0, 0);
+    } else
+        puts("[=returning to icb=]");
+    return (TCL_OK);
 }

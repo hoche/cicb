@@ -5,14 +5,14 @@
 #include "icb.h"
 
 int
-s_version (ARGV_TCL)
+s_version(ARGV_TCL)
 {
-	static char *usage = "usage: s_version";
+    static char *usage = "usage: s_version";
 
-	/* check the arg count */
-	if (argc != 1)
-		TRETURNERR(usage)
+    /* check the arg count */
+    if (argc != 1)
+        TRETURNERR(usage);
 
-	sendcmd("v", "");
-	return(TCL_OK);
+    sendcmd("v", "");
+    return (TCL_OK);
 }

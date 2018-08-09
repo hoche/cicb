@@ -15,7 +15,8 @@
    list element, rather than concat-ing the strings together and then
    eval-ing the result. */
 
-static int tcl_execl(Tcl_Interp * interp, ...)
+static int
+tcl_execl(Tcl_Interp * interp, ...)
 {
     va_list args;
     char *arg;
@@ -41,7 +42,8 @@ static int tcl_execl(Tcl_Interp * interp, ...)
     return status;
 }
 
-static int do_command(Tcl_Interp * interp, char *line)
+static int
+do_command(Tcl_Interp * interp, char *line)
 {
     int status;
     char *cmd = line;
@@ -81,9 +83,9 @@ static int do_command(Tcl_Interp * interp, char *line)
     } else if (status == TCL_ERROR) {
 
         /* handle the dreaded "invoked continue" message */
-        char *errmsg = (char*)Tcl_GetStringResult (interp);
+        char *errmsg = (char *)Tcl_GetStringResult(interp);
         if (strcmp(errmsg, TCL_CONTINUE_ERROR_MSG) == 0) {
-            send_command (cmd, args);
+            send_command(cmd, args);
             status = TCL_IGNORE;
         }
     }
@@ -91,7 +93,8 @@ static int do_command(Tcl_Interp * interp, char *line)
     return status;
 }
 
-void parse(char *line)
+void
+parse(char *line)
 {
     static int error_mode = 0;
     int status = TCL_OK;

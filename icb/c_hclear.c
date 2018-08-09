@@ -5,13 +5,13 @@
 #include "icb.h"
 
 int
-c_hclear (ARGV_TCL)
+c_hclear(ARGV_TCL)
 {
-	static char *usage = "usage: c_hclear";
-	
-	if (argc > 1)
-		TRETURNERR(usage);
+    static char *usage = "usage: c_hclear";
 
-	histclear();
-	return TCL_OK;
+    if (argc > 1)
+        TRETURNERR(usage);
+
+    histclear();
+    return TCL_OK;
 }
