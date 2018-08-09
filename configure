@@ -4220,6 +4220,7 @@ else
 			  /sw/include \
 			  /usr/pkg/include \
 			  /usr/local/include \
+			  /usr/local/opt/readline/include \
 			  /usr/include \
 			  ; do
 		if test -f $i/readline/readline.h ; then
@@ -4334,6 +4335,7 @@ else
 				  /sw/lib \
 				  /usr/pkg/lib \
 				  /usr/local/lib \
+				  /usr/local/opt/readline/lib \
 				  /usr/lib \
 				  /usr/lib64 \
 				  ; do

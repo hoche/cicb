@@ -125,6 +125,7 @@ AC_DEFUN(ICB_AC_PATH_READLINEH, [
 			  /sw/include \
 			  /usr/pkg/include \
 			  /usr/local/include \
+			  /usr/local/opt/readline/include \
 			  /usr/include \
 			  ; do
 		if test -f $i/readline/readline.h ; then
@@ -230,6 +231,7 @@ dnl pointless, but it might come in handy later.  an accidental feature.
 				  /sw/lib \
 				  /usr/pkg/lib \
 				  /usr/local/lib \
+				  /usr/local/opt/readline/lib \
 				  /usr/lib \
 				  /usr/lib64 \
 				  ; do
