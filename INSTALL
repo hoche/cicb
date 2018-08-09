@@ -47,16 +47,6 @@ The simplest way to compile this package is:
      files that `configure' created (so you can compile the package for
      a different kind of computer), type `make distclean'.
 
-IMPORTANT:
-==========
-
-Under certain conditions, if you have both Tcl8.0 and Tcl8.3 installed on 
-your system, it is possible that your new icb client may hang at startup 
-when attempting to source your .icb/icbrc file.  If this happens, edit 
-icb/Makefile and replace -ltcl8.3 with -ltcl8.0, then 'make' and 'make 
-install' again.  This should eliminate the problem.
-
-
 Compilers and Options
 =====================
 
@@ -159,9 +149,15 @@ Getting TCL
     you to extend your client by writing scripts that you can embed
     in your .icbrc.
 
-	Get it from ftp://ftp.scriptics.com/pub/tcl.
+	You can get the source from ftp://ftp.scriptics.com/pub/tcl, or
+    use a system package manager to get it. For example:
 
-	We've tested against tcl7.6b1, tcl8.0, and tcl8.3.
+    Fedora/Centos Linux variants: yum install tcl tcl-devel
+    Debian/Ubuntu Linux variants: apt-get tcl8.6 tcl8.6-dev
+    FreeBSD: pkg install tcl86
+    MacOS: brew install tcl
+
+	We've tested against tcl7.6b1, tcl8.0, tcl8.3, tcl8.5, and tcl8.6.
 
 	If `configure' has problems finding your Tcl installation, or if
     Tcl has been installed in a non-standard location, you can use the
@@ -184,9 +180,16 @@ Getting Readline
 	Readline is library provided by GNU which facilitates getting
     user input from a command line.
 
-	Get it from ftp://ftp.gnu.org/gnu/readline.
+	Many systems already have it installed, but if not you can get
+    its source from ftp://ftp.gnu.org/gnu/readline, or use a system
+    package manger to get it. For example:
+
+    Fedora/Centos Linux variants: yum install readline readline-devel
+    Debian/Ubuntu Linux variants: apt-get readline readline-dev
+    FreeBSD: pkg install readline
+    MacOS: brew install readline
 	
-	We've tested against readline 2.1, 2.2.1, 4.0, and 4.1.
+	We've tested against readline 2.1, 2.2.1, 4.0, 4.1, 6.3, and 7.
 
 	If `configure' has problems finding your readline installation, or if
     readline has been installed in a non-standard location, you can use 
@@ -213,7 +216,6 @@ Getting Readline
     readline build directory.  
     (Example: "./configure --prefix=/home/emf/local/readline-4.1 ; make;
      make install")
-
 
 Default ICB Server Options
 ==========================
