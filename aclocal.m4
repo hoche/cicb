@@ -407,6 +407,7 @@ AC_DEFUN(ICB_AC_PATH_TCLH, [
 	  for i in ${tclprefix}/include \
 			  /usr/pkg/include \
 			  /usr/local/include \
+			  /usr/local/opt/tcl-tk/include \
 			  /usr/include \
 			  ; do
 		  for j in ${i} \
@@ -513,29 +514,49 @@ AC_DEFUN(ICB_AC_PATH_TCLLIB, [
 	AC_MSG_CHECKING([for Tcl library])
 	AC_CACHE_VAL(icb_ac_cv_tcllib,[
 
+        # First look in the user-supplied location
+
 		if test x"${with_tcllib}" != x ; then
 
 		  if test -f "${with_tcllib}/lib$dottedtcllibroot.so" -a \
+				-f "${with_tcllib}/lib$dottedtcllibroot.dll" -a \
+				-f "${with_tcllib}/lib$dottedtcllibroot.dylib" -a \
 				-f "${with_tcllib}/lib$dottedtcllibroot.a" ; then
 			icb_ac_cv_tcllib="-L`(cd ${with_tcllib}; pwd)` -l$dottedtcllibroot"
 		  elif test -f "${with_tcllib}/lib$dottedtcllibroot.so" ; then
 			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$dottedtcllibroot.so
+		  elif test -f "${with_tcllib}/lib$dottedtcllibroot.dll" ; then
+			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$dottedtcllibroot.dll
+		  elif test -f "${with_tcllib}/lib$dottedtcllibroot.dylib" ; then
+			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$dottedtcllibroot.dylib
 		  elif test -f "${with_tcllib}/lib$dottedtcllibroot.a" ; then
 			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$dottedtcllibroot.a
 
 		  elif test -f "${with_tcllib}/lib$undottedtcllibroot.so" -a \
+				-f "${with_tcllib}/lib$undottedtcllibroot.dll" -a \
+				-f "${with_tcllib}/lib$undottedtcllibroot.dylib" -a \
 				-f "${with_tcllib}/lib$undottedtcllibroot.a" ; then
 			icb_ac_cv_tcllib="-L`(cd ${with_tcllib}; pwd)` -l$undottedtcllibroot"
 		  elif test -f "${with_tcllib}/lib$undottedtcllibroot.so" ; then
 			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$undottedtcllibroot.so
+		  elif test -f "${with_tcllib}/lib$undottedtcllibroot.dll" ; then
+			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$undottedtcllibroot.dll
+		  elif test -f "${with_tcllib}/lib$undottedtcllibroot.dylib" ; then
+			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$undottedtcllibroot.dylib
 		  elif test -f "${with_tcllib}/lib$undottedtcllibroot.a" ; then
 			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/lib$undottedtcllibroot.a
 
 		  elif test -f "${with_tcllib}/libtcl.so" -a \
+				-f "${with_tcllib}/libtcl.dll" -a \
+				-f "${with_tcllib}/libtcl.dylib" -a \
 				-f "${with_tcllib}/libtcl.a" ; then
 			icb_ac_cv_tcllib="-L`(cd ${with_tcllib}; pwd)` -ltcl"
 		  elif test -f "${with_tcllib}/libtcl.so" ; then
 			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/libtcl.so
+		  elif test -f "${with_tcllib}/libtcl.dll" ; then
+			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/libtcl.dll
+		  elif test -f "${with_tcllib}/libtcl.dylib" ; then
+			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/libtcl.dylib
 		  elif test -f "${with_tcllib}/libtcl.a" ; then
 			icb_ac_cv_tcllib=`(cd ${with_tcllib}; pwd)`/libtcl.a
 
@@ -544,7 +565,9 @@ AC_DEFUN(ICB_AC_PATH_TCLLIB, [
 		  fi
 		fi
 
-		# check in a few common install locations
+        # Didn't find it in the user-supplied location. Check other 
+		# common install locations
+
 		if test x"${prefix}" = xNONE ; then
 			 tclprefix=.
 		else
@@ -554,6 +577,7 @@ AC_DEFUN(ICB_AC_PATH_TCLLIB, [
 		  for i in ${tclprefix}/lib \
 				  /usr/pkg/lib \
 				  /usr/local/lib \
+                  /usr/local/opt/tcl-tk/lib \
 				  /usr/lib \
 				  /usr/lib64 \
 				  ; do
@@ -563,22 +587,38 @@ AC_DEFUN(ICB_AC_PATH_TCLLIB, [
 					   `ls -dr ${i}/tcl/tcl[[0-9]]* 2>/dev/null`  \
 					  ; do
 				if test -f "$j/lib$dottedtcllibroot.so" -a \
+					-f "$j/lib$dottedtcllibroot.dll" -a \
+					-f "$j/lib$dottedtcllibroot.dylib" -a \
 					-f "$j/lib$dottedtcllibroot.a" ; then
 				  icb_ac_cv_tcllib="-L`(cd $j; pwd)` -l$dottedtcllibroot"
 				  break;
 				elif test -f "$j/lib$dottedtcllibroot.so" ; then
 				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$dottedtcllibroot.so
 				  break;
+				elif test -f "$j/lib$dottedtcllibroot.dll" ; then
+				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$dottedtcllibroot.dll
+				  break;
+				elif test -f "$j/lib$dottedtcllibroot.dylib" ; then
+				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$dottedtcllibroot.dylib
+				  break;
 				elif test -f "$j/lib$dottedtcllibroot.a" ; then
 				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$dottedtcllibroot.a
 				  break;
 
 				elif test -f "$j/lib$undottedtcllibroot.so" -a \
+					-f "$j/lib$undottedtcllibroot.dll" -a \
+					-f "$j/lib$undottedtcllibroot.dylib" -a \
 					-f "$j/lib$undottedtcllibroot.a" ; then
 				  icb_ac_cv_tcllib="-L`(cd $j; pwd)` -l$undottedtcllibroot"
 				  break;
 				elif test -f "$j/lib$undottedtcllibroot.so" ; then
 				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$undottedtcllibroot.so
+				  break;
+				elif test -f "$j/lib$undottedtcllibroot.dll" ; then
+				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$undottedtcllibroot.dll
+				  break;
+				elif test -f "$j/lib$undottedtcllibroot.dylib" ; then
+				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$undottedtcllibroot.dylib
 				  break;
 				elif test -f "$j/lib$undottedtcllibroot.a" ; then
 				  icb_ac_cv_tcllib=`(cd $j; pwd)`/lib$undottedtcllibroot.a
@@ -719,7 +759,9 @@ AC_DEFUN(ICB_AC_PATH_SSL_LIB, [
 
 		# First check to see if --with-ssl-lib was specified.
 		if test x"${with_ssl_lib}" != x ; then
-		  if test -f "${with_ssl_lib}/libssl.so" ; then
+		  if test -f "${with_ssl_lib}/libssl.so" -a \
+		        -f "${with_ssl_lib}/libssl.dll" -a \
+		        -f "${with_ssl_lib}/libssl.dylib" ; then
 			icb_ac_cv_ssl_lib="-L`(cd ${with_ssl_lib}; pwd)` -lssl -lcrypto"
 		  elif test -f "${with_ssl_lib}/libssl.a" ; then
 			icb_ac_cv_ssl_lib="`(cd ${with_ssl_lib}; pwd)`/libssl.a `(cd ${with_ssl_lib}; pwd)`/libcrypto.a"
@@ -738,10 +780,13 @@ AC_DEFUN(ICB_AC_PATH_SSL_LIB, [
 		  for i in ${ssl_prefix}/lib \
 				  /usr/pkg/lib \
 				  /usr/local/ssl/lib \
+				  /usr/local/opt/openssl/lib \
 				  /usr/local/lib \
 				  /usr/lib \
 				  ; do
-				if test -f "$i/libssl.so" ; then
+				if test -f "$i/libssl.so" -a \
+                    -f "$i/libssl.dll" -a \
+                    -f "$i/libssl.dylib" ; then
 				  icb_ac_cv_ssl_lib="-L`(cd $i; pwd)` -lssl -lcrypto"
 				  break;
 				elif test -f "$i/libssl.a" ; then
