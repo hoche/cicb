@@ -106,8 +106,8 @@ sendlogin(char *id, char *nick, char *group, char *command, char *passwd)
 void
 sendpong()
 {
-    *pbuf = M_PONG;
-    *pp = 1;
+    pbuf[0] = M_PONG;
+    pbuf[1] = '\0';
     send_packet(pp);
 }
 
