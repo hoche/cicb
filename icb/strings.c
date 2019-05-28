@@ -136,32 +136,49 @@ catargs(char **argv)
     return catargsbuf;
 }
 
+/* Print a line, splitting it (at a space) if necessary to make it fit
+ * the screenwidth.
+ *
+ * if per = 0, it's an open message
+ * if per = 1, it's a personal message and we need to do some additional
+ *    padding.
+ *
+ * from is the nick from which the message came
+ * s is the message itself, NULL terminated
+ */
 void
 mbreakprint(int per, char *from, char *s)
 {
     int width;
+    int padlen;
     char **pieces;
     char **p;
 
-    /* figure out where to split the string */
 
+    if (per) {
+        padlen = 2 + 3; /* pad nick with "<*" and "*> " */
+    } else {
+        padlen = 1 + 2; /* pad nick with "<" and "> " */
+    }
+    if (gv.timestamp) {
+        padlen += 8;
+    }
+
+    /* if gv.pagewidth < 0, it means set it was set dynamically from the
+     *    window size, usually by handling SIGWINCH.
+     * if gv.pagewidth == 0, it means the user doesn't ever want it to linebreak
+     * if pagewidth > 0, it means the user wanted a fixed width.
+     */
     width = gv.pagewidth;
     if (width < 0) {
         width = -width;
     }
-
-    if (per) {
-        width -= 2 + strlen(from) + 3;
-    } else {
-        width -= 1 + strlen(from) + 2;
-    }
-
-    if (gv.timestamp) {
-        width -= 8;
-    }
+    width -= padlen + strlen(from);
 
     /* split and print it */
 
+    /* note: at this point width can be <0 (if it was set really small or
+     * 0 to begin with */
     pieces = msplit(s, width, 0);
 
     for (p = pieces; *p != NULL; ++p) {
@@ -283,12 +300,21 @@ msplit_dup(char *s, int n, int hyphen)
 }
 
 /* Split STRING for msplit().
-
-   Returns the number of fragments.  Returns -1 on malloc error.
-
-   If FRAGS is non-null, then it gets filled with pointers to malloc'ed
-   copies of the fragments.  FRAGS must be large enough.
-*/
+ *
+ *  Returns the number of fragments.  Returns -1 on malloc error.
+ *
+ *  If FRAGS is non-null, then it gets filled with pointers to malloc'ed
+ *  copies of the fragments.  FRAGS must be large enough.
+ *
+ *  If soft <= 0 and hard <= 0, don't split, just copy everything to the first
+ *      frag
+ *  If soft <= 0 and hard > 0, split at hard point
+ *  If soft > 0 and hard <= 0, try to split at or prior to the soft point, but
+ *     if there's no convenient space, split at the first space after the soft
+ *     point.
+ *  If soft > 0 and hard > 0, try to split at or prior to the soft point, but
+ *     if there's no convenient space, force a split at the hard point.
+ */
 
 static int
 msplit_internal(char *string, int soft, int hard, char **frags)
@@ -296,53 +322,58 @@ msplit_internal(char *string, int soft, int hard, char **frags)
     int n_frags;
     int string_len;
 
+    if (string == NULL) {
+        return 0;
+    }
+
     if (soft <= 0) {
         soft = hard;
     }
 
-    if (string == NULL || soft <= 0) {
-        return 0;
-    }
-
     n_frags = 0;
     string_len = strlen(string);
-    while (soft < string_len) {
-        char *p = string + soft;
+    if (soft > 0) {
+        while (soft < string_len) {
+            char *p = string + soft;
 
-        /* find last space on the line */
-        while (string < p && !isspace(*p)) {
-            --p;
-        }
+            /* find last space prior to our current position */
+            while (string < p && !isspace(*p)) {
+                --p;
+            }
 
-        /* If no spaces, or space is too close to the beginning... */
-        if (p < string + soft / 2) {
-            /* find next space */
-            p = string + soft;
-            while (*p != '\0' && !isspace(*p)) {
+            /* If no spaces, or space is too close to the beginning... */
+            if (p < string + soft / 2) {
+
+                /* find next space */
+                p = string + soft;
+                while (*p != '\0' && !isspace(*p)) {
+                    ++p;
+                }
+
+                /* if the hard break is set and this fragment is bigger than
+                 * that, force truncation even if it's in the middle of a word */
+                if (hard > 0 && string + hard < p) {
+                    p = string + hard;
+                }
+            }
+
+            /* Copy it out */
+            if (frags != NULL) {
+                char *frag = msplit_dup(string, p - string, 0);
+                if (frag == NULL)
+                    return -1;
+                frags[n_frags] = frag;
+            }
+            ++n_frags;
+
+            /* Skip over the space */
+            if (*p != '\0' && isspace(*p)) {
                 ++p;
             }
-            /* if this fragment is too large, force truncation */
-            if (0 < hard && string + hard < p) {
-                p = string + hard;
-            }
-        }
 
-        /* Copy it out */
-        if (frags != NULL) {
-            char *frag = msplit_dup(string, p - string, 0);
-            if (frag == NULL)
-                return -1;
-            frags[n_frags] = frag;
+            string_len -= p - string;
+            string = p;
         }
-        ++n_frags;
-
-        /* Skip over the space */
-        if (*p != '\0' && isspace(*p)) {
-            ++p;
-        }
-
-        string_len -= p - string;
-        string = p;
     }
 
     /* last fragment */
@@ -359,22 +390,21 @@ msplit_internal(char *string, int soft, int hard, char **frags)
 }
 
 /* Split STRING, usually at space chars, into fragments usually <=SOFT
-   chars.  STRING is not modified.
-
-   Returns a malloc'ed array of malloc'ed strings.  Returns NULL on malloc
-   error.
-
-   Any returned array should be destroyed with msplit_free().
-
-   A fragment can be >SOFT chars if there are no spaces in the fragment, or
-   if splitting at a space would create a fragment <SOFT/2 chars.
-
-   If HARD is non-zero, then all fragments are forced to be <=HARD chars,
-   which may require splitting at a non-space char.
-
-   If the split point is a space, the space isn't included in the
-   fragments. */
-
+ * chars.  STRING is not modified.
+ *
+ * Returns a malloc'ed array of malloc'ed strings.  Returns NULL on malloc
+ * error.
+ *
+ * Any returned array should be destroyed with msplit_free().
+ *
+ * A fragment can be >SOFT chars if there are no spaces in the fragment, or
+ * if splitting at a space would create a fragment <SOFT/2 chars.
+ *
+ * If HARD is non-zero, then all fragments are forced to be <=HARD chars,
+ * which may require splitting at a non-space char.
+ *
+ * If the split point is a space, the space isn't included in the fragments.
+ */
 char **
 msplit(char *string, int soft, int hard)
 {
