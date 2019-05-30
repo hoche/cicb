@@ -48,6 +48,8 @@ int init_openssl_library(void)
     SSL_load_error_strings();
     /*OPENSSL_config(NULL); */
 
+    OpenSSL_add_ssl_algorithms();
+
     return(1);
 }
 #endif
@@ -258,7 +260,11 @@ main(int argc, char *argv[])
         myport = DEFAULT_SSL_PORT;
     SSL_load_error_strings();
     SSLeay_add_ssl_algorithms();
-    ctx = SSL_CTX_new(SSLv23_client_method());
+#if HAVE_TLS_CLIENT_METHOD
+    ctx = SSL_CTX_new(TLS_client_method());
+#else
+    ctx = SSL_CTX_new(TLSv1_1_client_method());
+#endif
     if (!ctx) {
         fprintf(stderr, "Error setting up the SSL context.\n");
         exit(1);

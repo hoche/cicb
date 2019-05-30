@@ -69,7 +69,7 @@
 /* Defined if TCL is available. */
 #undef HAVE_TCL
 
-/* Define if generic TLS_client_method is available */
+/* Define to 1 if you have the `TLS_client_method' function. */
 #undef HAVE_TLS_CLIENT_METHOD
 
 /* Define to 1 if you have the <unistd.h> header file. */
