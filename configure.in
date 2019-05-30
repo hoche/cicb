@@ -157,32 +157,38 @@ ICB_AC_PATH_TCL
 AH_TEMPLATE([HAVE_SSL])
 AH_TEMPLATE([DEFAULT_SSL_PORT], [Default server port to connect to when using SSL.])
 
-dnl Locate SSL libs.
+    dnl Locate SSL libs.
 if test x"$ssl" = x"yes" ; then
-  dnl Order matters!
-  if test "$PORTNAME" != "win32"; then
-     AC_SEARCH_LIBS(CRYPTO_new_ex_data, crypto, [], [AC_MSG_ERROR([library 'crypto' is required for OpenSSL])])
-     FOUND_SSL_LIB="no"
-     AC_SEARCH_LIBS(OPENSSL_init_ssl, ssl, [], [FOUND_SSL_LIB="yes"])
-     AC_SEARCH_LIBS(SSL_library_init, ssl, [], [FOUND_SSL_LIB="yes"])
-     AS_IF([test "x$FOUND_SSL_LIB" = xno], [AC_MSG_ERROR([library 'ssl' is required for OpenSSL])])
-  else
-     AC_SEARCH_LIBS(CRYPTO_new_ex_data, eay32 crypto, [], [AC_MSG_ERROR([library 'eay32' or 'crypto' is required for OpenSSL])])
-     FOUND_SSL_LIB="no"
-     AC_SEARCH_LIBS(OPENSSL_init_ssl, ssleay32 ssl, [FOUND_SSL_LIB="yes"])
-     AC_SEARCH_LIBS(SSL_library_init, ssleay32 ssl, [FOUND_SSL_LIB="yes"])
-     AS_IF([test "x$FOUND_SSL_LIB" = xno], [AC_MSG_ERROR([library 'ssleay32' or 'ssl' is required for OpenSSL])])
-  fi
+    dnl Order matters!
+    if test "$PORTNAME" != "win32"; then
+        AC_SEARCH_LIBS(CRYPTO_new_ex_data, crypto, [], [AC_MSG_ERROR([library 'crypto' is required for OpenSSL])])
+        FOUND_SSL_LIB="no"
+        FOUND_TLS_CLIENT_METHOD="no"
+        AC_SEARCH_LIBS(OPENSSL_init_ssl, ssl, [], [FOUND_SSL_LIB="yes"])
+        AC_SEARCH_LIBS(SSL_library_init, ssl, [], [FOUND_SSL_LIB="yes"])
+        AC_SEARCH_LIBS(TLS_client_method, ssl)
+        AS_IF([test "x$FOUND_SSL_LIB" = xno], [AC_MSG_ERROR([library 'ssl' is required for OpenSSL])])
+    else
+        AC_SEARCH_LIBS(CRYPTO_new_ex_data, eay32 crypto, [], [AC_MSG_ERROR([library 'eay32' or 'crypto' is required for OpenSSL])])
+        FOUND_SSL_LIB="no"
+        AC_SEARCH_LIBS(OPENSSL_init_ssl, ssleay32 ssl, [FOUND_SSL_LIB="yes"])
+        AC_SEARCH_LIBS(SSL_library_init, ssleay32 ssl, [FOUND_SSL_LIB="yes"])
+        AC_SEARCH_LIBS(TLS_server_method, ssleay32 ssl)
+        AS_IF([test "x$FOUND_SSL_LIB" = xno], [AC_MSG_ERROR([library 'ssleay32' or 'ssl' is required for OpenSSL])])
+    fi
 fi
 if test x"$FOUND_SSL_LIB" = x"yes" ; then
-    AC_DEFINE([HAVE_SSL], [], [Define to enable SSL])
+AC_DEFINE([HAVE_SSL], [], [Define to enable SSL])
     if test "x$icb_default_ssl_port" = "x"; then
         AC_CACHE_CHECK("default server ssl port", ac_cv_icb_default_ssl_port, [
-            ac_cv_icb_default_ssl_port="7327" ])
+                   ac_cv_icb_default_ssl_port="7327" ])
     else
         ac_cv_icb_default_ssl_port=`eval echo "${icb_default_ssl_port}"`
     fi
     AC_DEFINE_UNQUOTED(DEFAULT_SSL_PORT, $ac_cv_icb_default_ssl_port)
+fi
+if test x"$ac_cv_search_TLS_client_method" = x"yes" ; then
+    AC_DEFINE([HAVE_TLS_CLIENT_METHOD], [], [Define if generic TLS_client_method is available])
 fi
 
 
