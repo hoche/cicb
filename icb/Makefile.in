@@ -19,15 +19,14 @@ CFLAGS       = @CFLAGS@
 
 # -I.. for config.h in the objdir
 # -I. for tclinit.c in the objdir
-CPPFLAGS     = @CPPFLAGS@ @READLINEHDIR@ @SSL_H_DIR@ -I.. -I. -I$(srcdir)
+CPPFLAGS     = @CPPFLAGS@ @READLINEHDIR@ -I.. -I. -I$(srcdir)
 
 MAKEDEPEND   = @MAKEDEPEND@
 MDFLAGS      = $(CPPFLAGS)
 
 TCLLIBS      = @TCLLIB@
 READLINELIBS = @READLINELIB@
-SSL_LIBS     = @SSL_LIB@
-LIBS         = @STATICFLAG@ $(TCLLIBS) $(READLINELIBS) $(SSL_LIBS) @LIBS@
+LIBS         = @STATICFLAG@ $(TCLLIBS) $(READLINELIBS) @LIBS@
 
 install_sh = $(top_srcdir)/support/install-sh
 

@@ -5,12 +5,15 @@ dnl Author:      Michel Hoche-Mong (hoche@grok.com)
 dnl $Id: configure.in,v 1.24 2009/04/04 09:08:40 hoche Exp $
 dnl
 
-AC_INIT(icb/main.c)
+AC_INIT
+AC_CONFIG_SRCDIR(icb/main.c)
 AC_CONFIG_HEADER(config.h)
+AC_LANG(C)
 
 dnl
 dnl Some standard autoconfig stuff
 dnl
+AC_PROG_MAKE_SET
 AC_PROG_CC
 
 if [[ x"$GCC" = x"yes" ]]; then
@@ -21,8 +24,6 @@ AC_PROG_CPP
 dnl these checks are inane. make them be useful, hoche. -hoche.
 AC_CHECK_PROG(RM, rm, rm, rm)
 AC_CHECK_PROG(AR, ar, ar, ar)
-AC_CHECK_PROG(MAKEDEPEND, makedepend, makedepend, mkdep)
-dnl AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PATH_PROG(UNAME, uname, "")
@@ -157,18 +158,31 @@ AH_TEMPLATE([HAVE_SSL])
 AH_TEMPLATE([DEFAULT_SSL_PORT], [Default server port to connect to when using SSL.])
 
 dnl Locate SSL libs.
-if test x"$ssl" != x"no" ; then
-    ICB_AC_PATH_SSL
-    if test x"$no_ssl" = x ; then
-        AC_DEFINE(HAVE_SSL)
-		if test "x$icb_default_ssl_port" = "x"; then
-			AC_CACHE_CHECK("default server ssl port", ac_cv_icb_default_ssl_port, [
-				ac_cv_icb_default_ssl_port="7327" ])
-		else
-			ac_cv_icb_default_ssl_port=`eval echo "${icb_default_ssl_port}"`
-		fi
-		AC_DEFINE_UNQUOTED(DEFAULT_SSL_PORT, $ac_cv_icb_default_ssl_port)
+if test x"$ssl" = x"yes" ; then
+  dnl Order matters!
+  if test "$PORTNAME" != "win32"; then
+     AC_CHECK_LIB(crypto, CRYPTO_new_ex_data, [], [AC_MSG_ERROR([library 'crypto' is required for OpenSSL])])
+     FOUND_SSL_LIB="no"
+     AC_CHECK_LIB(ssl, OPENSSL_init_ssl, [FOUND_SSL_LIB="yes"])
+     AC_CHECK_LIB(ssl, SSL_library_init, [FOUND_SSL_LIB="yes"])
+     AS_IF([test "x$FOUND_SSL_LIB" = xno], [AC_MSG_ERROR([library 'ssl' is required for OpenSSL])])
+  else
+     AC_SEARCH_LIBS(CRYPTO_new_ex_data, eay32 crypto, [], [AC_MSG_ERROR([library 'eay32' or 'crypto' is required for OpenSSL])])
+     FOUND_SSL_LIB="no"
+     AC_SEARCH_LIBS(OPENSSL_init_ssl, ssleay32 ssl, [FOUND_SSL_LIB="yes"])
+     AC_SEARCH_LIBS(SSL_library_init, ssleay32 ssl, [FOUND_SSL_LIB="yes"])
+     AS_IF([test "x$FOUND_SSL_LIB" = xno], [AC_MSG_ERROR([library 'ssleay32' or 'ssl' is required for OpenSSL])])
+  fi
+fi
+if test x"$FOUND_SSL_LIB" = x"yes" ; then
+    AC_DEFINE([HAVE_SSL], [], [Define to enable SSL])
+    if test "x$icb_default_ssl_port" = "x"; then
+        AC_CACHE_CHECK("default server ssl port", ac_cv_icb_default_ssl_port, [
+            ac_cv_icb_default_ssl_port="7327" ])
+    else
+        ac_cv_icb_default_ssl_port=`eval echo "${icb_default_ssl_port}"`
     fi
+    AC_DEFINE_UNQUOTED(DEFAULT_SSL_PORT, $ac_cv_icb_default_ssl_port)
 fi
 
 
