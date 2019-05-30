@@ -11,6 +11,9 @@
 #    include <openssl/pem.h>
 #    include <openssl/ssl.h>
 #    include <openssl/err.h>
+#if (SSLEAY_VERSION_NUMBER >= 0x0907000L)
+#    include <openssl/conf.h>
+#endif
 #endif
 
 char *optv[] = {
@@ -32,6 +35,22 @@ char *optv[] = {
     "help/",
     (char *)NULL
 };
+
+#ifdef HAVE_SSL
+int init_openssl_library(void)
+{
+    #if OPENSSL_VERSION_NUMBER < 0x10100000L
+    SSL_library_init();
+    #else
+    OPENSSL_init_ssl(0, NULL);
+    #endif
+
+    SSL_load_error_strings();
+    /*OPENSSL_config(NULL); */
+
+    return(1);
+}
+#endif
 
 void
 usage(char *name, int ret)
@@ -234,6 +253,7 @@ main(int argc, char *argv[])
             set_restricted();
     }
 #ifdef HAVE_SSL
+    init_openssl_library();
     if (m_ssl_on && myport == DEFAULT_PORT)
         myport = DEFAULT_SSL_PORT;
     SSL_load_error_strings();
