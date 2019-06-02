@@ -60,13 +60,11 @@ readpacket(int fd, struct Cbuf *p)
     /* read as much of the command as we can get */
 #ifdef HAVE_SSL
     if (m_ssl_on) {
-        ret = SSL_read(ssl, p->rptr, 1);
-    } else {
-        ret = read(fd, p->rptr, 1);
-    }
-#else
-    ret = read(fd, p->rptr, p->remain);
+        ret = SSL_read(ssl, p->rptr, p->remain);
+    } else 
 #endif
+    ret = read(fd, p->rptr, p->remain);
+
     if (ret < 0) {
         if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
             return (0);
@@ -137,6 +135,8 @@ getc_or_dispatch(FILE * fp)
     int max_fd;
     int ret;
     int fd;
+    char buf[1];
+    int port_fd_available = 0;
 
     FD_ZERO(&read_fds);
 
@@ -145,8 +145,12 @@ getc_or_dispatch(FILE * fp)
     max_fd = fd;
 
     /* Listen to the server only if the input line is empty,
-       or if we're in 'async' mode. */
+       or if we're in 'async' mode and SSL is off. */
+#ifdef HAVE_SSL
+    if (rl_end == 0 || (gv.asyncread && !m_ssl_on)) {
+#else
     if (rl_end == 0 || gv.asyncread) {
+#endif
         FD_SET(port_fd, &read_fds);
         max_fd = (max_fd < port_fd) ? port_fd : max_fd;
     }
@@ -160,6 +164,8 @@ getc_or_dispatch(FILE * fp)
         tv = pause_skip_char ? &zerot : NULL;
 
         r_fds = read_fds;
+
+        /* Test if we can read keyboard input (and from server if SSL is off). */
         ret = select(max_fd + 1, &r_fds, 0, 0, tv);
 
         if (ret < 0) {
@@ -170,7 +176,16 @@ getc_or_dispatch(FILE * fp)
             }
         }
 
-        if (FD_ISSET(port_fd, &r_fds)) {
+        /* Test if SSL data is available. */
+#ifdef HAVE_SSL
+        if (m_ssl_on) {
+            port_fd_available = SSL_peek(ssl, buf, 1) == 1;
+        } else
+#endif
+        /* Test if we can read from server. */
+        port_fd_available = (FD_ISSET(port_fd, &r_fds));
+
+        if (port_fd_available) {
             read_from_server();
             if (pause_skip_char) {
                 /* Skip the keyboard, keep spewing output. */
