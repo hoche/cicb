@@ -58,28 +58,25 @@ void
 usage(char *name, int ret)
 {
     fprintf(stderr, "Usage: %s [switches]\n", name);
-    fprintf(stderr, " Switches may be abbreviated.  They are:\n");
-    fprintf(stderr, "  -nickname nick\tsign on with nickname nick.\n");
-    fprintf(stderr, "  -password pass\tset password to pass.\n");
-    fprintf(stderr, "  -password -\t\tprompt for password.\n");
-    fprintf(stderr, "  -group group\t\tsign on into group group.\n");
-    fprintf(stderr, "  -server name\t\tconnect to server named name.\n");
-    fprintf(stderr, "  -host host\t\tconnect to server on host host.\n");
-    fprintf(stderr, "  -port port\t\ttry to connect to port port.\n");
-    fprintf(stderr,
-            "  -bindhost host\t\ttry to bind outgoing connect to host host.\n");
+    fprintf(stderr, "  Switches may be abbreviated.  They are:\n");
+    fprintf(stderr, "  -b <host>    Try to bind outgoing connect to <host>\n");
+    fprintf(stderr, "  -cl          Clear args from command line\n");
+    fprintf(stderr, "  -co          Use color\n");
+    fprintf(stderr, "  -g <group>   Sign on into <group>\n");
+    fprintf(stderr, "  -h           display this message.\n");
+    fprintf(stderr, "  -l           List known servers\n");
+    fprintf(stderr, "  -n <nick>    Sign on with nickname nick.\n");
+    fprintf(stderr, "  -pa <pass>   Use icb password <pass>. If <pass> is\n");
+    fprintf(stderr, "               empty, prompt for it.\n");
+    fprintf(stderr, "  -po <port>   Try to connect to <port>.\n");
+    fprintf(stderr, "  -r           Use restricted mode\n");
+    fprintf(stderr, "  -s <host>    Connect to server with DNS name <host>\n");
 #ifdef HAVE_SSL
-    fprintf(stderr, "  -SSL\t\tuse SSL.\n");
+    fprintf(stderr, "  -S           use SSL.\n");
 #endif
-    fprintf(stderr, "  -list\t\t\tlist known servers, in order.\n");
-    fprintf(stderr, "  -clear\t\twipe args from command line.\n");
-    fprintf(stderr, "  -who\t\t\tsee who's on; don't sign on.\n");
-    fprintf(stderr, "  -restricted\t\trestricted mode\n");
-    fprintf(stderr,
-            "  -color\t\tenable ANSI color mode (disabled by default)\n");
-    fprintf(stderr, "  -help\t\t\tdisplay this message.\n");
-    fprintf(stderr,
-            " Note: specifying a password on the command line implies -clear.\n");
+    fprintf(stderr, "  -w           see who's on; don't sign on.\n");
+    fprintf(stderr, "  Note: specifying a password on the command line "
+                    "implies -cl (clear).\n");
     exit(ret);
 }
 
@@ -122,10 +119,7 @@ main(int argc, char *argv[])
         switch (s[0]) {
 
         case 'b':
-            if (s[1] == 'i')
-                bindhost = strdup(switcharg);
-            else
-                usage(argv[0], 0);
+            bindhost = strdup(switcharg);
             break;
 
         case 'c':
@@ -143,13 +137,6 @@ main(int argc, char *argv[])
             strncpy(group, switcharg, MAX_NICKLEN + 1);
             group[MAX_NICKLEN] = '\0';
             mygroup = group;
-            break;
-
-        case 'h':
-            if (s[1] == 'o')
-                myserver = strdup(switcharg);
-            else
-                usage(argv[0], 0);
             break;
 
         case 'l':
@@ -184,10 +171,26 @@ main(int argc, char *argv[])
             restrictflg = 1;
             break;
 
+/*
+        // this was the old version, but people found it counterintuitive that
+        // this selected from a list of canonical server nicknames rather than
+        // from the actual DNS name for the server, confusing it the the -h
+        // flag. Since I was annoyed that -h had been overridden and wasn't
+        // being used for "help", I decided to move it and disable the
+        // canonical-name-lookup thing.
+        // 
+        // I'm probably going to remove this whole feature unless someone
+        // complains.
+        // hoche - 5/30/19
         case 's':
             myserver = strdup(switcharg);
             use_server_nick = 1;
             break;
+*/
+        case 's':
+            myserver = strdup(switcharg);
+            break;
+
 
         case 'S':
             m_ssl_on = 1;
@@ -277,6 +280,7 @@ main(int argc, char *argv[])
     if ((port_fd =
          connect_to_server(use_server_nick, myserver, myport, bindhost)) < 0) {
         fprintf(stderr, "%s: %s: server not found.\n", argv[0], myserver);
+/*
         if (use_server_nick) {
             fprintf(stderr,
                     "(use -h to specify a hostname instead of a server name from the icbserverdb file)\n");
@@ -284,6 +288,7 @@ main(int argc, char *argv[])
             fprintf(stderr,
                     "(use -s to specify a server name from the icbserverdb file instead of a host name)\n");
         }
+*/
         exit(1);
     }
 #ifdef HAVE_SSL
@@ -293,49 +298,53 @@ main(int argc, char *argv[])
         ssl = SSL_new(ctx);
         SSL_set_fd(ssl, port_fd);
         result = SSL_connect(ssl);
-        switch (ssl_error) {
-            /* not sure how to handle a bunch of these cases, so we just report
-             * 'em and go on for now */
-        case SSL_ERROR_WANT_READ:
-            fprintf(stderr, "SSL_ERROR_WANT_READ at SSL_connect().\n");
-            SSL_free(ssl);
-            exit(1);
+        if (result <= 0) {
+            ssl_error = SSL_get_error(ssl, result);
+            switch (ssl_error) {
+              /* XXX a bunch of these aren't critical errors should just result
+               * in a retry of the connect.
+               */
+            case SSL_ERROR_WANT_READ:
+                fprintf(stderr, "SSL_ERROR_WANT_READ at SSL_connect().\n");
+                SSL_free(ssl);
+                exit(1);
 
-        case SSL_ERROR_WANT_WRITE:
-            fprintf(stderr, "SSL_ERROR_WANT_WRITE at SSL_connect().\n");
-            SSL_free(ssl);
-            exit(1);
+            case SSL_ERROR_WANT_WRITE:
+                fprintf(stderr, "SSL_ERROR_WANT_WRITE at SSL_connect().\n");
+                SSL_free(ssl);
+                exit(1);
 
-        case SSL_ERROR_ZERO_RETURN:
-            fprintf(stderr, "SSL_ERROR_ZERO_RETURN at SSL_connect().\n");
-            SSL_free(ssl);
-            exit(1);
+            case SSL_ERROR_ZERO_RETURN:
+                fprintf(stderr, "SSL_ERROR_ZERO_RETURN at SSL_connect().\n");
+                SSL_free(ssl);
+                exit(1);
 
-        case SSL_ERROR_WANT_X509_LOOKUP:
-            fprintf(stderr, "SSL_connect() wants X509 lookup.\n");
-            SSL_free(ssl);
-            exit(1);
+            case SSL_ERROR_WANT_X509_LOOKUP:
+                fprintf(stderr, "SSL_connect() wants X509 lookup.\n");
+                SSL_free(ssl);
+                exit(1);
 
-        case SSL_ERROR_SYSCALL:
-            fprintf(stderr, "SSL_ERROR_SYSCALL at SSL_connect().\n");
-            SSL_free(ssl);
-            exit(1);
+            case SSL_ERROR_SYSCALL:
+                fprintf(stderr, "SSL_ERROR_SYSCALL at SSL_connect().\n");
+                SSL_free(ssl);
+                exit(1);
 
-        case SSL_ERROR_SSL:
-            ssl_error = ERR_get_error();
-            if (ssl_error == 0) {
-                if (result == 0) {
-                    fprintf(stderr, "SSL_connect got bad EOF.\n");
+            case SSL_ERROR_SSL:
+                ssl_error = ERR_get_error();
+                if (ssl_error == 0) {
+                    if (result == 0) {
+                        fprintf(stderr, "SSL_connect got bad EOF.\n");
+                    } else {
+                        fprintf(stderr, "SSL_connect got socket I/O error.\n");
+                    }
                 } else {
-                    fprintf(stderr, "SSL_connect got socket I/O error.\n");
+                    char err_buf[256];
+                    ERR_error_string(ssl_error, &err_buf[0]);
+                    fprintf(stderr, "SSL_connect error: %s", err_buf);
                 }
-            } else {
-                char err_buf[256];
-                ERR_error_string(ssl_error, &err_buf[0]);
-                fprintf(stderr, "SSL_connect error: %s", err_buf);
+                SSL_free(ssl);
+                exit(1);
             }
-            SSL_free(ssl);
-            exit(1);
         }
         printf("SSL connection using %s\n", SSL_get_cipher(ssl));
     }

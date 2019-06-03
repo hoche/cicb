@@ -36,6 +36,11 @@ readpacket(int fd, struct Cbuf *p)
         /* read the length of the command packet */
 #ifdef HAVE_SSL
         if (m_ssl_on) {
+            /* XXX We should check the error code on this and at least figure
+             * out which errors are critical errors that we want to bomb out
+             * on, and which ones are just SSL-needs-to-retry errors that we
+             * can ignore here.
+             */
             ret = SSL_read(ssl, p->rptr, 1);
         } else {
             ret = read(fd, p->rptr, 1);
@@ -60,6 +65,11 @@ readpacket(int fd, struct Cbuf *p)
     /* read as much of the command as we can get */
 #ifdef HAVE_SSL
     if (m_ssl_on) {
+        /* XXX Same thing as above: we should check the error code on this
+         * and at least figure out which errors are critical errors that we
+         * want to bomb out on, and which ones are just SSL-needs-to-retry
+         * errors that we can ignore here.
+         */
         ret = SSL_read(ssl, p->rptr, p->remain);
     } else 
 #endif
