@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 
 #include <arpa/inet.h>
 #include <netdb.h>
