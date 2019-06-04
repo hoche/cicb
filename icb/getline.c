@@ -41,13 +41,21 @@ readpacket(int fd, struct Cbuf *p)
              * on, and which ones are just SSL-needs-to-retry errors that we
              * can ignore here.
              */
-            ret = SSL_read(ssl, p->rptr, 1);
-        } else {
-            ret = read(fd, p->rptr, 1);
-        }
-#else
-        ret = read(fd, p->rptr, 1);
+            do {
+                ret = SSL_read(ssl, p->rptr, 1);
+
+                if (ret <= 0) {
+                    int ssl_error = SSL_get_error(ssl, ret);
+
+                    if (ssl_error != SSL_ERROR_WANT_READ && ssl_error != SSL_ERROR_WANT_WRITE) {
+                        abort(); /* XXX error handling */
+                    }
+                }
+            } while (ret < 0);
+        } else
 #endif
+        ret = read(fd, p->rptr, 1);
+
         if (ret < 0) {
             if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
                 return (0);
@@ -70,7 +78,17 @@ readpacket(int fd, struct Cbuf *p)
          * want to bomb out on, and which ones are just SSL-needs-to-retry
          * errors that we can ignore here.
          */
-        ret = SSL_read(ssl, p->rptr, p->remain);
+        do {
+            ret = SSL_read(ssl, p->rptr, p->remain);
+
+            if (ret <= 0) {
+                int ssl_error = SSL_get_error(ssl, ret);
+
+                if (ssl_error != SSL_ERROR_WANT_READ && ssl_error != SSL_ERROR_WANT_WRITE) {
+                    abort(); /* XXX error handling */
+                }
+            }
+        } while (ret < 0);
     } else 
 #endif
     ret = read(fd, p->rptr, p->remain);
@@ -145,7 +163,6 @@ getc_or_dispatch(FILE * fp)
     int max_fd;
     int ret;
     int fd;
-    char buf[1];
     int port_fd_available = 0;
 
     FD_ZERO(&read_fds);
@@ -155,12 +172,8 @@ getc_or_dispatch(FILE * fp)
     max_fd = fd;
 
     /* Listen to the server only if the input line is empty,
-       or if we're in 'async' mode and SSL is off. */
-#ifdef HAVE_SSL
-    if (rl_end == 0 || (gv.asyncread && !m_ssl_on)) {
-#else
+       or if we're in 'async' mode. */
     if (rl_end == 0 || gv.asyncread) {
-#endif
         FD_SET(port_fd, &read_fds);
         max_fd = (max_fd < port_fd) ? port_fd : max_fd;
     }
@@ -189,6 +202,7 @@ getc_or_dispatch(FILE * fp)
         /* Test if SSL data is available. */
 #ifdef HAVE_SSL
         if (m_ssl_on) {
+            char buf[1];
             port_fd_available = SSL_peek(ssl, buf, 1) == 1;
         } else
 #endif
@@ -196,7 +210,15 @@ getc_or_dispatch(FILE * fp)
         port_fd_available = (FD_ISSET(port_fd, &r_fds));
 
         if (port_fd_available) {
+#ifdef HAVE_SSL
+            if (m_ssl_on) {
+                do {
+                    read_from_server();
+                } while (SSL_has_pending(ssl));
+            } else
+#endif
             read_from_server();
+
             if (pause_skip_char) {
                 /* Skip the keyboard, keep spewing output. */
                 continue;

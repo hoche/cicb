@@ -38,13 +38,21 @@ send_packet(char *pkt)
 
 #ifdef HAVE_SSL
     if (m_ssl_on) {
-        ret = SSL_write(ssl, pkt, len);
-    } else {
-        ret = write(port_fd, pkt, len);
-    }
-#else
-    ret = write(port_fd, pkt, len);
+        do {
+            ret = SSL_write(ssl, pkt, len);
+
+            if (ret <= 0) {
+                int ssl_error = SSL_get_error(ssl, ret);
+
+                if (ssl_error != SSL_ERROR_WANT_READ && ssl_error != SSL_ERROR_WANT_WRITE) {
+                    abort(); /* XXX error handling */
+                }
+            }
+        } while(ret < 0);
+    } else
 #endif
+    ret = write(port_fd, pkt, len);
+
     if (ret == len) {
         /* reset any keepalive timers */
         alarm(gv.keepalive);
