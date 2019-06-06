@@ -293,59 +293,57 @@ main(int argc, char *argv[])
     }
 #ifdef HAVE_SSL
     if (m_ssl_on) {
-        int result, ssl_error;
+        int result, ssl_error = SSL_ERROR_WANT_READ;
 
         ssl = SSL_new(ctx);
         SSL_set_fd(ssl, port_fd);
         result = SSL_connect(ssl);
-        if (result <= 0) {
+
+        while (result < 0 && (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)) {
             ssl_error = SSL_get_error(ssl, result);
+
             switch (ssl_error) {
               /* XXX a bunch of these aren't critical errors should just result
                * in a retry of the connect.
                */
-            case SSL_ERROR_WANT_READ:
-                fprintf(stderr, "SSL_ERROR_WANT_READ at SSL_connect().\n");
-                SSL_free(ssl);
-                exit(1);
+                case SSL_ERROR_WANT_READ:
+                case SSL_ERROR_WANT_WRITE:
+                    result = SSL_connect(ssl);
+                    break;
 
-            case SSL_ERROR_WANT_WRITE:
-                fprintf(stderr, "SSL_ERROR_WANT_WRITE at SSL_connect().\n");
-                SSL_free(ssl);
-                exit(1);
+                case SSL_ERROR_ZERO_RETURN:
+                    fprintf(stderr, "SSL_ERROR_ZERO_RETURN at SSL_connect().\n");
+                    SSL_free(ssl);
+                    exit(1);
 
-            case SSL_ERROR_ZERO_RETURN:
-                fprintf(stderr, "SSL_ERROR_ZERO_RETURN at SSL_connect().\n");
-                SSL_free(ssl);
-                exit(1);
+                case SSL_ERROR_WANT_X509_LOOKUP:
+                    fprintf(stderr, "SSL_connect() wants X509 lookup.\n");
+                    SSL_free(ssl);
+                    exit(1);
 
-            case SSL_ERROR_WANT_X509_LOOKUP:
-                fprintf(stderr, "SSL_connect() wants X509 lookup.\n");
-                SSL_free(ssl);
-                exit(1);
+                case SSL_ERROR_SYSCALL:
+                    fprintf(stderr, "SSL_ERROR_SYSCALL at SSL_connect().\n");
+                    SSL_free(ssl);
+                    exit(1);
 
-            case SSL_ERROR_SYSCALL:
-                fprintf(stderr, "SSL_ERROR_SYSCALL at SSL_connect().\n");
-                SSL_free(ssl);
-                exit(1);
-
-            case SSL_ERROR_SSL:
-                ssl_error = ERR_get_error();
-                if (ssl_error == 0) {
-                    if (result == 0) {
-                        fprintf(stderr, "SSL_connect got bad EOF.\n");
+                case SSL_ERROR_SSL:
+                    ssl_error = ERR_get_error();
+                    if (ssl_error == 0) {
+                        if (result == 0) {
+                            fprintf(stderr, "SSL_connect got bad EOF.\n");
+                        } else {
+                            fprintf(stderr, "SSL_connect got socket I/O error.\n");
+                        }
                     } else {
-                        fprintf(stderr, "SSL_connect got socket I/O error.\n");
+                        char err_buf[256];
+                        ERR_error_string(ssl_error, &err_buf[0]);
+                        fprintf(stderr, "SSL_connect error: %s", err_buf);
                     }
-                } else {
-                    char err_buf[256];
-                    ERR_error_string(ssl_error, &err_buf[0]);
-                    fprintf(stderr, "SSL_connect error: %s", err_buf);
-                }
-                SSL_free(ssl);
-                exit(1);
+                    SSL_free(ssl);
+                    exit(1);
             }
         }
+
         printf("SSL connection using %s\n", SSL_get_cipher(ssl));
     }
 #endif
