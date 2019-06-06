@@ -299,13 +299,15 @@ main(int argc, char *argv[])
         SSL_set_fd(ssl, port_fd);
         result = SSL_connect(ssl);
 
+        /* XXX we retry infinitely. We should set a max-number-of-tries and
+         * a timeout and give up after awhile if we can't establish the
+         * SSL connection.
+         */
+
         while (result < 0 && (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)) {
             ssl_error = SSL_get_error(ssl, result);
 
             switch (ssl_error) {
-              /* XXX a bunch of these aren't critical errors should just result
-               * in a retry of the connect.
-               */
                 case SSL_ERROR_WANT_READ:
                 case SSL_ERROR_WANT_WRITE:
                     result = SSL_connect(ssl);
