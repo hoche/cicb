@@ -204,7 +204,7 @@ getc_or_dispatch(FILE * fp)
             if (m_ssl_on) {
                 do {
                     read_from_server();
-                } while (SSL_has_pending(ssl));
+                } while (SSL_pending(ssl)); /* not SSL_has_pending() */
             } else
 #endif
             read_from_server();
