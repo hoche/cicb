@@ -189,11 +189,12 @@ getc_or_dispatch(FILE * fp)
             }
         }
 
-        /* Test if SSL data is available. */
+        /* Test if SSL data is available. We use SSL_pending() instead
+         * of SSL_has_pending() so we can support older openSSL
+         * implementations. */
 #ifdef HAVE_SSL
         if (m_ssl_on) {
-            char buf[1];
-            port_fd_available = SSL_peek(ssl, buf, 1) == 1;
+            port_fd_available = (SSL_pending(ssl)>0);
         } else
 #endif
         /* Test if we can read from server. */
@@ -204,7 +205,7 @@ getc_or_dispatch(FILE * fp)
             if (m_ssl_on) {
                 do {
                     read_from_server();
-                } while (SSL_pending(ssl)); /* not SSL_has_pending() */
+                } while (SSL_pending(ssl)>0);
             } else
 #endif
             read_from_server();
