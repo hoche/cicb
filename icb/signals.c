@@ -81,7 +81,9 @@ static RETSIGTYPE
 handle_keepalive(int sig)
 {
     if (connected) {
-        putl("Pinging server...", PL_SCR);
+        if (!gv.mutepongs) {
+            putl("Pinging server...", PL_SCR);
+        }
         sendcmd("ping", "");
     }
 

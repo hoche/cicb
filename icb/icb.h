@@ -50,6 +50,7 @@ typedef struct {
 	char *personalto;	/* 'permanent' personal message recipient */
 	int logreplay;		/* should replays go into the log by default? */
 	int keepalive;		/* number of seconds between sending keepalive packets */
+	int mutepongs;	    /* silence pong packets (used in keepalives) */
 	char *alert;		/* alert mode */
 	int autoregister;	/* prompt for password when [=Register=] msg
 				   received? */

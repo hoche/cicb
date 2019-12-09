@@ -319,6 +319,11 @@ puts -nonewline "system..."
 #    }
 #}
 
+#proc Trig_pongmsg {} {
+#    global theMessage
+#    puts "\[=PONG!=\] $theMessage"
+#}
+
 #proc Trig_arrivemsg {person} {}
 #proc Trig_errormsg {} {}
 #proc Trig_importantmsg {} {}

@@ -463,6 +463,14 @@ statusmsg(char *pkt)
         run_trigger(fields[1], "Trig_bootmsg", "");
     }
 
+    if (!strcmp(fields[0], "PONG")) {
+        run_trigger(fields[1], "Trig_pongmsg", "");
+        if (gv.mutepongs) {
+            return;
+        }
+    }
+
+
     if (!strcmp(gv.alert, "all")) {
         putchar('\007');
         fflush(stdout);

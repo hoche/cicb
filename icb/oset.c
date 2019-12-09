@@ -35,6 +35,7 @@ VARIABLE vars[] = {
     {"groupblanks", V_BOOLEAN, (char *)&gv.groupblanks},
     {"history", V_NONNEG, (char *)&gv.phistory},
     {"keepalive", V_NONNEG, (char *)&gv.keepalive},
+    {"mutepongs", V_BOOLEAN, (char *)&gv.mutepongs},
     {"logfile", V_STRING, (char *)&gv.logfile},
     {"logreplay", V_BOOLEAN, (char *)&gv.logreplay},
     {"pagesize", V_INT, (char *)&gv.pagesize},

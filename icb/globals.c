@@ -75,6 +75,7 @@ GLOBS gv = {
     "",                         /* personalto */
     0,                          /* logreplay */
     0,                          /* keepalive */
+    0,                          /* mutepongs */
     "none",                     /* alert */
     0,                          /* autoregister */
     0,                          /* asyncread */
