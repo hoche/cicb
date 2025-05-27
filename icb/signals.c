@@ -12,13 +12,13 @@
 
 #define	mask(s)	(1 << ((s)-1))
 
-static RETSIGTYPE
+static void
 handle_exit(int sig)
 {
     icbexit();
 }
 
-static RETSIGTYPE
+static void
 handle_intr(int sig)
 {
     askquit();
@@ -35,7 +35,7 @@ handle_intr(int sig)
  * handler and continue on processing packets.
  */
 
-static RETSIGTYPE
+static void
 handle_stop(int sig)
 {
     extern int _rl_meta_flag;   /* private var, sigh. */
@@ -75,7 +75,7 @@ handle_stop(int sig)
 }
 
 /* packet keepalive generator */
-static RETSIGTYPE
+static void
 handle_keepalive(int sig)
 {
     if (connected) {
@@ -90,7 +90,7 @@ handle_keepalive(int sig)
     signal(SIGALRM, handle_keepalive);
 }
 
-static RETSIGTYPE
+static void
 handle_winch(int sig)
 {
     getwinsize();

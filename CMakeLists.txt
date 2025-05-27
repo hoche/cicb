@@ -40,11 +40,38 @@ if(ENABLE_SSL AND OPENSSL_FOUND)
 	target_compile_definitions(icb PRIVATE HAVE_OPENSSL)
 endif()
 
-include_directories(${TCL_INCLUDE_PATH} ${READLINE_INCLUDE_PATH})
+# Define the custom command to generate the C file from the text file
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/tcl_init.string
+    COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string <
+            ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_init.tcl >
+	    ${CMAKE_CURRENT_BINARY_DIR}/tcl_init.string
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_init.tcl
+    		${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string
+    COMMENT "Generating tcl_init.string from tcl_init.tcl"
+)
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/tcl_connected.string
+    COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string <
+            ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_connected.tcl >
+	    ${CMAKE_CURRENT_BINARY_DIR}/tcl_connected.string
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_connected.tcl
+		${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string
+    COMMENT "Generating tcl_connected.string from tcl_connected.tcl"
+)
+
+include_directories(${TCL_INCLUDE_PATH}
+	${READLINE_INCLUDE_PATH}
+	${CMAKE_CURRENT_BINARY_DIR}
+)
 
 file(GLOB SOURCES icb/*.c)
 
-add_executable(icb ${SOURCES})
+add_executable(icb
+	${SOURCES}
+	${CMAKE_CURRENT_BINARY_DIR}/tcl_init.string
+	${CMAKE_CURRENT_BINARY_DIR}/tcl_connected.string
+)
 
 target_include_directories(icb PRIVATE src)
 

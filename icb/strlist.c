@@ -1,7 +1,6 @@
 /* $Id: strlist.c,v 1.6 2003/07/07 01:42:16 felixlee Exp $ */
 
 /* routines to maintain a generic list of strings */
-#include "config.h"
 
 #include "icb.h"
 
