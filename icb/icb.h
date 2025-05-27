@@ -156,7 +156,7 @@ struct COLORTABLE {
 	int defined;		/* has color been set? */ 
 };
 
-typedef enum { ColSANE, 
+enum { ColSANE, 
        ColNORMAL, 
        ColNOTICE, 
        ColWARNING, 
