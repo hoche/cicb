@@ -156,7 +156,7 @@ struct COLORTABLE {
 	int defined;		/* has color been set? */ 
 };
 
-enum { ColSANE, 
+typedef enum { ColSANE, 
        ColNORMAL, 
        ColNOTICE, 
        ColWARNING, 
@@ -180,7 +180,7 @@ enum { ColSANE,
        ColPERSHILITE, 
        ColPERSFROMHILITE,
        ColTIMESTAMP
-} colorlist;
+};
 
 
 #include "externs.h"
