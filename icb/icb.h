@@ -1,9 +1,5 @@
-/* $Id: icb.h,v 1.33 2009/03/23 07:42:06 hoche Exp $ */
+#pragma once
 
-#ifndef _ICB_H
-#define _ICB_H
-
-#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <tcl.h>
@@ -190,4 +186,3 @@ enum { ColSANE,
 #include "externs.h"
 #include "protos.h"
 
-#endif /* ICB_H */

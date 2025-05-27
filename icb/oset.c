@@ -183,17 +183,9 @@ varsanity()
     }
 
     if (strcmp(gv.editmode, "emacs") == 0) {
-#ifdef HAVE_HAVE_READLINE_2
-        rl_emacs_editing_mode();
-#else
         rl_emacs_editing_mode(1, 0);
-#endif
     } else {
-#ifdef HAVE_HAVE_READLINE_2
-        rl_vi_editing_mode();
-#else
         rl_vi_editing_mode(1, 0);
-#endif
         gv.editmode = "vi";
     }
 

@@ -1,6 +1,4 @@
-/* $Id: protocol.h,v 1.4 2001/07/22 21:38:48 alaric Exp $ */
-
-#include "config.h"
+#pragma once
 
 #define PACKET_BUF_SIZE 257
 

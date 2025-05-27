@@ -1,5 +1,3 @@
-/* $Id: c_shell.c,v 1.15 2009/03/23 06:52:36 hoche Exp $ */
-
 /* primitive to run a command in a shell */
 
 #include "icb.h"
@@ -12,11 +10,7 @@ c_shell(ARGV_TCL)
     int w, pid;
     int shellout = 0;
     char mbuf2[512];
-#ifdef HAVE_UNION_WAIT
-    union wait status;
-#else
-    int status;
-#endif
+    pid_t status;
     char *shell, *getenv();
 
     /* disallow use if restricted mode set */

@@ -19,6 +19,9 @@
  * Utils for reading the server file
  ***********************************************************************/
 
+#define PERSONALSL ".icbserverdb"
+#define SERVERLIST "/usr/share/cicb/icbserverdb"
+
 /* read a line from the server file and populate serv.
  */
 int

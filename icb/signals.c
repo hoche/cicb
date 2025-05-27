@@ -1,5 +1,3 @@
-/* $Id: signals.c,v 1.28 2009/04/04 09:08:40 hoche Exp $ */
-
 /* signal handling routines */
 
 #include "icb.h"
@@ -96,9 +94,7 @@ static RETSIGTYPE
 handle_winch(int sig)
 {
     getwinsize();
-#ifndef HAVE_READLINE_2
     rl_resize_terminal();
-#endif
     signal(SIGWINCH, handle_winch);
 }
 

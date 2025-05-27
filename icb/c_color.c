@@ -1,4 +1,3 @@
-/* $Id: c_color.c,v 1.26 2003/07/07 01:42:15 felixlee Exp $ */
 /* New Color Control */
 
 #include "icb.h"

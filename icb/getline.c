@@ -1,5 +1,3 @@
-/* $Id: getline.c,v 1.39 2009/04/04 09:08:40 hoche Exp $ */
-
 #include "icb.h"
 #include <errno.h>
 #include <sys/types.h>
@@ -34,7 +32,7 @@ readpacket(int fd, struct Cbuf *p)
         /* starting a new command */
         p->rptr = p->buf;
         /* read the length of the command packet */
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
         if (m_ssl_on) {
             do {
                 ret = SSL_read(ssl, p->rptr, 1);
@@ -66,7 +64,7 @@ readpacket(int fd, struct Cbuf *p)
     }
 
     /* read as much of the command as we can get */
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
     if (m_ssl_on) {
         do {
             ret = SSL_read(ssl, p->rptr, p->remain);
@@ -192,7 +190,7 @@ getc_or_dispatch(FILE * fp)
         /* Test if SSL data is available. We use SSL_pending() instead
          * of SSL_has_pending() so we can support older openSSL
          * implementations. */
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
         if (m_ssl_on) {
             port_fd_available = (SSL_pending(ssl)>0);
         } else
@@ -201,7 +199,7 @@ getc_or_dispatch(FILE * fp)
         port_fd_available = (FD_ISSET(port_fd, &r_fds));
 
         if (port_fd_available) {
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
             if (m_ssl_on) {
                 do {
                     read_from_server();
@@ -436,11 +434,7 @@ handletab(int count, char c)
         find_nick[i - word2] = '\0';
         found_nick = histmatch(find_nick);
         if (found_nick) {
-#ifdef HAVE_READLINE_2
-            rl_rubout(word2len);
-#else
             rl_rubout(word2len, 0);
-#endif
             rl_insert_text(found_nick);
             if (match_exact)
                 rl_insert(1, ' ');
@@ -458,18 +452,10 @@ handletab(int count, char c)
         found_nick = histget();
         if (found_nick) {
             rl_point = word2;
-#ifdef HAVE_READLINE_2
-            rl_delete(word2len);
-#else
             rl_delete(word2len, 0);
-#endif
             rl_insert_text(found_nick);
             rl_point = rl_end;
-#ifdef HAVE_READLINE_2
-            rl_kill_line(1);
-#else
             rl_kill_line(1, 0);
-#endif
             diff = strlen(found_nick) - word2len;
             rl_point = ppoint + diff;
             if (diff < 0) {     /* line shrunk */
@@ -477,11 +463,7 @@ handletab(int count, char c)
                 rl_insert(-diff, ' ');
                 putchar('\r');
                 rl_forced_update_display();
-#ifdef HAVE_READLINE_2
-                rl_rubout(-diff);
-#else
                 rl_rubout(-diff, 0);
-#endif
             }
             putchar('\r');
             rl_forced_update_display();

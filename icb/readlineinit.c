@@ -1,11 +1,12 @@
-/* $Id: readlineinit.c,v 1.21 2009/04/04 09:08:40 hoche Exp $ */
-
 #include "icb.h"
 
 #include <readline/readline.h>
+
+/*
 #ifdef HAVE_LIBGEN_H
 #    include <libgen.h>
 #endif
+*/
 
 /*
  * readlineinit - set up for readline()
@@ -29,11 +30,7 @@ readlineinit(void)
 
     rl_getc_function = getc_or_dispatch;
 
-#ifdef HAVE_READLINE_2
-    rl_vi_editing_mode();       /* default to vi, dammit. */
-#else
     rl_vi_editing_mode(0, 0);   /* default to vi, dammit. */
-#endif
     gv.editmode = "vi";
 
     editor = (char *)getenv("EDITOR");
@@ -42,11 +39,7 @@ readlineinit(void)
 
     if (editor != NULL)
         if (strcmp(basename(editor), "emacs") == 0) {
-#ifdef HAVE_READLINE_2
-            rl_emacs_editing_mode();
-#else
             rl_emacs_editing_mode(0, 0);
-#endif
             gv.editmode = "emacs";
         }
 }

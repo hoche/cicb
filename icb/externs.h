@@ -1,6 +1,4 @@
-/* $Id: externs.h,v 1.21 2003/07/07 01:42:15 felixlee Exp $ */
-#ifndef _ICB_EXTERNS_H
-#define _ICB_EXTERNS_H
+#pragma once
 
 #include "icb.h"
 #include <time.h>
@@ -45,7 +43,7 @@ extern int m_watchtime;		/* using boring time format */
 
 extern int m_ssl_on;
 
-#ifdef HAVE_SSL
+#ifdef HAVE_LIBSSL
 #include <openssl/ssl.h>
 extern SSL_CTX *ctx;
 extern SSL* ssl;
@@ -56,4 +54,3 @@ extern int last_command_was_kill;
 
 extern struct COLORTABLE colortable[];
 
-#endif /* _ICB_EXTERNS_H */

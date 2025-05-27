@@ -1,5 +1,3 @@
-/* $Id: c_hdel.c,v 1.6 2003/07/07 01:42:15 felixlee Exp $ */
-
 /* primitive to delete entries from the nickname history */
 
 #include "icb.h"
