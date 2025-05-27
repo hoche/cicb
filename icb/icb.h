@@ -128,6 +128,8 @@ extern Tcl_Interp* interp;
 #define MAX_PASSLEN 256
 
 #define PERSONALSL ".icbservrc"
+#define SERVERLIST "/usr/share/cicb/icbservrc"
+#define ICB_SYS_DATADIR "/usr/share/cicb"
 
 extern int port_fd;		/* file descriptor for our server port */
 extern char nick[MAX_NICKLEN+1];

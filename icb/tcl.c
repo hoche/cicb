@@ -6,7 +6,6 @@
 
 Tcl_Interp *interp = NULL;
 
-#define ICB_SYS_DATADIR "/usr/share/cicb"
 static char *tclvar_icb_sys_datadir = ICB_SYS_DATADIR;
 
 /*
