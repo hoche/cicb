@@ -1,5 +1,6 @@
 #include "icb.h"
 #include <errno.h>
+#include <ctype.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/select.h>
@@ -351,7 +352,6 @@ handletab(int count, char c)
     int word2, word2len, diff;
     char find_nick[MAX_NICKLEN];
     char *found_nick;
-    char *histmatch();
 
     /* make sure the history's not empty - punt if it is */
     if (histcount() == 0) {

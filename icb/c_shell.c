@@ -11,7 +11,7 @@ c_shell(ARGV_TCL)
     int shellout = 0;
     char mbuf2[512];
     pid_t status;
-    char *shell, *getenv();
+    char *shell;
 
     /* disallow use if restricted mode set */
     if (gv.restricted)
