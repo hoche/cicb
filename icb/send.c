@@ -4,7 +4,7 @@
 
 #include "icb.h"
 
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
 #    include <openssl/ssl.h>
 #endif
 
@@ -36,7 +36,7 @@ send_packet(char *pkt)
 
     /* Send it. */
 
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
     if (m_ssl_on) {
         do {
             ret = SSL_write(ssl, pkt, len);

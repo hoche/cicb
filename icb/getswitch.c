@@ -1,6 +1,3 @@
-/* $Id: getswitch.c,v 1.9 2003/07/07 02:20:12 felixlee Exp $ */
-
-#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

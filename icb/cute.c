@@ -1,4 +1,3 @@
-/* $Id: cute.c,v 1.9 2003/07/07 01:42:15 felixlee Exp $ */
 
 /* cute sayings when a user hits RETURN with no text */
 
@@ -207,11 +206,7 @@ static char *prompt[] = {
 static int
 randint(int n)
 {
-#ifdef HAVE_LRAND48
     return lrand48() % n;
-#else
-    return random() % n;
-#endif
 }
 
 /* Shuffle the prompt[] array */
@@ -221,11 +216,7 @@ shuffle(void)
 {
     int k;
 
-#ifdef HAVE_LRAND48
     srand48(time(NULL));
-#else
-    srandom(time(NULL));
-#endif
 
     for (k = 1; prompt[k] != NULL; ++k) {
         int j = randint(k + 1);

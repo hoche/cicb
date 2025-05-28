@@ -632,7 +632,7 @@ char *
 idlestr(char *num)
 {
     int seconds = atoi(num);
-    static char idletime[7];
+    static char idletime[16];
     int days, hours, minutes, years;
 
     if (seconds < 60)
@@ -668,7 +668,7 @@ char *
 response(char *num)
 {
     int secs = atoi(num);
-    static char rtime[8];
+    static char rtime[16];
 
     if (secs >= 2) {
         sprintf(rtime, " %2ds", secs);
@@ -683,7 +683,7 @@ char *
 ampm(time_t secs, int style)
 {
     struct tm *t, *localtime();
-    static char timestr[8];
+    static char timestr[16];
     int hr, mn;
 
     t = localtime(&secs);

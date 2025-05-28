@@ -43,7 +43,7 @@ int match_exact = 0;            /* used by histmatch() */
 
 int m_ssl_on = 0;
 
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
 SSL_CTX *ctx = NULL;
 SSL *ssl = NULL;
 #endif

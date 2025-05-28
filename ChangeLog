@@ -1,10 +1,10 @@
 2009-04-04  Michel Hoche-Mong <hoche@grok.com>
 
-    * aclocal.m4: add AH_TEMPLATE macros where necessary.
-                  strip out test for HAVE_LOCAL_READLINE.
-    * acconfig.h: removed
-    * configure: regenerated
-    * misc files in icb/ : remove HAVE_LOCAL_READLINE test.
+	* aclocal.m4: add AH_TEMPLATE macros where necessary.
+				  strip out test for HAVE_LOCAL_READLINE.
+	* acconfig.h: removed
+	* configure: regenerated
+	* misc files in icb/ : remove HAVE_LOCAL_READLINE test.
  
 2009-04-03  Michel Hoche-Mong <hoche@grok.com>
 

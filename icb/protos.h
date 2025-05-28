@@ -3,7 +3,6 @@
 
 	If you edit this file, your changes may be lost later.
 */
-#include "config.h"
 
 STRLIST *strgetnode(char *str, STRLIST *head, int caseindep);
 STRLIST *strmakenode(int size);

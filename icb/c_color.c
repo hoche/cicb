@@ -1,4 +1,3 @@
-/* $Id: c_color.c,v 1.26 2003/07/07 01:42:15 felixlee Exp $ */
 /* New Color Control */
 
 #include "icb.h"
@@ -167,7 +166,7 @@ whichcolor(char *token)
 int
 setcolor(int colortype, int fg, int bg)
 {
-    char cbuf[12];
+    char cbuf[32];
 
     if (colortype == -1)
         return 0;

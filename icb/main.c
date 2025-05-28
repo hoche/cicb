@@ -5,15 +5,13 @@
 
 #include <readline/readline.h>
 
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
 #    include <openssl/crypto.h>
 #    include <openssl/x509.h>
 #    include <openssl/pem.h>
 #    include <openssl/ssl.h>
 #    include <openssl/err.h>
-#if (SSLEAY_VERSION_NUMBER >= 0x0907000L)
 #    include <openssl/conf.h>
-#endif
 #endif
 
 char *optv[] = {
@@ -28,7 +26,7 @@ char *optv[] = {
     "password:",
     "server:",
     "bindhost:",
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
     "SSL",
 #endif
     "color",
@@ -36,14 +34,10 @@ char *optv[] = {
     (char *)NULL
 };
 
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
 int init_openssl_library(void)
 {
-    #if OPENSSL_VERSION_NUMBER < 0x10100000L
-    SSL_library_init();
-    #else
     OPENSSL_init_ssl(0, NULL);
-    #endif
 
     SSL_load_error_strings();
     /*OPENSSL_config(NULL); */
@@ -71,7 +65,7 @@ usage(char *name, int ret)
     fprintf(stderr, "  -po <port>   Try to connect to <port>.\n");
     fprintf(stderr, "  -r           Use restricted mode\n");
     fprintf(stderr, "  -s <host>    Connect to server with DNS name <host>\n");
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
     fprintf(stderr, "  -S           use SSL.\n");
 #endif
     fprintf(stderr, "  -w           see who's on; don't sign on.\n");
@@ -194,7 +188,7 @@ main(int argc, char *argv[])
 
         case 'S':
             m_ssl_on = 1;
-#ifndef HAVE_SSL
+#ifndef HAVE_OPENSSL
             fprintf(stderr, "This client not compiled for SSL.");
 #endif
             break;
@@ -247,27 +241,21 @@ main(int argc, char *argv[])
 
     if (gv.interactive) {
         tcl_init();
-#ifndef HAVE_READLINE_2
         /* we'll install our own signal handlers */
         rl_catch_signals = 0;
         /* we'll call readline's resizer ourselves when appropriate */
         rl_catch_sigwinch = 0;
-#endif
         readlineinit();
         if (restrictflg && !gv.restricted)
             set_restricted();
     }
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
     init_openssl_library();
     if (m_ssl_on && myport == DEFAULT_PORT)
         myport = DEFAULT_SSL_PORT;
     SSL_load_error_strings();
     SSLeay_add_ssl_algorithms();
-#if HAVE_TLS_CLIENT_METHOD
     ctx = SSL_CTX_new(TLS_client_method());
-#else
-    ctx = SSL_CTX_new(TLSv1_1_client_method());
-#endif
     if (!ctx) {
         fprintf(stderr, "Error setting up the SSL context.\n");
         exit(1);
@@ -291,7 +279,7 @@ main(int argc, char *argv[])
 */
         exit(1);
     }
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
     if (m_ssl_on) {
         int result, ssl_error = SSL_ERROR_WANT_READ;
 
@@ -372,7 +360,7 @@ icbexit()
     if (logging())
         closesessionlog();
 
-#ifdef HAVE_SSL
+#ifdef HAVE_OPENSSL
     if (m_ssl_on) {
         SSL_shutdown(ssl);
         close(port_fd);

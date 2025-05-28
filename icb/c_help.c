@@ -1,5 +1,3 @@
-/* $Id: c_help.c,v 1.7 2003/07/07 01:42:15 felixlee Exp $ */
-
 /* primitive to display some help */
 
 #include "icb.h"

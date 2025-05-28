@@ -10,7 +10,7 @@ static int personalflag = 0;
 static int screenflag = 1;
 static int logflag = 0;
 static char *nickptr;
-char nick[MAX_NICKLEN + 1];
+char replaynick[MAX_NICKLEN + 1];
 
 static char bufnick[MAX_NICKLEN + 1];
 static enum { BUF_UNKNOWN, BUF_PUBLIC, BUF_PERSONAL } buftype;
@@ -182,9 +182,9 @@ c_replay(ARGV_TCL)
 
     while ((s = getswitch(argc, argv, optv)) != NULL) {
         if (!strcmp(s, "nickname")) {
-            strncpy(nick, switcharg, MAX_NICKLEN);
-            nick[MAX_NICKLEN] = '\0';
-            nickptr = nick;
+            strncpy(replaynick, switcharg, MAX_NICKLEN);
+            replaynick[MAX_NICKLEN] = '\0';
+            nickptr = replaynick;
             continue;
         }
 

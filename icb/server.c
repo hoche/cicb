@@ -19,6 +19,7 @@
  * Utils for reading the server file
  ***********************************************************************/
 
+
 /* read a line from the server file and populate serv.
  */
 int

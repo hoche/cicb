@@ -1,5 +1,3 @@
-/* $Id: signals.c,v 1.28 2009/04/04 09:08:40 hoche Exp $ */
-
 /* signal handling routines */
 
 #include "icb.h"
@@ -14,13 +12,13 @@
 
 #define	mask(s)	(1 << ((s)-1))
 
-static RETSIGTYPE
+static void
 handle_exit(int sig)
 {
     icbexit();
 }
 
-static RETSIGTYPE
+static void
 handle_intr(int sig)
 {
     askquit();
@@ -37,7 +35,7 @@ handle_intr(int sig)
  * handler and continue on processing packets.
  */
 
-static RETSIGTYPE
+static void
 handle_stop(int sig)
 {
     extern int _rl_meta_flag;   /* private var, sigh. */
@@ -77,7 +75,7 @@ handle_stop(int sig)
 }
 
 /* packet keepalive generator */
-static RETSIGTYPE
+static void
 handle_keepalive(int sig)
 {
     if (connected) {
@@ -92,13 +90,11 @@ handle_keepalive(int sig)
     signal(SIGALRM, handle_keepalive);
 }
 
-static RETSIGTYPE
+static void
 handle_winch(int sig)
 {
     getwinsize();
-#ifndef HAVE_READLINE_2
     rl_resize_terminal();
-#endif
     signal(SIGWINCH, handle_winch);
 }
 

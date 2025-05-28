@@ -1,9 +1,5 @@
-/* $Id: icb.h,v 1.33 2009/03/23 07:42:06 hoche Exp $ */
+#pragma once
 
-#ifndef _ICB_H
-#define _ICB_H
-
-#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <tcl.h>
@@ -132,6 +128,8 @@ extern Tcl_Interp* interp;
 #define MAX_PASSLEN 256
 
 #define PERSONALSL ".icbservrc"
+#define SERVERLIST "/usr/share/cicb/icbservrc"
+#define ICB_SYS_DATADIR "/usr/share/cicb"
 
 extern int port_fd;		/* file descriptor for our server port */
 extern char nick[MAX_NICKLEN+1];
@@ -184,10 +182,9 @@ enum { ColSANE,
        ColPERSHILITE, 
        ColPERSFROMHILITE,
        ColTIMESTAMP
-} colorlist;
+};
 
 
 #include "externs.h"
 #include "protos.h"
 
-#endif /* ICB_H */
