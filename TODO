@@ -1,10 +1,15 @@
 5.2: 
 
 * rewrite every function to get rid of old K&R style
+* Fix the CMake-readline issue on OSX & other BSDs
 * fix flee's problem with the TCL parser
 * add capability to have choice of TCL, python, javascript, lua parser
-* revive old icb's readline? use libgetline? free version of readline?
-  * use linenoise: https://github.com/antirez/linenoise
+* readline woes:
+  * revive old icb's readline?
+  * use libgetline? 
+  * free version of readline?
+  * use linenoise: https://github.com/antirez/linenoise?
+  * use libedit?
 * rewrite the damn thing in C++, or at least use some better encapsulation.
 * add ipv6 support
 
