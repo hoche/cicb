@@ -44,12 +44,10 @@ readline library.
                                INSTALLING
                                ----------
 
-cicb now uses the gnu configure utility to try to figure out the correct
-settings for your system. See the file "INSTALL" for details on building
+cicb now uses the CMake to build. See the file "INSTALL" for details on building
 the executable.
 
-
-                           CHANGES SINCE 5.1.1
+                           5.2.0 ANNOUNCEMENT
                            -------------------
 
     The 5.2.0 release is currently in long-term development. A bunch
@@ -57,14 +55,18 @@ of code cleanup has been started, including de-K&Ring most of the code.
 The intent is to isolate the TCL engine from the main handling and make
 it so that alternate (modern) scripting languages may be substituted.
 
+                           CHANGES SINCE 5.1.1
+                           -------------------
+
 Repository:
     Sourceforge has become untenable, so the code has been moved to github.
 
 Bugfixes:
-
-    Fix bug in /w messages where overly-long idle times would cause a buffer
+    - Fix bug in /w messages where overly-long idle times would cause a buffer
     overrun. patch contributed by tris, modified by hoche.
-
+    - Convert to CMake
+    - Fix a variety of small coding issues uncovered by using stricter compiler
+      settings.
 
 
                            CHANGES SINCE 5.1.0
