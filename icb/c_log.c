@@ -3,6 +3,7 @@
 /* primitive to control the session logging function */
 
 #include "icb.h"
+#include <time.h>
 #include <errno.h>
 #include <sys/stat.h>           /* for fchmod() */
 
@@ -13,10 +14,9 @@ FILE *logfp = NULL;
 int
 startsessionlog(Tcl_Interp * interp, char *path)
 {
-    char *aptr, *ampm();
+    char *aptr;
     char buf[BUFSIZ];
-    time_t time();
-    struct tm *t, *localtime();
+    struct tm *t;
     time_t clock;
 
     /* determine pathname to use */
@@ -69,9 +69,8 @@ startsessionlog(Tcl_Interp * interp, char *path)
 void
 closesessionlog()
 {
-    char *aptr, *ampm();
-    time_t time();
-    struct tm *t, *localtime();
+    char *aptr;
+    struct tm *t;
     time_t clock;
 
     /* do nothing if we're not really logging */
