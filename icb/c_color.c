@@ -166,7 +166,7 @@ whichcolor(char *token)
 int
 setcolor(int colortype, int fg, int bg)
 {
-    char cbuf[12];
+    char cbuf[32];
 
     if (colortype == -1)
         return 0;
