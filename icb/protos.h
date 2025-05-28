@@ -11,6 +11,7 @@ char *findspace(char *s);
 char *getloginid(void);
 char *getword(char *s);
 char *histget(void);
+char * histmatch(char *prefix);
 char *idlestr(char *num);
 char *nextword(char *s);
 char *response(char *num);
