@@ -30,6 +30,7 @@ tcl_execl(Tcl_Interp * interp, ...)
     while ((arg = va_arg(args, char *)) != NULL) {
         if (ARRAY_SIZE(argv) <= argc) {
             Tcl_AppendResult(interp, "Too many args to tcl_execl");
+            va_end(args);
             return TCL_ERROR;
         }
         argv[argc++] = arg;
