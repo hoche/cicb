@@ -333,11 +333,12 @@ puts -nonewline "system..."
 # Source user .icb/icbrc file
 #=============================================================================#
 
-if [ file exists [glob -nocomplain "~/.icb/icbrc"] ] {
-	puts "Found personal ~/.icb/icbrc file; loading it."
-	source ~/.icb/icbrc
-	return
-}
+# this is embedded in the server. see tcl_connected.tcl
+#if [ file exists [glob -nocomplain "~/.icb/icbrc"] ] {
+#	puts "Found personal ~/.icb/icbrc file; loading it."
+#	source ~/.icb/icbrc
+#	return
+#}
 
 #=============================================================================#
 ## Gratuitous startup commands if no user icbrc is found
