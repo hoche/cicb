@@ -184,7 +184,14 @@ main(int argc, char *argv[])
         case 'p':
             switch (s[1]) {
             case 'o':
-                myport = atoi(switcharg);
+                {
+                    int port_val;
+                    if (safe_atoi(switcharg, &port_val) != 0 || port_val <= 0 || port_val > 65535) {
+                        fprintf(stderr, "%s: Invalid port number: %s\n", argv[0], switcharg);
+                        exit(1);
+                    }
+                    myport = port_val;
+                }
                 break;
             case 'a':
                 strncpy(pass, switcharg, MAX_PASSLEN);

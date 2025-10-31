@@ -139,7 +139,11 @@ c_time(ARGV_TCL)
     if (argc == 1) {
         t = time(NULL);
     } else if (argc == 2) {
-        t = atoi(argv[1]);
+        int time_val;
+        if (safe_atoi(argv[1], &time_val) != 0) {
+            RETURN_ERR_ARGC("?timeval?");
+        }
+        t = (time_t)time_val;
     } else {
         RETURN_ERR_ARGC("?timeval?");
     }

@@ -223,11 +223,13 @@ c_replay(ARGV_TCL)
 
     if (switchind >= argc || !*argv[switchind])
         lines = bufmessages;
-    else
-        lines = atoi(argv[switchind]);
-
-    if (lines <= 0)
-        TRETURNERR(usage);
+    else {
+        int lines_val;
+        if (safe_atoi(argv[switchind], &lines_val) != 0 || lines_val <= 0) {
+            TRETURNERR(usage);
+        }
+        lines = lines_val;
+    }
     bufferlist(lines);
     return (TCL_OK);
 }

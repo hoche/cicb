@@ -224,8 +224,10 @@ tcl_has_handler(const char *cmd)
     
     if (Tcl_Eval(interp, eval_cmd) == TCL_OK) {
         const char *result_str = Tcl_GetStringResult(interp);
-        int matches = atoi(result_str);
-        return (matches == 1);  /* Unique abbreviation */
+        int matches;
+        if (safe_atoi(result_str, &matches) == 0) {
+            return (matches == 1);  /* Unique abbreviation */
+        }
     }
 
     return 0;

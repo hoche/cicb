@@ -268,11 +268,15 @@ setvar(Tcl_Interp * interp, int type, char *address, char *s)
         *address = *s;
         break;
     case V_INT:
-        tmp = atoi(s);
+        if (safe_atoi(s, &tmp) != 0) {
+            TRETURNERR("oset: invalid integer value");
+        }
         memcpy(address, &tmp, sizeof(int));
         break;
     case V_NONNEG:
-        tmp = atoi(s);
+        if (safe_atoi(s, &tmp) != 0) {
+            TRETURNERR("oset: invalid integer value");
+        }
         if (tmp < 0) {
             TRETURNERR("oset: only non-negative values allowed");
         }

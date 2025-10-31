@@ -16,6 +16,7 @@ char *idlestr(char *num);
 char *nextword(char *s);
 char *response(char *num);
 char *tildexpand(char *s);
+int safe_atoi(const char *str, int *result);
 int addusage(char *name, int type, char *args, char *usage);
 void askquit();
 

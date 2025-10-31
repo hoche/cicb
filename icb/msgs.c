@@ -310,7 +310,17 @@ protomsg(char *pkt)
         return;
     }
 
-    proto_level = atoi(fields[0]);
+    {
+        int proto_val;
+        if (safe_atoi(fields[0], &proto_val) != 0) {
+            sprintf(mbuf,
+                    "%s[=Error=] got bad protocol level in proto message packet%s",
+                    printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+            putl(mbuf, PL_ALL ^ PL_TS);
+            return;
+        }
+        proto_level = proto_val;
+    }
     if (PROTO_LEVEL != proto_level) {
         fprintf(stderr,
                 "\r\nThis forum client does not know the same protocol as\r\n");
@@ -631,9 +641,14 @@ importantmsg(char *pkt)
 char *
 idlestr(char *num)
 {
-    int seconds = atoi(num);
-    static char idletime[16];
+    int seconds;
     int days, hours, minutes, years;
+    static char idletime[16];
+    
+    /* If parsing fails, default to showing as "unknown" */
+    if (safe_atoi(num, &seconds) != 0) {
+        seconds = -1;
+    }
 
     if (seconds < 60)
         sprintf(idletime, "%6s", "-");
@@ -667,8 +682,13 @@ idlestr(char *num)
 char *
 response(char *num)
 {
-    int secs = atoi(num);
+    int secs;
     static char rtime[16];
+    
+    /* If parsing fails, default to 0 */
+    if (safe_atoi(num, &secs) != 0) {
+        secs = 0;
+    }
 
     if (secs >= 2) {
         sprintf(rtime, " %2ds", secs);

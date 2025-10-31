@@ -14,7 +14,7 @@ c_rand(ARGV_TCL)
     if (argc != 2 || !*argv[1])
         TRETURNERR(usage);
 
-    if ((range = atoi(argv[1])) == 0)
+    if (safe_atoi(argv[1], &range) != 0 || range == 0)
         TRETURNERR("c_rand: zero or non-numeric argument given");
 
     sprintf(num, "%d", (rand() % range) + 1);

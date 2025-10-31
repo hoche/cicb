@@ -2,6 +2,8 @@
 
 #include "icb.h"
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
 
 extern char *charmap;
 
@@ -52,6 +54,54 @@ filtergroupname(char *txt)
                 *txt = '?';
         }
     }
+}
+
+/* Safe integer parsing function.
+ * Converts string to int with full validation.
+ * Returns 0 on success, -1 on error.
+ * On success, *result contains the parsed integer.
+ * Validates that entire string is consumed and value is in int range.
+ */
+int
+safe_atoi(const char *str, int *result)
+{
+    char *endptr;
+    long val;
+
+    if (str == NULL || *str == '\0') {
+        return -1;
+    }
+
+    errno = 0;
+    val = strtol(str, &endptr, 10);
+
+    /* Check for conversion errors */
+    if (endptr == str) {
+        /* No digits found */
+        return -1;
+    }
+
+    /* Check if entire string was consumed (allow trailing whitespace) */
+    while (*endptr != '\0' && isspace((unsigned char)*endptr)) {
+        endptr++;
+    }
+    if (*endptr != '\0') {
+        /* Extra characters after number */
+        return -1;
+    }
+
+    /* Check for overflow/underflow */
+    if ((val == LONG_MAX || val == LONG_MIN) && errno == ERANGE) {
+        return -1;
+    }
+
+    /* Check if value fits in int */
+    if (val > INT_MAX || val < INT_MIN) {
+        return -1;
+    }
+
+    *result = (int)val;
+    return 0;
 }
 
 /* return 1 if a string is a number */
