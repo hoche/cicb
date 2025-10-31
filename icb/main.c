@@ -240,10 +240,7 @@ main(int argc, char *argv[])
     getwinsize();
 
     if (gv.interactive) {
-        /* TCL initialization is optional - program works without it */
-        if (tcl_init() != 0) {
-            fprintf(stderr, "Warning: TCL initialization failed. Continuing without TCL support.\n");
-        }
+        tcl_init();
         /* we'll install our own signal handlers */
         rl_catch_signals = 0;
         /* we'll call readline's resizer ourselves when appropriate */
