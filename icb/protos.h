@@ -193,5 +193,5 @@ void msplit_free (char** frags);
 
 /* tcl.c */
 void tcl_connected (void);
-void tcl_init (void);
+int tcl_init (void);
 void tcl_restrict (void);

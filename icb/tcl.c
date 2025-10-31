@@ -87,14 +87,22 @@ static char *tcl_init_string =
 #include "tcl_init.string"
     ;
 
-void
+/* Initialize TCL interpreter. Returns 0 on success, -1 on failure.
+   On failure, interp remains NULL and program continues without TCL. */
+int
 tcl_init()
 {
     tcl_command_t *tc;
 
     interp = Tcl_CreateInterp();
     if (interp == NULL) {
-        abort();
+        return -1;
+    }
+
+    if (Tcl_Init(interp) != TCL_OK) {
+        Tcl_DeleteInterp(interp);
+        interp = NULL;
+        return -1;
     }
 
     for (tc = tcl_commands; tc->tc_name != NULL; ++tc) {
@@ -121,6 +129,7 @@ tcl_init()
                 TCL_LINK_STRING | TCL_LINK_READ_ONLY);
 
     tcl_eval_string(tcl_init_string, "builtin tcl_init script");
+    return 0;
 }
 
 /*
@@ -135,15 +144,19 @@ static char *tcl_connected_string =
 void
 tcl_connected(void)
 {
-    tcl_eval_string(tcl_connected_string, "builtin tcl_connected script");
+    if (interp != NULL) {
+        tcl_eval_string(tcl_connected_string, "builtin tcl_connected script");
+    }
 }
 
 void
 tcl_restrict()
 {
-    /* delete commands that might shellout or read or write files */
-    Tcl_DeleteCommand(interp, "exec");
-    Tcl_DeleteCommand(interp, "print");
-    Tcl_DeleteCommand(interp, "file");
-    Tcl_DeleteCommand(interp, "source");
+    if (interp != NULL) {
+        /* delete commands that might shellout or read or write files */
+        Tcl_DeleteCommand(interp, "exec");
+        Tcl_DeleteCommand(interp, "print");
+        Tcl_DeleteCommand(interp, "file");
+        Tcl_DeleteCommand(interp, "source");
+    }
 }
