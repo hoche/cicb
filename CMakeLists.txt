@@ -33,29 +33,22 @@ else()
     message(STATUS "SSL support disabled via ENABLE_SSL=OFF")
 endif()
 
-if(ENABLE_SSL AND OPENSSL_FOUND)
-	set(DEFAULT_SSL_PORT 7326 CACHE STRING "Default SSL port")
-	target_include_directories(icb PRIVATE ${OPENSSL_INCLUDE_DIR})
-	target_link_libraries(icb PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
-	target_compile_definitions(icb PRIVATE HAVE_OPENSSL)
-endif()
-
 # Define the custom command to generate the C file from the text file
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/tcl_init.string
     COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string <
-            ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_init.tcl >
+            ${CMAKE_CURRENT_SOURCE_DIR}/tcl-scripts/tcl_init.tcl >
 	    ${CMAKE_CURRENT_BINARY_DIR}/tcl_init.string
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_init.tcl
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tcl-scripts/tcl_init.tcl
     		${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string
     COMMENT "Generating tcl_init.string from tcl_init.tcl"
 )
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/tcl_connected.string
     COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string <
-            ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_connected.tcl >
+            ${CMAKE_CURRENT_SOURCE_DIR}/tcl-scripts/tcl_connected.tcl >
 	    ${CMAKE_CURRENT_BINARY_DIR}/tcl_connected.string
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/icb/tcl_connected.tcl
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tcl-scripts/tcl_connected.tcl
 		${CMAKE_CURRENT_SOURCE_DIR}/scripts/tcl2string
     COMMENT "Generating tcl_connected.string from tcl_connected.tcl"
 )
@@ -65,15 +58,71 @@ include_directories(${TCL_INCLUDE_PATH}
 	${CMAKE_CURRENT_BINARY_DIR}
 )
 
-file(GLOB SOURCES icb/*.c)
+# List all C source files explicitly
+set(ICB_SOURCES
+	src/c_color.c
+	src/c_hclear.c
+	src/c_hdel.c
+	src/c_help.c
+	src/c_hush.c
+	src/c_log.c
+	src/c_quit.c
+	src/c_rand.c
+	src/c_replay.c
+	src/c_shell.c
+	src/c_time.c
+	src/c_usage.c
+	src/c_version.c
+	src/cute.c
+	src/dispatch.c
+	src/getline.c
+	src/getswitch.c
+	src/globals.c
+	src/helpdata.c
+	src/history.c
+	src/main.c
+	src/msgs.c
+	src/oset.c
+	src/parse.c
+	src/print.c
+	src/readlineinit.c
+	src/s_admin.c
+	src/s_beep.c
+	src/s_chpw.c
+	src/s_group.c
+	src/s_motd.c
+	src/s_open.c
+	src/s_person.c
+	src/s_register.c
+	src/s_send.c
+	src/s_user.c
+	src/s_version.c
+	src/s_who.c
+	src/send.c
+	src/server.c
+	src/signals.c
+	src/strccmp.c
+	src/strings.c
+	src/strlist.c
+	src/tcl.c
+	src/unix.c
+	src/usage.c
+)
 
 add_executable(icb
-	${SOURCES}
+	${ICB_SOURCES}
 	${CMAKE_CURRENT_BINARY_DIR}/tcl_init.string
 	${CMAKE_CURRENT_BINARY_DIR}/tcl_connected.string
 )
 
 target_include_directories(icb PRIVATE src)
+
+if(ENABLE_SSL AND OPENSSL_FOUND)
+	set(DEFAULT_SSL_PORT 7326 CACHE STRING "Default SSL port")
+	target_include_directories(icb PRIVATE ${OPENSSL_INCLUDE_DIR})
+	target_link_libraries(icb PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+	target_compile_definitions(icb PRIVATE HAVE_OPENSSL)
+endif()
 
 target_compile_definitions(icb PRIVATE
 		DEFAULT_PORT=${DEFAULT_PORT} 
@@ -89,4 +138,3 @@ target_link_libraries(icb ${TCL_LIBRARY} ${READLINE_LIBRARY})
 
 # Install rule
 install(TARGETS icb RUNTIME DESTINATION bin)
-

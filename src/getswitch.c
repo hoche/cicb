@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "getswitch.h"
+#include "icb.h"
 
 /* getswitch - parse multicharacter option arguments.
  */
