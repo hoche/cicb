@@ -117,8 +117,9 @@ void bufferlist(int lines) {
     continued = 0;
 
     if (! bufmessages) {
-        sprintf(mbuf, "%s[=Replay=] There are no lines in the buffer.%s",
-                printcolor(ColNOTICE, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Replay=] There are no lines in the buffer.%s",
+                 printcolor(ColNOTICE, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, pl_flags);
         return;
     }

@@ -158,7 +158,8 @@ void read_from_server(void) {
         }
         break;
     default:
-        abort();
+        /* Unexpected return from readpacket; ignore gracefully */
+        return;
     }
 }
 
@@ -204,7 +205,8 @@ int getc_or_dispatch(FILE *fp) {
             if (errno == EINTR) {
                 continue;
             } else {
-                abort();
+                /* Select failed; fall back to reading a character to keep UI responsive */
+                return rl_getc(fp);
             }
         }
 

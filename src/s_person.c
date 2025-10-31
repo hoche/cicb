@@ -48,7 +48,10 @@ int s_personal(ARGV_TCL) {
         if (personalto)
             free(personalto);
         personalto = (char *) malloc(strlen(argv[switchind]) + 1);
-        strcpy(personalto, argv[switchind]);
+        if (personalto) {
+            safe_strncpy(personalto, argv[switchind],
+                         strlen(argv[switchind]) + 1);
+        }
         gv.personalto = personalto;
         if (argc - switchind + 1 == 2)
             return TCL_OK;
@@ -99,13 +102,15 @@ void sendpersonal(char *nick, char *text, int echoflag) {
 
     buf = (char *) malloc(strlen(nick) + strlen(text) + 5);
     if (! buf) {
-        sprintf(mbuf, "%s[=Error=] No memory to build packet%s",
-                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Error=] No memory to build packet%s",
+                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_SCR | PL_TS);
         return;
     }
 
-    sprintf(buf, "%cm %s %s", gv.cmdchar, nick, text);
+    snprintf(buf, strlen(nick) + strlen(text) + 5, "%cm %s %s", gv.cmdchar,
+             nick, text);
     putl(buf, pl_flags);
     sendcmd("m", buf + 3);
 

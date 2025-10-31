@@ -170,20 +170,20 @@ int setcolor(int colortype, int fg, int bg) {
     }
     if (bg == -1) {
         if (fg < 8)
-            sprintf(cbuf, "\033[3%im", fg);
+            snprintf(cbuf, sizeof(cbuf), "\033[3%im", fg);
         else
-            sprintf(cbuf, "\033[1;3%im", fg - 8);
+            snprintf(cbuf, sizeof(cbuf), "\033[1;3%im", fg - 8);
     } else {
         if (bg < 8) {
             if (fg < 8)
-                sprintf(cbuf, "\033[3%i;4%im", fg, bg);
+                snprintf(cbuf, sizeof(cbuf), "\033[3%i;4%im", fg, bg);
             else
-                sprintf(cbuf, "\033[1;3%i;4%im", fg - 8, bg);
+                snprintf(cbuf, sizeof(cbuf), "\033[1;3%i;4%im", fg - 8, bg);
         } else {
             if (fg < 8)
-                sprintf(cbuf, "\033[3%i;4%im", fg, bg - 8);
+                snprintf(cbuf, sizeof(cbuf), "\033[3%i;4%im", fg, bg - 8);
             else
-                sprintf(cbuf, "\033[1;3%i;4%im", fg - 8, bg - 8);
+                snprintf(cbuf, sizeof(cbuf), "\033[1;3%i;4%im", fg - 8, bg - 8);
         }
     }
     safe_strncpy(colortable[colortype].color, cbuf, COLORSIZE);

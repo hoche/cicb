@@ -37,7 +37,8 @@ void listusage(char *name) {
 }
 
 void uline(USAGE *u) {
-    sprintf(mbuf, "  %-8s %-20s %s", u->name, u->args, u->usage);
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "  %-8s %-20s %s", u->name, u->args,
+             u->usage);
     putl(mbuf, PL_SCR);
 }
 

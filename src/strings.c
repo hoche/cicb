@@ -316,27 +316,28 @@ void mprint(int per, char *from, char *s) {
     if (per)
         if ((personalhilite != NULL) && (strlen((char *) personalhilite)) &&
             (strcasestr((const char *) personalhilite, (const char *) from)))
-            sprintf(mbuf, "%s<*%s%s%s*>%s %s%s%s",
-                    printcolor(ColPERSFROMHILITE, ColPERSFROM),
-                    printcolor(ColPERSFROMHILITE, ColPERSFROM), from,
-                    printcolor(ColPERSFROMHILITE, ColPERSFROM),
-                    printcolor(ColSANE, ColSANE),
-                    printcolor(ColPERSHILITE, ColPERSONAL), s,
-                    printcolor(ColSANE, ColSANE));
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "%s<*%s%s%s*>%s %s%s%s",
+                     printcolor(ColPERSFROMHILITE, ColPERSFROM),
+                     printcolor(ColPERSFROMHILITE, ColPERSFROM), from,
+                     printcolor(ColPERSFROMHILITE, ColPERSFROM),
+                     printcolor(ColSANE, ColSANE),
+                     printcolor(ColPERSHILITE, ColPERSONAL), s,
+                     printcolor(ColSANE, ColSANE));
         else
-            sprintf(mbuf, "%s<*%s%s%s*>%s %s%s%s",
-                    printcolor(ColPBRKT, ColPERSFROM),
-                    printcolor(ColPERSFROM, ColPERSFROM), from,
-                    printcolor(ColPBRKT, ColPERSFROM),
-                    printcolor(ColSANE, ColSANE),
-                    printcolor(ColPERSONAL, ColPERSONAL), s,
-                    printcolor(ColSANE, ColSANE));
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "%s<*%s%s%s*>%s %s%s%s",
+                     printcolor(ColPBRKT, ColPERSFROM),
+                     printcolor(ColPERSFROM, ColPERSFROM), from,
+                     printcolor(ColPBRKT, ColPERSFROM),
+                     printcolor(ColSANE, ColSANE),
+                     printcolor(ColPERSONAL, ColPERSONAL), s,
+                     printcolor(ColSANE, ColSANE));
     else
-        sprintf(mbuf, "%s<%s%s%s>%s %s%s%s", printcolor(ColABRKT, ColNICKNAME),
-                printcolor(ColNICKNAME, ColNICKNAME), from,
-                printcolor(ColABRKT, ColNICKNAME), printcolor(ColSANE, ColSANE),
-                printcolor(ColNORMAL, ColNORMAL), s,
-                printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%s<%s%s%s>%s %s%s%s",
+                 printcolor(ColABRKT, ColNICKNAME),
+                 printcolor(ColNICKNAME, ColNICKNAME), from,
+                 printcolor(ColABRKT, ColNICKNAME),
+                 printcolor(ColSANE, ColSANE), printcolor(ColNORMAL, ColNORMAL),
+                 s, printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL);
 }
 

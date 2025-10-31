@@ -25,11 +25,11 @@ int c_shell(ARGV_TCL) {
 
     /* announce what we are doing */
     if (shellout) {
-        sprintf(mbuf, "[%s]\r\n", shell);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "[%s]\r\n", shell);
         putl(mbuf, PL_SCR);
     } else {
-        sprintf(mbuf, "%s", catargs(&argv[1]));
-        sprintf(mbuf2, "[%s]\r\n", mbuf);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%s", catargs(&argv[1]));
+        snprintf(mbuf2, sizeof(mbuf2), "[%s]\r\n", mbuf);
         putl(mbuf2, PL_SCR);
     }
 
@@ -40,7 +40,8 @@ int c_shell(ARGV_TCL) {
             execlp(shell, shell, "-c", mbuf, NULL);
 
         /* exec failed if we make it here */
-        sprintf(mbuf, "c_shell: can't run shell \"%s\"", shell);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "c_shell: can't run shell \"%s\"",
+                 shell);
         putl(mbuf, PL_SL);
         putl(usage, PL_SCR);
         exit(-1);

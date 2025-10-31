@@ -15,15 +15,17 @@ static void helptoc() {
     putl("", PL_SL);
 
     for (x = 0; helpkeys[x] != 0; x++) {
-        sprintf(mbuf, "%-16s %s", helpkeys[x], helptopics[x]);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%-16s %s", helpkeys[x],
+                 helptopics[x]);
         putl(mbuf, PL_SL);
     }
 
     putl("", PL_SL);
-    sprintf(mbuf, "To get help on a particular subject: %chelp subject",
-            gv.cmdchar);
+    snprintf(mbuf, MESSAGE_BUF_SIZE,
+             "To get help on a particular subject: %chelp subject", gv.cmdchar);
     putl(mbuf, PL_SL);
-    sprintf(mbuf, "To get a list of commands: %ccommands", gv.cmdchar);
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "To get a list of commands: %ccommands",
+             gv.cmdchar);
     putl(mbuf, PL_SL);
     putl("", PL_SL);
     putl("[=End of help=]", PL_SL);
@@ -39,7 +41,7 @@ int helpme(char *subject) {
     for (x = 0; helpkeys[x] != 0; x++)
         if (strcasecmp(subject, (char *) helpkeys[x]) == 0) {
             text = (char **) helptexts[x];
-            sprintf(mbuf, "[=Help for %s=]", subject);
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "[=Help for %s=]", subject);
             putl(mbuf, PL_SL);
             putl("", PL_SL);
             for (x = 0; text[x] != NULL; x++)

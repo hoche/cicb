@@ -53,8 +53,9 @@ void copenmsg(char *pkt) {
     char nick[MAX_NICKLEN + 1];
 
     if (split(pkt) != 2) {
-        sprintf(mbuf, "%s[=Error=] got bad open message packet%s",
-                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Error=] got bad open message packet%s",
+                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
     }
@@ -86,8 +87,9 @@ void cpersonalmsg(char *pkt) {
     char nick[MAX_NICKLEN + 1];
 
     if (split(pkt) != 2) {
-        sprintf(mbuf, "%s[=Error=] got bad personal message packet%s",
-                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Error=] got bad personal message packet%s",
+                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
     }
@@ -225,8 +227,9 @@ void beep(char *pkt) {
     char nick[MAX_NICKLEN + 1];
 
     if (split(pkt) != 1) {
-        sprintf(mbuf, "%s[=Error=] got bad beep message packet%s",
-                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Error=] got bad beep message packet%s",
+                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
     }
@@ -239,23 +242,25 @@ void beep(char *pkt) {
         return;
 
     if (gv.beeps) {
-        sprintf(mbuf, "%c%s[=Beep!=] %s%s%s sent you a beep!%s", '\007',
-                printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
-                fields[0], printcolor(ColBEEP, ColSANE),
-                printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%c%s[=Beep!=] %s%s%s sent you a beep!%s", '\007',
+                 printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
+                 fields[0], printcolor(ColBEEP, ColSANE),
+                 printcolor(ColSANE, ColSANE));
     } else {
-        sprintf(mbuf, "%s[=Beep!=] %s%s%s sent you a beep!%s",
-                printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
-                fields[0], printcolor(ColBEEP, ColSANE),
-                printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Beep!=] %s%s%s sent you a beep!%s",
+                 printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
+                 fields[0], printcolor(ColBEEP, ColSANE),
+                 printcolor(ColSANE, ColSANE));
     }
     putl(mbuf, PL_SCR | PL_TS);
 
     /* logs and review buffers don't get audible beeps */
-    sprintf(mbuf, "%s[=Beep!=] %s%s%s sent you a beep!%s",
-            printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
-            fields[0], printcolor(ColBEEP, ColSANE),
-            printcolor(ColSANE, ColSANE));
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=Beep!=] %s%s%s sent you a beep!%s",
+             printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
+             fields[0], printcolor(ColBEEP, ColSANE),
+             printcolor(ColSANE, ColSANE));
     putl(mbuf, (PL_BUF | PL_LOG | PL_TS));
     if (gv.tabreply)
         histput(nick);
@@ -274,8 +279,9 @@ void protomsg(char *pkt) {
     int proto_level;
 
     if (split(pkt) != 3) {
-        sprintf(mbuf, "%s[=Error=]  got bad proto message packet%s",
-                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Error=]  got bad proto message packet%s",
+                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
     }
@@ -283,8 +289,8 @@ void protomsg(char *pkt) {
     {
         int proto_val;
         if (safe_atoi(fields[0], &proto_val) != 0) {
-            sprintf(
-                mbuf,
+            snprintf(
+                mbuf, MESSAGE_BUF_SIZE,
                 "%s[=Error=] got bad protocol level in proto message packet%s",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_ALL ^ PL_TS);
@@ -303,8 +309,8 @@ void protomsg(char *pkt) {
     }
 
     if (! whoflg) {
-        sprintf(mbuf, "Connected to the %s ICB server (%s).", fields[1],
-                fields[2]);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "Connected to the %s ICB server (%s).",
+                 fields[1], fields[2]);
         putl(mbuf, PL_SCR);
     }
 
@@ -328,7 +334,7 @@ void loginokmsg(char *pkt) {
 
     /* FIXME: some of this should be moved to after the server banner */
     tcl_connected();
-    sprintf(mbuf, "Type %chelp for help.\n", gv.cmdchar);
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "Type %chelp for help.\n", gv.cmdchar);
     putl(mbuf, PL_SCR);
 }
 
@@ -336,8 +342,9 @@ void loginokmsg(char *pkt) {
 
 void statusmsg(char *pkt) {
     if (split(pkt) != 2) {
-        sprintf(mbuf, "%s[=Error=] got bad status message packet%s",
-                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Error=] got bad status message packet%s",
+                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
     }
@@ -350,16 +357,17 @@ void statusmsg(char *pkt) {
 
     if (! strcmp(fields[0], "Pass")) {
         if (! strncmp(fields[1], "Password changed to", 19)) {
-            sprintf(
-                mbuf, "%s[=%sPass%s=]%s Password successfully changed%s",
+            snprintf(
+                mbuf, MESSAGE_BUF_SIZE,
+                "%s[=%sPass%s=]%s Password successfully changed%s",
                 printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
                 printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
                 printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_ALL ^ PL_TS);
             return;
         } else if (! strncmp(fields[1], "Password set to", 15)) {
-            sprintf(
-                mbuf, "%s[=%sPass%s=]%s Password set%s",
+            snprintf(
+                mbuf, MESSAGE_BUF_SIZE, "%s[=%sPass%s=]%s Password set%s",
                 printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
                 printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
                 printcolor(ColSANE, ColSANE));
@@ -452,10 +460,11 @@ void statusmsg(char *pkt) {
         fflush(stdout);
     }
 
-    sprintf(mbuf, "%s[=%s%s%s=]%s %s%s", printcolor(ColSBRKT, ColNOTICE),
-            printcolor(ColNOTICE, ColSANE), fields[0],
-            printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
-            fields[1], printcolor(ColSANE, ColSANE));
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=%s%s%s=]%s %s%s",
+             printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
+             fields[0], printcolor(ColSBRKT, ColNOTICE),
+             printcolor(ColNOTICE, ColSANE), fields[1],
+             printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL);
 }
 
@@ -472,36 +481,41 @@ void cmdoutmsg(char *pkt) {
     if (strcmp(fields[0], "wl") == 0) {
 
         if (*fields[1] == 'm')
-            sprintf(mbuf2, "%s%c", printcolor(ColMOD, ColNICKNAME), '*');
+            snprintf(mbuf2, sizeof(mbuf2), "%s%c",
+                     printcolor(ColMOD, ColNICKNAME), '*');
         else
-            sprintf(mbuf2, " ");
+            snprintf(mbuf2, sizeof(mbuf2), " ");
 
         /* body of a who listing */
-        sprintf(mbuf, "  %s%s%-10s%s %s%9s%s   %s%s%s  %s%s@%s%s %s%s", mbuf2,
-                printcolor(ColNICKNAME, ColSANE), fields[2],
-                printcolor(ColSANE, ColSANE), printcolor(ColIDLETIME, ColSANE),
-                idlestr(fields[3]), printcolor(ColSANE, ColSANE),
-                printcolor(ColLOGINTIME, ColSANE),
-                ampm((time_t) atol(fields[5]), 0), printcolor(ColSANE, ColSANE),
-                printcolor(ColADDRESS, ColSANE), fields[6], fields[7],
-                printcolor(ColUNREG, ColADDRESS), fields[8],
-                printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "  %s%s%-10s%s %s%9s%s   %s%s%s  %s%s@%s%s %s%s", mbuf2,
+                 printcolor(ColNICKNAME, ColSANE), fields[2],
+                 printcolor(ColSANE, ColSANE), printcolor(ColIDLETIME, ColSANE),
+                 idlestr(fields[3]), printcolor(ColSANE, ColSANE),
+                 printcolor(ColLOGINTIME, ColSANE),
+                 ampm((time_t) atol(fields[5]), 0),
+                 printcolor(ColSANE, ColSANE), printcolor(ColADDRESS, ColSANE),
+                 fields[6], fields[7], printcolor(ColUNREG, ColADDRESS),
+                 fields[8], printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_SL ^ PL_TS);
 
     } else if (strcmp(fields[0], "gh") == 0) {
         /* header for a grouplisting */
         if (m_groupheader) {
-            sprintf(mbuf, "%sGroup     ## S  Moderator    Topic%s",
-                    printcolor(ColWHEAD, ColSANE),
-                    printcolor(ColSANE, ColSANE));
+            snprintf(mbuf, MESSAGE_BUF_SIZE,
+                     "%sGroup     ## S  Moderator    Topic%s",
+                     printcolor(ColWHEAD, ColSANE),
+                     printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
         }
 
     } else if (strcmp(fields[0], "wh") == 0) {
         /* header for a who listing */
         if (m_whoheader) {
-            sprintf(mbuf, "%s   Nickname        Idle  Sign-On  Account%s",
-                    printcolor(ColWSUB, ColSANE), printcolor(ColSANE, ColSANE));
+            snprintf(mbuf, MESSAGE_BUF_SIZE,
+                     "%s   Nickname        Idle  Sign-On  Account%s",
+                     printcolor(ColWSUB, ColSANE),
+                     printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
         }
 
@@ -513,19 +527,21 @@ void cmdoutmsg(char *pkt) {
         }
 
         if (*fields[2] == '\0') {
-            sprintf(mbuf, "%sGroup: %s%s", printcolor(ColWHEAD, ColSANE),
-                    fields[1], printcolor(ColSANE, ColSANE));
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "%sGroup: %s%s",
+                     printcolor(ColWHEAD, ColSANE), fields[1],
+                     printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
         } else {
-            sprintf(mbuf, "%sGroup: %-9s %s%s", printcolor(ColWHEAD, ColSANE),
-                    fields[1], fields[2], printcolor(ColSANE, ColSANE));
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "%sGroup: %-9s %s%s",
+                     printcolor(ColWHEAD, ColSANE), fields[1], fields[2],
+                     printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
         }
 
     } else if (strcmp(fields[0], "ch") == 0) {
         /* do nothing here? th' hell? obsolete protocol shit? */
     } else if (strcmp(fields[0], "c") == 0) {
-        sprintf(mbuf, "%c%s", gv.cmdchar, fields[1]);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%c%s", gv.cmdchar, fields[1]);
         putl(mbuf, PL_SL ^ PL_TS);
     } else
         /* just some generic command output */
@@ -538,8 +554,8 @@ void errormsg(char *pkt) {
     char nick[MAX_NICKLEN + 1];
     int index;
 
-    sprintf(mbuf, "%s[=Server Error=] %s%s", printcolor(ColERROR, ColSANE), pkt,
-            printcolor(ColSANE, ColSANE));
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=Server Error=] %s%s",
+             printcolor(ColERROR, ColSANE), pkt, printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL ^ PL_TS);
 
     for (index = 0;
@@ -562,13 +578,15 @@ void errormsg(char *pkt) {
 
 void importantmsg(char *pkt) {
     if (split(pkt) != 2) {
-        sprintf(mbuf, "%s[=Error=]  got bad \"important\" message packet%s",
-                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        snprintf(mbuf, MESSAGE_BUF_SIZE,
+                 "%s[=Error=]  got bad \"important\" message packet%s",
+                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
     }
-    sprintf(mbuf, "\007%s[=%s=] %s%s", printcolor(ColWARNING, ColSANE),
-            fields[0], fields[1], printcolor(ColSANE, ColSANE));
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "\007%s[=%s=] %s%s",
+             printcolor(ColWARNING, ColSANE), fields[0], fields[1],
+             printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL ^ PL_TS);
     run_trigger(fields[1], "Trig_importantmsg", "");
 }
@@ -588,9 +606,9 @@ char *idlestr(char *num) {
     }
 
     if (seconds < 60)
-        sprintf(idletime, "%6s", "-");
+        snprintf(idletime, sizeof(idletime), "%6s", "-");
     else if (seconds < 3600)
-        sprintf(idletime, "%5dm", seconds / 60);
+        snprintf(idletime, sizeof(idletime), "%5dm", seconds / 60);
     else {
         minutes = (seconds / 60) % 60;
         hours = seconds / 3600;
@@ -598,18 +616,18 @@ char *idlestr(char *num) {
         years = days / 365;
 
         if (hours < 24) {
-            sprintf(idletime, "%2dh%2dm", hours, minutes);
+            snprintf(idletime, sizeof(idletime), "%2dh%2dm", hours, minutes);
         } else if (days < 100)
-            sprintf(idletime, "%2dd%2dh", days, hours % 24);
+            snprintf(idletime, sizeof(idletime), "%2dd%2dh", days, hours % 24);
         else if (days < 365)
-            sprintf(idletime, "%5dd", days);
+            snprintf(idletime, sizeof(idletime), "%5dd", days);
         else if (years < 100)
-            sprintf(idletime, "%2dy%2dd", years, days % 365);
+            snprintf(idletime, sizeof(idletime), "%2dy%2dd", years, days % 365);
         else if (years < 100000)
-            sprintf(idletime, "%5dy", years);
+            snprintf(idletime, sizeof(idletime), "%5dy", years);
         else
-            // I'm impressed
-            strcpy(idletime, "  ages");
+            /* I'm impressed */
+            snprintf(idletime, sizeof(idletime), "%s", "  ages");
     }
     return idletime;
 }
@@ -626,7 +644,7 @@ char *response(char *num) {
     }
 
     if (secs >= 2) {
-        sprintf(rtime, " %2ds", secs);
+        snprintf(rtime, sizeof(rtime), " %2ds", secs);
         return (rtime);
     } else
         return ("   -");
@@ -644,16 +662,17 @@ char *ampm(time_t secs, int style) {
     mn = t->tm_min;
 
     if (style) {
-        sprintf(timestr, "%02d:%02d", hr, mn);
+        snprintf(timestr, sizeof(timestr), "%02d:%02d", hr, mn);
         return (timestr);
     }
 
     if (hr >= 12)
-        sprintf(timestr, "%2d:%02dpm", (hr > 12) ? hr - 12 : hr, mn);
+        snprintf(timestr, sizeof(timestr), "%2d:%02dpm",
+                 (hr > 12) ? hr - 12 : hr, mn);
     else if (hr > 0)
-        sprintf(timestr, "%2d:%02dam", hr, mn);
+        snprintf(timestr, sizeof(timestr), "%2d:%02dam", hr, mn);
     else
-        sprintf(timestr, "12:%02dam", mn);
+        snprintf(timestr, sizeof(timestr), "12:%02dam", mn);
 
     return (timestr);
 }

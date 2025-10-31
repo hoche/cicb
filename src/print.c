@@ -46,8 +46,9 @@ void putl(char *s, int flags) {
             pagesize = -gv.pagesize;
 
         if (pagesize > 0 && (++linenumber >= (pagesize - 1))) {
-            sprintf(printbuf, "%s[=More=]%s", printcolor(ColMORE, ColNOTICE),
-                    printcolor(ColSANE, ColSANE));
+            snprintf(printbuf, sizeof(printbuf), "%s[=More=]%s",
+                     printcolor(ColMORE, ColNOTICE),
+                     printcolor(ColSANE, ColSANE));
             /*COLOR*/ pauseprompt(printbuf, 1, 0, 1, " ");
             linenumber = 0;
         }

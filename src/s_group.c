@@ -36,7 +36,7 @@ int s_group(ARGV_TCL) {
             TRETURNERR("usage: s_group invite nick");
         sendcmd("invite", argv[2]);
         histput(argv[2]);
-        sprintf(mbuf, "%cinvite %s", gv.cmdchar, argv[2]);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%cinvite %s", gv.cmdchar, argv[2]);
         bufferadd(mbuf);
         return (TCL_OK);
     }

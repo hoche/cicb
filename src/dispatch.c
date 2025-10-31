@@ -52,9 +52,9 @@ void dispatch(char *pkt) {
         break;
 
     default:
-        sprintf(mbuf, "%s[=Error=] Invalid packet type \"%c\"%s",
-                printcolor(ColERROR, ColSANE), *pkt,
-                printcolor(ColSANE, ColSANE));
+        snprintf(
+            mbuf, MESSAGE_BUF_SIZE, "%s[=Error=] Invalid packet type \"%c\"%s",
+            printcolor(ColERROR, ColSANE), *pkt, printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL);
     }
 }

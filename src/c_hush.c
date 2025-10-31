@@ -23,12 +23,12 @@ int hushadd(Tcl_Interp *interp, char *nick) {
     if ((hp = strmakenode(strlen(nick))) == NULL) {
         TRETURNERR("c_hush: out of memory");
     }
-    strcpy(hp->str, nick);
+    safe_strncpy(hp->str, nick, strlen(nick) + 1);
     strlinkalpha(hp, &hushhead, &hushtail, 1);
-    sprintf(mbuf, "%s[=Hush=] %s%s%s added to hush list.%s",
-            printcolor(ColNOTICE, ColSANE), printcolor(ColNICKNAME, ColSANE),
-            hp->str, printcolor(ColNOTICE, ColSANE),
-            printcolor(ColSANE, ColSANE));
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=Hush=] %s%s%s added to hush list.%s",
+             printcolor(ColNOTICE, ColSANE), printcolor(ColNICKNAME, ColSANE),
+             hp->str, printcolor(ColNOTICE, ColSANE),
+             printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_SL);
     return (0);
 }
@@ -41,9 +41,10 @@ int hushdelete(Tcl_Interp *interp, char *nick) {
         snprintf(buf, BUFSIZ, "c_hush: %s is not being hushed", nick);
         TRETURNERR(buf);
     }
-    sprintf(mbuf, "%s[=Hush=] %s%s%s deleted from hush list.%s",
-            printcolor(ColNOTICE, ColSANE), printcolor(ColNICKNAME, ColSANE),
-            nick, printcolor(ColNOTICE, ColSANE), printcolor(ColSANE, ColSANE));
+    snprintf(
+        mbuf, MESSAGE_BUF_SIZE, "%s[=Hush=] %s%s%s deleted from hush list.%s",
+        printcolor(ColNOTICE, ColSANE), printcolor(ColNICKNAME, ColSANE), nick,
+        printcolor(ColNOTICE, ColSANE), printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_SL);
     strunlink(s, &hushhead, &hushtail);
     free(s);

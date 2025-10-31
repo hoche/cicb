@@ -15,7 +15,7 @@ int c_rand(ARGV_TCL) {
     if (safe_atoi(argv[1], &range) != 0 || range == 0)
         TRETURNERR("c_rand: zero or non-numeric argument given");
 
-    sprintf(num, "%d", (rand() % range) + 1);
+    snprintf(num, sizeof(num), "%d", (rand() % range) + 1);
 
     /* pass the number back to the caller */
     Tcl_Return(interp, num, TCL_VOLATILE);

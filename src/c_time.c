@@ -154,7 +154,8 @@ char *gettimestamp(void) {
     t = time(NULL);
     now = localtime(&t);
 
-    sprintf(tsbuf, "%s[%02d:%02d]%s ", printcolor(ColTIMESTAMP, ColSANE),
-            now->tm_hour, now->tm_min, printcolor(ColSANE, ColSANE));
+    snprintf(tsbuf, sizeof(tsbuf), "%s[%02d:%02d]%s ",
+             printcolor(ColTIMESTAMP, ColSANE), now->tm_hour, now->tm_min,
+             printcolor(ColSANE, ColSANE));
     /*COLOR*/ return tsbuf;
 }

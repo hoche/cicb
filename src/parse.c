@@ -417,9 +417,10 @@ void parse(char *line) {
                 argv_buf[2] = NULL;
                 status = handler->handler(NULL, NULL, 2, argv_buf);
             } else {
-                sprintf(mbuf, "%s[=Error=] Shell escape not available%s",
-                        printcolor(ColERROR, ColSANE),
-                        printcolor(ColSANE, ColSANE));
+                snprintf(mbuf, MESSAGE_BUF_SIZE,
+                         "%s[=Error=] Shell escape not available%s",
+                         printcolor(ColERROR, ColSANE),
+                         printcolor(ColSANE, ColSANE));
                 putl(mbuf, PL_SL);
                 status = TCL_ERROR;
             }
@@ -430,9 +431,9 @@ void parse(char *line) {
         if (interp != NULL) {
             status = Tcl_Eval(interp, s + 4);
         } else {
-            sprintf(mbuf, "%s[=Error=] TCL not available%s",
-                    printcolor(ColERROR, ColSANE),
-                    printcolor(ColSANE, ColSANE));
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=Error=] TCL not available%s",
+                     printcolor(ColERROR, ColSANE),
+                     printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL);
             status = TCL_ERROR;
         }
@@ -470,7 +471,8 @@ void parse(char *line) {
                 errmsg = "Hi.  Having problems?  Here's a verbose traceback:";
             }
 
-            sprintf(mbuf, "%s[=Tcl Error=] %s%s", c0, errmsg, c1);
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=Tcl Error=] %s%s", c0, errmsg,
+                     c1);
             putl(mbuf, PL_SL);
 
             /* If we had an error before, the user's probably repeating a
@@ -482,12 +484,14 @@ void parse(char *line) {
                 if (errmsg != NULL) {
                     putl(errmsg, PL_SL);
                 }
-                sprintf(mbuf, "%s[=End Traceback=]%s", c0, c1);
+                snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=End Traceback=]%s", c0,
+                         c1);
                 putl(mbuf, PL_SL);
             }
         } else {
             /* TCL not available - simple error message */
-            sprintf(mbuf, "%s[=Error=] Command failed%s", c0, c1);
+            snprintf(mbuf, MESSAGE_BUF_SIZE, "%s[=Error=] Command failed%s", c0,
+                     c1);
             putl(mbuf, PL_SL);
             error_mode = 0;
         }

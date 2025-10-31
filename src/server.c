@@ -74,22 +74,47 @@ int readserverent(FILE *fd, struct server *serverdata) {
  */
 FILE *openserverfile() {
     struct stat statbuf;
-    char command[256];
     char pwd[PATH_MAX + 1];
-    FILE *ret;
+    FILE *combined = NULL;
+    FILE *src = NULL;
+    char buf[512];
+    size_t n;
 
-    getcwd(pwd, PATH_MAX + 1);
+    if (! getcwd(pwd, sizeof(pwd))) {
+        return NULL;
+    }
 
+    /* Create a temporary in-memory file to hold the combined contents */
+    combined = tmpfile();
+    if (! combined) {
+        return NULL;
+    }
+
+    /* Switch to $HOME to check for personal server list */
     chdir(getenv("HOME"));
 
     if (! stat(PERSONALSL, &statbuf)) {
-        sprintf(command, "/bin/cat %s %s\n", PERSONALSL, SERVERLIST);
-        ret = popen(command, "r");
-    } else
-        ret = fopen(SERVERLIST, "r");
+        src = fopen(PERSONALSL, "r");
+        if (src) {
+            while ((n = fread(buf, 1, sizeof(buf), src)) > 0) {
+                fwrite(buf, 1, n, combined);
+            }
+            fclose(src);
+        }
+    }
+
+    /* Append system server list */
+    src = fopen(SERVERLIST, "r");
+    if (src) {
+        while ((n = fread(buf, 1, sizeof(buf), src)) > 0) {
+            fwrite(buf, 1, n, combined);
+        }
+        fclose(src);
+    }
 
     chdir(pwd);
-    return ret;
+    rewind(combined);
+    return combined;
 }
 
 /* read from the server config file, looking for a named entry.

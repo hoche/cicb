@@ -113,25 +113,27 @@ void printvar(char *name, int type, char *address) {
 
     switch (type) {
     case V_CHAR:
-        sprintf(mbuf, "%-12s  char  '%c'", name, *address);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%-12s  char  '%c'", name, *address);
         break;
     case V_INT:
         memcpy(&ival, address, sizeof(int));
-        sprintf(mbuf, "%-12s  int   %d", name, ival);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%-12s  int   %d", name, ival);
         break;
     case V_NONNEG:
         memcpy(&ival, address, sizeof(int));
-        sprintf(mbuf, "%-12s  nneg  %d", name, ival);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%-12s  nneg  %d", name, ival);
         break;
     case V_BOOLEAN:
-        sprintf(mbuf, "%-12s  bool  %s", name,
-                *(int *) address ? "true" : "false");
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%-12s  bool  %s", name,
+                 *(int *) address ? "true" : "false");
         break;
     case V_STRING:
-        sprintf(mbuf, "%-12s  str   \"%s\"", name, *(char **) address);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%-12s  str   \"%s\"", name,
+                 *(char **) address);
         break;
     default:
-        sprintf(mbuf, "printvar unknown type %d for \"%8s\"", type, name);
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "printvar unknown type %d for \"%8s\"",
+                 type, name);
         break;
     }
     putl(mbuf, PL_SCR);

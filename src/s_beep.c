@@ -13,7 +13,7 @@ int s_beep(ARGV_TCL) {
 
     sendcmd("beep", argv[1]);
     histput(argv[1]);
-    sprintf(mbuf, "%cbeep %s", gv.cmdchar, argv[1]);
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "%cbeep %s", gv.cmdchar, argv[1]);
     bufferadd(mbuf);
     return (TCL_OK);
 }

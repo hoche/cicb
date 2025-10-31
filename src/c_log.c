@@ -55,8 +55,9 @@ int startsessionlog(Tcl_Interp *interp, char *path) {
         aptr++;
 
     /* timestamp it */
-    sprintf(mbuf, "Session log \"%s\" started at %d/%02d/%02d %s.", path,
-            t->tm_mon + 1, t->tm_mday, t->tm_year % 100, aptr);
+    snprintf(mbuf, MESSAGE_BUF_SIZE,
+             "Session log \"%s\" started at %d/%02d/%02d %s.", path,
+             t->tm_mon + 1, t->tm_mday, t->tm_year % 100, aptr);
     putl(mbuf, PL_SL);
 
     return (0);
@@ -81,8 +82,8 @@ void closesessionlog() {
         aptr++;
 
     /* timestamp it */
-    sprintf(mbuf, "Session log closed at %d/%02d/%02d %s.", t->tm_mon + 1,
-            t->tm_mday, t->tm_year % 100, aptr);
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "Session log closed at %d/%02d/%02d %s.",
+             t->tm_mon + 1, t->tm_mday, t->tm_year % 100, aptr);
     putl(mbuf, PL_SL);
 
     /* close it */
