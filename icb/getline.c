@@ -391,10 +391,10 @@ handletab(int count, char c)
     if (rl_end == 0 || rl_line_buffer[0] != gv.cmdchar) {
         /* case 1 - no command char */
         if ((found_nick = histget()) != 0) {
-            sprintf(mpref, "%cm", gv.cmdchar);
-            strcat(mpref, " ");
-            strcat(mpref, found_nick);
-            strcat(mpref, " ");
+            snprintf(mpref, sizeof(mpref), "%cm", gv.cmdchar);
+            safe_strncat(mpref, " ", sizeof(mpref));
+            safe_strncat(mpref, found_nick, sizeof(mpref));
+            safe_strncat(mpref, " ", sizeof(mpref));
             rl_point = 0;
             rl_insert_text(mpref);
             rl_point = rl_end;

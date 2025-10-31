@@ -25,19 +25,19 @@ s_chpw(ARGV_TCL)
 /* this.                                                                                                            */
 
     if (argc == 2 && argv[1][0]) {
-        strcpy(args, argv[1]);
+        safe_strncpy(args, argv[1], sizeof(args));
         token = strtok(args, " ");
         if (token != NULL) {
             tokens++;
-            strcpy(old, token);
+            safe_strncpy(old, token, sizeof(old));
             token = (char *)strtok(NULL, " ");
             if (token != NULL) {
                 tokens++;
-                strcpy(new1, token);
+                safe_strncpy(new1, token, sizeof(new1));
                 token = (char *)strtok(NULL, " ");
                 if (token != NULL) {
                     tokens++;
-                    strcpy(new2, token);
+                    safe_strncpy(new2, token, sizeof(new2));
                     token = (char *)strtok(NULL, " ");
                     if (token != NULL) {
                         tokens++;
@@ -50,7 +50,12 @@ s_chpw(ARGV_TCL)
     switch (tokens) {
     case 0:
         {
-            strcpy(old, (char *)getpass("Enter old password:"));
+            {
+                char *pass = (char *)getpass("Enter old password:");
+                if (pass) {
+                    safe_strncpy(old, pass, sizeof(old));
+                }
+            }
             if (strlen(old))
                 tokens++;
             else
@@ -60,9 +65,14 @@ s_chpw(ARGV_TCL)
     case 1:
         {
             do {
-                strcpy(new1, (char *)getpass("Enter new password:"));
+                {
+                    char *pass = (char *)getpass("Enter new password:");
+                    if (pass) {
+                        safe_strncpy(new1, pass, sizeof(new1));
+                    }
+                }
                 length = strlen(new1);
-                sprintf(message, "Received password %s, length %d", new1,
+                snprintf(message, sizeof(message), "Received password %s, length %d", new1,
                         length);
                 putl(message, PL_SCR);
                 if (length > 14)
@@ -78,7 +88,12 @@ s_chpw(ARGV_TCL)
     case 2:
         {
             do {
-                strcpy(new2, (char *)getpass("Enter new password again:"));
+                {
+                    char *pass = (char *)getpass("Enter new password again:");
+                    if (pass) {
+                        safe_strncpy(new2, pass, sizeof(new2));
+                    }
+                }
                 match = strcmp(new1, new2);
                 if (match)
                     putl("New password mismatch; try again", PL_SCR);
@@ -94,9 +109,9 @@ s_chpw(ARGV_TCL)
         {
             match = !strcmp(new1, new2);
             if (match) {
-                sprintf(message, "New password %s accepted", new1);
+                snprintf(message, sizeof(message), "New password %s accepted", new1);
                 putl(message, PL_SCR);
-                sprintf(message, "cp %s %s", old, new1);
+                snprintf(message, sizeof(message), "cp %s %s", old, new1);
                 sendpersonal("server", message, -1);
             } else
                 putl("New password mismatch; password change aborted.", PL_SCR);

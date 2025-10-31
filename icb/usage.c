@@ -56,10 +56,10 @@ addusage(char *name, int type, char *args, char *usage)
     if ((u = (USAGE *) malloc((unsigned)sizeof(USAGE))) == NULL)
         return (-1);
 
-    strncpy(u->name, name, sizeof(u->name) - 1);
+    safe_strncpy(u->name, name, sizeof(u->name));
     u->type = type;
-    strncpy(u->args, args, sizeof(u->args) - 1);
-    strncpy(u->usage, usage, sizeof(u->usage) - 1);
+    safe_strncpy(u->args, args, sizeof(u->args));
+    safe_strncpy(u->usage, usage, sizeof(u->usage));
     usagelinkin(u);
     return (0);
 }

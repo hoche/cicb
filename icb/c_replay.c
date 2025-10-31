@@ -38,11 +38,12 @@ bufferadd(char *text)
         return;  /* Early return on allocation failure to prevent NULL pointer dereference */
     }
 
+    /* We already calculated len and allocated space, so these operations are safe */
     if (gv.timestamp) {
-        strcpy(bp->str, timestamp);
-        strcat(bp->str, text);
+        safe_strncpy(bp->str, timestamp, len + 1);
+        safe_strncat(bp->str, text, len + 1);
     } else {
-        strcpy(bp->str, text);
+        safe_strncpy(bp->str, text, len + 1);
     }
 
     strlinktail(bp, &bufhead, &buftail);
@@ -67,7 +68,8 @@ bufparse(char *str)
     int i, j;
 
     i = j = 0;
-    while (i < strlen(str)) {
+    size_t str_len = strlen(str);
+    while (i < str_len && j < MESSAGE_BUF_SIZE - 1) {
         if (str[i] == 27)
             copy = 0;
         if (copy == 1)
@@ -76,7 +78,7 @@ bufparse(char *str)
             copy = 1;
         i++;
     }
-    cleaned_str[j] = 0;
+    cleaned_str[j] = '\0';
 
     if (sscanf(cleaned_str, "<*%[^*]*>", bufnick) == 1) {
         buftype = BUF_PERSONAL;
@@ -132,19 +134,21 @@ bufferlist(int lines)
     if (lines > bufmessages)
         lines = bufmessages;
 
-    sprintf(mbuf, "[=Replaying last %d ", lines);
-    if (personalflag == 1)
-        strcat(mbuf, "personal ");
-    else if (personalflag == -1)
-        strcat(mbuf, "public ");
-    strcat(mbuf, "message");
-    if (lines > 1)
-        strcat(mbuf, "s");
-    if (nickptr) {
-        strncpy(mbuf2, mbuf, 511);
-        sprintf(mbuf, "%s from/to %s", mbuf2, nickptr);
+    snprintf(mbuf, MESSAGE_BUF_SIZE, "[=Replaying last %d ", lines);
+    if (personalflag == 1) {
+        safe_strncat(mbuf, "personal ", MESSAGE_BUF_SIZE);
+    } else if (personalflag == -1) {
+        safe_strncat(mbuf, "public ", MESSAGE_BUF_SIZE);
     }
-    strcat(mbuf, "=]");
+    safe_strncat(mbuf, "message", MESSAGE_BUF_SIZE);
+    if (lines > 1) {
+        safe_strncat(mbuf, "s", MESSAGE_BUF_SIZE);
+    }
+    if (nickptr) {
+        safe_strncpy(mbuf2, mbuf, sizeof(mbuf2));
+        snprintf(mbuf, MESSAGE_BUF_SIZE, "%s from/to %s", mbuf2, nickptr);
+    }
+    safe_strncat(mbuf, "=]", MESSAGE_BUF_SIZE);
     putl(mbuf, pl_flags);
 
     /* find the start point */
@@ -183,8 +187,7 @@ c_replay(ARGV_TCL)
 
     while ((s = getswitch(argc, argv, optv)) != NULL) {
         if (!strcmp(s, "nickname")) {
-            strncpy(replaynick, switcharg, MAX_NICKLEN);
-            replaynick[MAX_NICKLEN] = '\0';
+            safe_strncpy(replaynick, switcharg, sizeof(replaynick));
             nickptr = replaynick;
             continue;
         }

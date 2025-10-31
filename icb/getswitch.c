@@ -44,7 +44,11 @@ getswitch(int argc, char **argv, char **switchv)
 
         if ((slash = strchr(thisswitch, '/')) != NULL) {
             *slash = '\0';
-            strcat(thisswitch, slash + 1);
+            size_t thisswitch_len = strlen(thisswitch);
+            size_t suffix_len = strlen(slash + 1);
+            if (thisswitch_len + suffix_len + 1 <= strlen(*switchv) + 1) {
+                safe_strncat(thisswitch, slash + 1, strlen(*switchv) + 1);
+            }
             length = slash - thisswitch;
         }
 

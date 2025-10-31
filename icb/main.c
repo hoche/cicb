@@ -137,11 +137,13 @@ main(int argc, char *argv[])
     char *bindhost = (char *)NULL;
 
     myserver = NULL;
-    mygroup = strcpy(group, "1");
-    mynick =
-        (getenv("ICBNAME") ? strncpy(nick, getenv("ICBNAME"), MAX_NICKLEN + 1) :
-         NULL);
-    nick[MAX_NICKLEN] = '\0';
+    safe_strncpy(group, "1", sizeof(group));
+    mygroup = group;
+    mynick = NULL;
+    if (getenv("ICBNAME")) {
+        safe_strncpy(nick, getenv("ICBNAME"), sizeof(nick));
+        mynick = nick;
+    }
     myport = DEFAULT_PORT;
 
     m_ssl_on = 0;
@@ -165,8 +167,7 @@ main(int argc, char *argv[])
             break;
 
         case 'g':
-            strncpy(group, switcharg, MAX_NICKLEN + 1);
-            group[MAX_NICKLEN] = '\0';
+            safe_strncpy(group, switcharg, sizeof(group));
             mygroup = group;
             break;
 
@@ -176,8 +177,7 @@ main(int argc, char *argv[])
             break;
 
         case 'n':
-            strncpy(nick, switcharg, MAX_NICKLEN + 1);
-            nick[MAX_NICKLEN] = '\0';
+            safe_strncpy(nick, switcharg, sizeof(nick));
             mynick = nick;
             break;
 
@@ -194,8 +194,7 @@ main(int argc, char *argv[])
                 }
                 break;
             case 'a':
-                strncpy(pass, switcharg, MAX_PASSLEN);
-                pass[MAX_PASSLEN] = '\0';
+                safe_strncpy(pass, switcharg, sizeof(pass));
                 mypass = pass;
                 if (pass[0] == '-') {
                     mypass = getpass("Password:");

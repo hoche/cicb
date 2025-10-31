@@ -67,8 +67,7 @@ copenmsg(char *pkt)
         return;
 
     if (sscanf(fields[0], "%s (%*s)", nick) != 1) {
-        strncpy(nick, fields[0], MAX_NICKLEN);
-        nick[MAX_NICKLEN] = '\0';
+        safe_strncpy(nick, fields[0], sizeof(nick));
     }
 
     if (!strcmp(gv.alert, "all")) {
@@ -101,8 +100,7 @@ cpersonalmsg(char *pkt)
     }
 
     if (sscanf(fields[0], "%s (%*s)", nick) != 1) {
-        strncpy(nick, fields[0], MAX_NICKLEN);
-        nick[MAX_NICKLEN] = '\0';
+        safe_strncpy(nick, fields[0], sizeof(nick));
     }
 
     if (ishushed(fields[0]))
@@ -199,7 +197,8 @@ grab_url(char *msg)
                    going to copy back the non-lowercased version, then chop it out 
                    using the pointers we calculated from the lowercased message.
                  */
-                strcpy(msgbuf, msg);
+                /* msgbuf was strdup'd from msg, so sizes match - safe */
+                safe_strncpy(msgbuf, msg, strlen(msg) + 1);
                 *infobuf.e = '\0';
                 run_trigger(msg, "Trig_URL", infobuf.s);
             }
@@ -247,8 +246,7 @@ beep(char *pkt)
     }
 
     if (sscanf(fields[0], "%s (%*s)", nick) != 1) {
-        strncpy(nick, fields[0], MAX_NICKLEN);
-        nick[MAX_NICKLEN] = '\0';
+        safe_strncpy(nick, fields[0], sizeof(nick));
     }
 
     if (ishushed(nick))
@@ -448,16 +446,20 @@ statusmsg(char *pkt)
         if (sscanf(fields[1],
                    " %s changed nickname to %s",
                    (char *)&nick, (char *)&newnick) == 2) {
-            if (!strcmp(nick, mynick))
-                strcpy(mynick, newnick);
+            if (!strcmp(nick, mynick)) {
+                /* mynick points to nick[] buffer, safe to update */
+                safe_strncpy(mynick, newnick, MAX_NICKLEN + 1);
+            }
         }
     }
 
     if (!strcmp(fields[0], "Status")) {
         char group[9];
 
-        if (sscanf(fields[1], " You are now in group %s", (char *)&group) == 1)
-            strcpy(mygroup, group);
+        if (sscanf(fields[1], " You are now in group %s", (char *)&group) == 1) {
+            /* mygroup points to group[] buffer, safe to update */
+            safe_strncpy(mygroup, group, MAX_NICKLEN + 2);
+        }
         run_trigger(fields[1], "Trig_statusmsg", "");
     }
 
@@ -465,7 +467,8 @@ statusmsg(char *pkt)
         char group[9];
 
         if (sscanf(fields[1], " Group is now named %s", (char *)&group) == 1) {
-            strcpy(mygroup, group);
+            /* mygroup points to group[] buffer, safe to update */
+            safe_strncpy(mygroup, group, MAX_NICKLEN + 2);
         }
     }
 

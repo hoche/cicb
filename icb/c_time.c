@@ -67,50 +67,50 @@ put_cute_time(struct tm *now)
         h += 24;
     }
 
-    strcpy(buf, "It's ");
-    strcat(buf, eng_1min[m % 5]);
-    strcat(buf, eng_5min[m / 5 + (2 < m % 5)]);
+    safe_strncpy(buf, "It's ", sizeof(buf));
+    safe_strncat(buf, eng_1min[m % 5], sizeof(buf));
+    safe_strncat(buf, eng_5min[m / 5 + (2 < m % 5)], sizeof(buf));
 
     if (h == 0) {
-        strcat(buf, "midnight.");
+        safe_strncat(buf, "midnight.", sizeof(buf));
 
     } else if (h == 12) {
-        strcat(buf, "noon.");
+        safe_strncat(buf, "noon.", sizeof(buf));
 
     } else {
-        strcat(buf, eng_hour[h % 12]);
+        safe_strncat(buf, eng_hour[h % 12], sizeof(buf));
         if (m == 0) {
-            strcat(buf, " o'clock");
+            safe_strncat(buf, " o'clock", sizeof(buf));
         }
         if (20 <= h || h < 4) {
-            strcat(buf, " at night");
+            safe_strncat(buf, " at night", sizeof(buf));
         } else if (4 <= h && h < 12) {
-            strcat(buf, " in the morning");
+            safe_strncat(buf, " in the morning", sizeof(buf));
         } else if (12 <= h && h < 17) {
-            strcat(buf, " in the afternoon");
+            safe_strncat(buf, " in the afternoon", sizeof(buf));
         } else if (17 <= h && h < 20) {
-            strcat(buf, " in the evening");
+            safe_strncat(buf, " in the evening", sizeof(buf));
         }
-        strcat(buf, ".");
+        safe_strncat(buf, ".", sizeof(buf));
     }
 
     if (m != 0 && m % 15 == 0) {
-        strcat(buf, "  *ding*");
+        safe_strncat(buf, "  *ding*", sizeof(buf));
     }
 
     putl(buf, PL_SCR);
 
     if (m == 0) {
-        strcpy(buf, "(");
+        safe_strncpy(buf, "(", sizeof(buf));
         if (h == 0) {
             h = 12;
         } else if (12 < h) {
             h -= 12;
         }
         for (; 1 < h; --h) {
-            strcat(buf, "Bong, ");
+            safe_strncat(buf, "Bong, ", sizeof(buf));
         }
-        strcat(buf, "Bong!)");
+        safe_strncat(buf, "Bong!)", sizeof(buf));
         putl(buf, PL_SCR);
     }
 }

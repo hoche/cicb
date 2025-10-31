@@ -65,8 +65,7 @@ s_personal(ARGV_TCL)
     if (!argv[switchind])
         return TCL_ERROR;
 
-    strncpy(nick, argv[switchind], MAX_NICKLEN);
-    nick[MAX_NICKLEN] = '\0';
+    safe_strncpy(nick, argv[switchind], sizeof(nick));
     sendpersonal(nick, catargs(&argv[switchind + 1]), 0);
     return (TCL_OK);
 }

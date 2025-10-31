@@ -115,12 +115,20 @@ csendopen(char *txt)
 
     for (i = 0; p[i]; ++i) {
         /* construct the packet and send it */
-        sprintf(pbuf, "%c", M_OPEN);
-        strcat(pbuf, p[i]);
+        size_t pbuf_size = PACKET_BUF_SIZE - 1;  /* pbuf = packetbuffer + 1 */
+        pbuf[0] = M_OPEN;
+        pbuf[1] = '\0';
+        if (safe_strncat(pbuf, p[i], pbuf_size) != 0) {
+            fprintf(stderr,
+                    "%s[=Error=] Message too long after splitting.%s",
+                    printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+            msplit_free(p);
+            return;
+        }
         send_packet(pp);
 
         /* and then log it to the buffer and logfile */
-        strcpy(mbuf, p[i]);
+        safe_strncpy(mbuf, p[i], MESSAGE_BUF_SIZE);
         putl(mbuf, PL_BUF | PL_LOG);
     }
 
@@ -132,9 +140,17 @@ csendopen(char *txt)
 void
 sendlogin(char *id, char *nick, char *group, char *command, char *passwd)
 {
-
-    sprintf(pbuf, "%c%s\001%s\001%s\001%s\001%s",
-            M_LOGIN, id, nick, group, command, passwd);
+    size_t pbuf_size = PACKET_BUF_SIZE - 1;
+    size_t needed = strlen(id) + strlen(nick) + strlen(group) + 
+                    strlen(command) + strlen(passwd) + 6;  /* M_LOGIN + 5 separators + null */
+    
+    if (needed > pbuf_size) {
+        fprintf(stderr, "Login packet too large.\n");
+        return;
+    }
+    
+    snprintf(pbuf, pbuf_size, "%c%s\001%s\001%s\001%s\001%s",
+             M_LOGIN, id, nick, group, command, passwd);
     send_packet(pp);
 }
 
@@ -165,7 +181,15 @@ sendcmd(char *cmd, char *args)
     }
 
     if (!args || *args == '\0') {
-        sprintf(pbuf, "%c%s\001", M_COMMAND, cmd);
+        size_t pbuf_size = PACKET_BUF_SIZE - 1;
+        size_t needed = strlen(cmd) + 3;  /* M_COMMAND + cmd + \001 + null */
+        if (needed > pbuf_size) {
+            fprintf(stderr,
+                    "%s[=Error=] Command too long.%s\n",
+                    printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+            return;
+        }
+        snprintf(pbuf, pbuf_size, "%c%s\001", M_COMMAND, cmd);
         send_packet(pp);
         return;
     }
@@ -189,12 +213,35 @@ sendcmd(char *cmd, char *args)
     }
 
     for (i = 0; p[i]; ++i) {
-        sprintf(pbuf, "%c%s\001", M_COMMAND, cmd);
+        size_t pbuf_size = PACKET_BUF_SIZE - 1;
+        size_t needed;
+        
+        snprintf(pbuf, pbuf_size, "%c%s\001", M_COMMAND, cmd);
+        needed = strlen(pbuf);
+        
         if (nick) {
-            strcat(pbuf, nick);
-            strcat(pbuf, " ");
+            needed += strlen(nick) + 1;  /* nick + space */
+            if (needed > pbuf_size - 1 || safe_strncat(pbuf, nick, pbuf_size) != 0) {
+                fprintf(stderr,
+                        "%s[=Error=] Command too long.%s\n",
+                        printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+                msplit_free(p);
+                return;
+            }
+            if (safe_strncat(pbuf, " ", pbuf_size) != 0) {
+                msplit_free(p);
+                return;
+            }
         }
-        strcat(pbuf, p[i]);
+        
+        needed += strlen(p[i]);
+        if (needed > pbuf_size - 1 || safe_strncat(pbuf, p[i], pbuf_size) != 0) {
+            fprintf(stderr,
+                    "%s[=Error=] Command too long.%s\n",
+                    printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+            msplit_free(p);
+            return;
+        }
         send_packet(pp);
     }
 
@@ -207,14 +254,17 @@ sendcmd(char *cmd, char *args)
 void
 send_command(char *cmd, char *arg)
 {
-    if (MAX_INPUTSTR < strlen(cmd) + 1 + strlen(arg)) {
+    size_t pbuf_size = PACKET_BUF_SIZE - 1;
+    size_t needed = strlen(cmd) + strlen(arg) + 3;  /* M_COMMAND + cmd + \001 + arg + null */
+    
+    if (needed > pbuf_size) {
         fprintf(stderr,
                 "%s[=Error=] Command too long.%s\n",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         return;
     }
 
-    sprintf(pbuf, "%c%s\001%s", M_COMMAND, cmd, arg);
+    snprintf(pbuf, pbuf_size, "%c%s\001%s", M_COMMAND, cmd, arg);
     send_packet(pp);
 }
 
@@ -244,7 +294,16 @@ send_split_command(char *cmd, char *who, char *text)
     }
 
     for (k = 0; frags[k] != NULL; ++k) {
-        sprintf(pbuf, "%c%s\001%s %s", M_COMMAND, cmd, who, frags[k]);
+        size_t pbuf_size = PACKET_BUF_SIZE - 1;
+        size_t needed = strlen(cmd) + strlen(who) + strlen(frags[k]) + 4;  /* M_COMMAND + cmd + \001 + who + space + frag + null */
+        if (needed > pbuf_size) {
+            fprintf(stderr,
+                    "%s[=Error=] Command too long.%s\n",
+                    printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+            msplit_free(frags);
+            return;
+        }
+        snprintf(pbuf, pbuf_size, "%c%s\001%s %s", M_COMMAND, cmd, who, frags[k]);
         send_packet(pp);
     }
 

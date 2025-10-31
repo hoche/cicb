@@ -60,7 +60,7 @@ readserverent(FILE * fd, struct server *serverdata)
                 && (sscanf(line, "%s %s", serverdata->name, serverdata->host) !=
                     2)) {
                 if (sscanf(line, "%s", serverdata->host) == 1) {
-                    strcpy(serverdata->name, serverdata->host);
+                    safe_strncpy(serverdata->name, serverdata->host, sizeof(serverdata->name));
                 } else {
                     fprintf(stderr, "Bad server entry: %sSkipping...\n", line);
                     continue;

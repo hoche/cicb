@@ -192,7 +192,7 @@ setcolor(int colortype, int fg, int bg)
                 sprintf(cbuf, "\033[1;3%i;4%im", fg - 8, bg - 8);
         }
     }
-    strcpy(colortable[colortype].color, cbuf);
+    safe_strncpy(colortable[colortype].color, cbuf, COLORSIZE);
     colortable[colortype].defined = 1;
     return 0;
 }

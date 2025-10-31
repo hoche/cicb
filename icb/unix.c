@@ -91,8 +91,14 @@ tildexpand(char *s)
     if ((pw = getpwnam(login)) == NULL)
         return (NULL);
 
-    strcpy(path, pw->pw_dir);
-    strcat(path, s);
+    /* Safely build path with bounds checking */
+    if (strlen(pw->pw_dir) >= sizeof(path)) {
+        return (NULL);  /* Directory path too long */
+    }
+    safe_strncpy(path, pw->pw_dir, sizeof(path));
+    if (safe_strncat(path, s, sizeof(path)) != 0) {
+        return (NULL);  /* Final path would be too long */
+    }
 
     return (path);
 }

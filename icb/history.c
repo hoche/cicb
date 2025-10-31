@@ -140,8 +140,7 @@ histmatch(char *prefix)
         if (strncasecmp(prefix, p->str, len) == 0) {
             if (!first_match) {
                 first_match = p;
-                strncpy(buf, p->str, MAX_NICKLEN - 1);
-                buf[MAX_NICKLEN - 1] = '\0';
+                safe_strncpy(buf, p->str, sizeof(buf));
                 match = buf;
 
             } else {

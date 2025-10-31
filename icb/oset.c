@@ -86,7 +86,14 @@ oset(ARGV_TCL)
         return (TCL_OK);
     }
 
-    strcpy(mbuf, catargs(&argv[2]));
+    {
+        char *args_str = catargs(&argv[2]);
+        if (args_str) {
+            safe_strncpy(mbuf, args_str, MESSAGE_BUF_SIZE);
+        } else {
+            mbuf[0] = '\0';
+        }
+    }
 
     for (x = 0; vars[x].name != NULL; x++) {
         if (strcmp(argv[1], vars[x].name) == 0) {

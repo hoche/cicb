@@ -17,6 +17,8 @@ char *nextword(char *s);
 char *response(char *num);
 char *tildexpand(char *s);
 int safe_atoi(const char *str, int *result);
+int safe_strncpy(char *dest, const char *src, size_t dest_size);
+int safe_strncat(char *dest, const char *src, size_t dest_size);
 int addusage(char *name, int type, char *args, char *usage);
 void askquit();
 
@@ -76,6 +78,7 @@ void mbreakprint(int per, char *from, char *s);
 void mprint(int per, char *from, char *s);
 int numeric(char *txt);
 void quoteify(char *a, char *b);
+void quoteify_safe(char *a, char *b, size_t b_size);
 void sendcmd(char *cmd, char *args);
 void sendlogin(char *id, char *nick, char *group, char *command, char *passwd);
 void sendpong(void);
