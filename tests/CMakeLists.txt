@@ -33,3 +33,33 @@ target_include_directories(strlist_test PRIVATE
 )
 target_link_libraries(strlist_test PRIVATE gtest gtest_main)
 add_test(NAME StrlistTest COMMAND strlist_test)
+
+# Integration tests (optional - requires server)
+option(BUILD_INTEGRATION_TESTS "Build integration tests" OFF)
+
+if(BUILD_INTEGRATION_TESTS)
+    # ICB Integration test - connects to real server (default.icb.net:7326)
+    # Implements ICB protocol directly for testing
+    add_executable(icb_integration_test icb_integration_test.cpp)
+    target_include_directories(icb_integration_test PRIVATE 
+        ${CMAKE_SOURCE_DIR}/src
+    )
+    target_link_libraries(icb_integration_test PRIVATE 
+        gtest 
+        gtest_main
+        pthread
+    )
+    add_test(NAME ICBIntegrationTest COMMAND icb_integration_test)
+    
+    # Mock server test - uses mock server
+    add_executable(server_mock_test server_mock_test.cpp)
+    target_include_directories(server_mock_test PRIVATE 
+        ${CMAKE_SOURCE_DIR}/src
+    )
+    target_link_libraries(server_mock_test PRIVATE 
+        gtest 
+        gtest_main
+        pthread
+    )
+    add_test(NAME ServerMockTest COMMAND server_mock_test)
+endif()

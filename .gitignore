@@ -8,4 +8,5 @@ icb/icb
 icb/tcl_connected.string
 icb/tcl_init.string
 stamp-h
+build*
 
