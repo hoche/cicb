@@ -6,9 +6,7 @@
 
 STRLIST *hushhead = NULL, *hushtail = NULL;
 
-int
-hushadd(Tcl_Interp * interp, char *nick)
-{
+int hushadd(Tcl_Interp *interp, char *nick) {
     STRLIST *hp;
 
     /* skip whitespace */
@@ -27,19 +25,15 @@ hushadd(Tcl_Interp * interp, char *nick)
     }
     strcpy(hp->str, nick);
     strlinkalpha(hp, &hushhead, &hushtail, 1);
-    sprintf(mbuf,
-            "%s[=Hush=] %s%s%s added to hush list.%s",
-            printcolor(ColNOTICE, ColSANE),
-            printcolor(ColNICKNAME, ColSANE),
-            hp->str,
-            printcolor(ColNOTICE, ColSANE), printcolor(ColSANE, ColSANE));
+    sprintf(mbuf, "%s[=Hush=] %s%s%s added to hush list.%s",
+            printcolor(ColNOTICE, ColSANE), printcolor(ColNICKNAME, ColSANE),
+            hp->str, printcolor(ColNOTICE, ColSANE),
+            printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_SL);
     return (0);
 }
 
-int
-hushdelete(Tcl_Interp * interp, char *nick)
-{
+int hushdelete(Tcl_Interp *interp, char *nick) {
     STRLIST *s;
 
     if ((s = strgetnode(nick, hushhead, 1)) == NULL) {
@@ -47,10 +41,8 @@ hushdelete(Tcl_Interp * interp, char *nick)
         snprintf(buf, BUFSIZ, "c_hush: %s is not being hushed", nick);
         TRETURNERR(buf);
     }
-    sprintf(mbuf,
-            "%s[=Hush=] %s%s%s deleted from hush list.%s",
-            printcolor(ColNOTICE, ColSANE),
-            printcolor(ColNICKNAME, ColSANE),
+    sprintf(mbuf, "%s[=Hush=] %s%s%s deleted from hush list.%s",
+            printcolor(ColNOTICE, ColSANE), printcolor(ColNICKNAME, ColSANE),
             nick, printcolor(ColNOTICE, ColSANE), printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_SL);
     strunlink(s, &hushhead, &hushtail);
@@ -58,9 +50,7 @@ hushdelete(Tcl_Interp * interp, char *nick)
     return (0);
 }
 
-void
-hushlist()
-{
+void hushlist() {
     STRLIST *p;
     char *s, *t;
 
@@ -89,27 +79,23 @@ hushlist()
     }
 }
 
-int
-ishushed(char *nick)
-{
+int ishushed(char *nick) {
     STRLIST *p;
 
     for (p = hushhead; p; p = p->next)
-        if (!strcasecmp(p->str, nick))
+        if (! strcasecmp(p->str, nick))
             return (1);
     return (0);
 }
 
-int
-c_hush(ARGV_TCL)
-{
+int c_hush(ARGV_TCL) {
     /* static char *usage = "usage: c_hush [nick]"; */
 
-    if (argc == 1 || !*argv[1]) {
+    if (argc == 1 || ! *argv[1]) {
         hushlist();
         return (TCL_OK);
     }
-    if (!ishushed(argv[1])) {
+    if (! ishushed(argv[1])) {
         return hushadd(interp, argv[1]);
     }
     return hushdelete(interp, argv[1]);

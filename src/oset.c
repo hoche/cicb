@@ -14,59 +14,53 @@ typedef struct Variable {
 } VARIABLE;
 
 /* variable types */
-#define V_CHAR		1
-#define V_BOOLEAN	2
-#define V_NONNEG	3
-#define V_INT		4
-#define V_STRING	5
+#define V_CHAR 1
+#define V_BOOLEAN 2
+#define V_NONNEG 3
+#define V_INT 4
+#define V_STRING 5
 
 /* list of usable variables */
-VARIABLE vars[] = {
-    {"alert", V_STRING, (char *)&gv.alert},
-    {"asyncread", V_BOOLEAN, (char *)&gv.asyncread},
-    {"autodel", V_BOOLEAN, (char *)&gv.autodel},
-    {"autoreg", V_BOOLEAN, (char *)&gv.autoregister},
-    {"beeps", V_BOOLEAN, (char *)&gv.beeps},
-    {"bufferlines", V_NONNEG, (char *)&gv.bufferlines},
-    {"commandchar", V_CHAR, (char *)&gv.cmdchar},
-    {"colorize", V_BOOLEAN, (char *)&gv.colorize},
-    {"cute", V_BOOLEAN, (char *)&gv.cute},
-    {"editmode", V_STRING, (char *)&gv.editmode},
-    {"groupblanks", V_BOOLEAN, (char *)&gv.groupblanks},
-    {"history", V_NONNEG, (char *)&gv.phistory},
-    {"keepalive", V_NONNEG, (char *)&gv.keepalive},
-    {"mutepongs", V_BOOLEAN, (char *)&gv.mutepongs},
-    {"logfile", V_STRING, (char *)&gv.logfile},
-    {"logreplay", V_BOOLEAN, (char *)&gv.logreplay},
-    {"pagesize", V_INT, (char *)&gv.pagesize},
-    {"pagewidth", V_INT, (char *)&gv.pagewidth},
-    {"pauseonshell", V_BOOLEAN, (char *)&gv.pauseonshell},
-    {"personalto", V_STRING, (char *)&gv.personalto},
-    {"restricted", V_BOOLEAN, (char *)&gv.restricted},
-    {"tabreply", V_BOOLEAN, (char *)&gv.tabreply},
-    {"timedisplay", V_STRING, (char *)&gv.timedisplay},
-    {"timestamp", V_BOOLEAN, (char *)&gv.timestamp},
-    {"turner", V_BOOLEAN, (char *)&gv.colorize},
-    {"urlgrab", V_BOOLEAN, (char *)&gv.urlgrab},
-    {"verifyquit", V_BOOLEAN, (char *)&gv.verifyquit},
-    {NULL, 0, NULL}
-};
+VARIABLE vars[] = {{"alert", V_STRING, (char *) &gv.alert},
+                   {"asyncread", V_BOOLEAN, (char *) &gv.asyncread},
+                   {"autodel", V_BOOLEAN, (char *) &gv.autodel},
+                   {"autoreg", V_BOOLEAN, (char *) &gv.autoregister},
+                   {"beeps", V_BOOLEAN, (char *) &gv.beeps},
+                   {"bufferlines", V_NONNEG, (char *) &gv.bufferlines},
+                   {"commandchar", V_CHAR, (char *) &gv.cmdchar},
+                   {"colorize", V_BOOLEAN, (char *) &gv.colorize},
+                   {"cute", V_BOOLEAN, (char *) &gv.cute},
+                   {"editmode", V_STRING, (char *) &gv.editmode},
+                   {"groupblanks", V_BOOLEAN, (char *) &gv.groupblanks},
+                   {"history", V_NONNEG, (char *) &gv.phistory},
+                   {"keepalive", V_NONNEG, (char *) &gv.keepalive},
+                   {"mutepongs", V_BOOLEAN, (char *) &gv.mutepongs},
+                   {"logfile", V_STRING, (char *) &gv.logfile},
+                   {"logreplay", V_BOOLEAN, (char *) &gv.logreplay},
+                   {"pagesize", V_INT, (char *) &gv.pagesize},
+                   {"pagewidth", V_INT, (char *) &gv.pagewidth},
+                   {"pauseonshell", V_BOOLEAN, (char *) &gv.pauseonshell},
+                   {"personalto", V_STRING, (char *) &gv.personalto},
+                   {"restricted", V_BOOLEAN, (char *) &gv.restricted},
+                   {"tabreply", V_BOOLEAN, (char *) &gv.tabreply},
+                   {"timedisplay", V_STRING, (char *) &gv.timedisplay},
+                   {"timestamp", V_BOOLEAN, (char *) &gv.timestamp},
+                   {"turner", V_BOOLEAN, (char *) &gv.colorize},
+                   {"urlgrab", V_BOOLEAN, (char *) &gv.urlgrab},
+                   {"verifyquit", V_BOOLEAN, (char *) &gv.verifyquit},
+                   {NULL, 0, NULL}};
 
-void
-set_restricted(void)
-{
+void set_restricted(void) {
     gv.restricted = 1;
     tcl_restrict();
 }
 
-int
-oset(ARGV_TCL)
-{
+int oset(ARGV_TCL) {
     /* static char *usage = "usage: oset var [value]"; */
     int x;
 
     if (argc == 1) {
-        (void)listvars(NULL);
+        (void) listvars(NULL);
         return (TCL_OK);
     }
 
@@ -78,7 +72,7 @@ oset(ARGV_TCL)
     }
 
     /* "restricted" is a special case */
-    if (!strcmp(argv[1], "restricted")) {
+    if (! strcmp(argv[1], "restricted")) {
         if (gv.restricted) {
             TRETURNERR("oset: restricted mode can't be reset");
         }
@@ -114,9 +108,7 @@ oset(ARGV_TCL)
     return (TCL_OK);
 }
 
-void
-printvar(char *name, int type, char *address)
-{
+void printvar(char *name, int type, char *address) {
     int ival;
 
     switch (type) {
@@ -133,10 +125,10 @@ printvar(char *name, int type, char *address)
         break;
     case V_BOOLEAN:
         sprintf(mbuf, "%-12s  bool  %s", name,
-                *(int *)address ? "true" : "false");
+                *(int *) address ? "true" : "false");
         break;
     case V_STRING:
-        sprintf(mbuf, "%-12s  str   \"%s\"", name, *(char **)address);
+        sprintf(mbuf, "%-12s  str   \"%s\"", name, *(char **) address);
         break;
     default:
         sprintf(mbuf, "printvar unknown type %d for \"%8s\"", type, name);
@@ -145,9 +137,7 @@ printvar(char *name, int type, char *address)
     putl(mbuf, PL_SCR);
 }
 
-int
-listvars(char *name)
-{
+int listvars(char *name) {
     int x;
 
     if (name == NULL) {
@@ -172,9 +162,7 @@ listvars(char *name)
 }
 
 /* perform a sanity check on some variables */
-void
-varsanity()
-{
+void varsanity() {
     if (gv.pagesize < 0 || gv.pagewidth < 0) {
         getwinsize();
     }
@@ -199,38 +187,30 @@ varsanity()
     if (strcmp(gv.alert, "none") != 0 && strcmp(gv.alert, "all") != 0 &&
         strcmp(gv.alert, "personal") != 0)
         gv.alert = "none";
-
 }
 
-int
-unsetvar(Tcl_Interp * interp, int type, char *address)
-{
+int unsetvar(Tcl_Interp *interp, int type, char *address) {
     switch (type) {
     case V_CHAR:
         *address = '\0';
         break;
-    case V_STRING:
-        {
-            char **s_addr = (char **)address;
-            *s_addr = "";
-            break;
-        }
+    case V_STRING: {
+        char **s_addr = (char **) address;
+        *s_addr = "";
+        break;
+    }
     case V_INT:
     case V_NONNEG:
-    case V_BOOLEAN:
-        {
-            int *i_addr = (int *)address;
-            *i_addr = 0;
-        }
-        break;
+    case V_BOOLEAN: {
+        int *i_addr = (int *) address;
+        *i_addr = 0;
+    } break;
     }
     varsanity();
     return (TCL_OK);
 }
 
-int
-ounset(ARGV_TCL)
-{
+int ounset(ARGV_TCL) {
     static char *usage = "usage: ounset var";
     int x;
 
@@ -239,7 +219,7 @@ ounset(ARGV_TCL)
     }
 
     /* "restricted" is a special case */
-    if (!strcmp(argv[1], "restricted")) {
+    if (! strcmp(argv[1], "restricted")) {
         if (gv.restricted) {
             TRETURNERR("ounset: restricted mode can't be reset");
         }
@@ -264,9 +244,7 @@ ounset(ARGV_TCL)
     return (TCL_OK);
 }
 
-int
-setvar(Tcl_Interp * interp, int type, char *address, char *s)
-{
+int setvar(Tcl_Interp *interp, int type, char *address, char *s) {
     int tmp;
     char *p;
 
@@ -290,14 +268,14 @@ setvar(Tcl_Interp * interp, int type, char *address, char *s)
         memcpy(address, &tmp, sizeof(int));
         break;
     case V_BOOLEAN:
-        if (!strncmp(s, "on", 2) ||
-            !strncmp(s, "true", 4) || *s == 'y' || *s == '1') {
-            int *i_addr = (int *)address;
+        if (! strncmp(s, "on", 2) || ! strncmp(s, "true", 4) || *s == 'y' ||
+            *s == '1') {
+            int *i_addr = (int *) address;
             *i_addr = 1;
-        } else if (!strncmp(s, "off", 2) ||
-                   !strncmp(s, "false", 4) || *s == 'n' || *s == '0') {
-            int *i_addr = (int *)address;
-            *i_addr = (int)0;
+        } else if (! strncmp(s, "off", 2) || ! strncmp(s, "false", 4) ||
+                   *s == 'n' || *s == '0') {
+            int *i_addr = (int *) address;
+            *i_addr = (int) 0;
         } else {
             TRETURNERR("oset: only boolean values allowed");
         }

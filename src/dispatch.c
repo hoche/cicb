@@ -4,9 +4,7 @@
 
 #include "icb.h"
 
-void
-dispatch(char *pkt)
-{
+void dispatch(char *pkt) {
     switch (*pkt) {
 
     case M_PING:
@@ -54,10 +52,9 @@ dispatch(char *pkt)
         break;
 
     default:
-        sprintf(mbuf,
-                "%s[=Error=] Invalid packet type \"%c\"%s",
-                printcolor(ColERROR, ColSANE),
-                *pkt, printcolor(ColSANE, ColSANE));
+        sprintf(mbuf, "%s[=Error=] Invalid packet type \"%c\"%s",
+                printcolor(ColERROR, ColSANE), *pkt,
+                printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL);
     }
 }

@@ -1,8 +1,8 @@
+#include "getswitch.h"
+#include "icb.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "getswitch.h"
-#include "icb.h"
 
 /* getswitch - parse multicharacter option arguments.
  */
@@ -13,9 +13,7 @@ static char *ambiguous = "?ambiguous";
 static char *unknown = "?unknown";
 static char *noarg = "?noarg";
 
-char *
-getswitch(int argc, char **argv, char **switchv)
-{
+char *getswitch(int argc, char **argv, char **switchv) {
     char *slash;
     char *thisswitch;
     char *retswitch;
@@ -53,7 +51,7 @@ getswitch(int argc, char **argv, char **switchv)
             length = slash - thisswitch;
         }
 
-        if (!strncmp(arg, thisswitch, length)) {
+        if (! strncmp(arg, thisswitch, length)) {
             if (retswitch) {
                 if (switcherr) {
                     fprintf(stderr, "%s: -%s ambiguous.\n", argv[0], arg);

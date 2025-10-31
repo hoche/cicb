@@ -10,19 +10,11 @@
 
 /* The signal stuff is not portable, and should be in unix.c. */
 
-#define	mask(s)	(1 << ((s)-1))
+#define mask(s) (1 << ((s) - 1))
 
-static void
-handle_exit(int sig)
-{
-    icbexit();
-}
+static void handle_exit(int sig) { icbexit(); }
 
-static void
-handle_intr(int sig)
-{
-    askquit();
-}
+static void handle_intr(int sig) { askquit(); }
 
 /* handle a stop signal
  * 
@@ -35,10 +27,8 @@ handle_intr(int sig)
  * handler and continue on processing packets.
  */
 
-static void
-handle_stop(int sig)
-{
-    extern int _rl_meta_flag;   /* private var, sigh. */
+static void handle_stop(int sig) {
+    extern int _rl_meta_flag; /* private var, sigh. */
 
     /* SIGTSTP is currently blocked and this is our signal handler
      * for it. First, reset the signal handler back to the default. */
@@ -75,11 +65,9 @@ handle_stop(int sig)
 }
 
 /* packet keepalive generator */
-static void
-handle_keepalive(int sig)
-{
+static void handle_keepalive(int sig) {
     if (connected) {
-        if (!gv.mutepongs) {
+        if (! gv.mutepongs) {
             putl("Pinging server...", PL_SCR);
         }
         sendcmd("ping", "");
@@ -90,9 +78,7 @@ handle_keepalive(int sig)
     signal(SIGALRM, handle_keepalive);
 }
 
-static void
-handle_winch(int sig)
-{
+static void handle_winch(int sig) {
     getwinsize();
     rl_resize_terminal();
     signal(SIGWINCH, handle_winch);
@@ -100,9 +86,7 @@ handle_winch(int sig)
 
 /* set up the signal trappers */
 
-void
-trapsignals()
-{
+void trapsignals() {
     signal(SIGHUP, handle_exit);
     signal(SIGTERM, handle_exit);
 
@@ -118,9 +102,7 @@ trapsignals()
 /* verify that the user wants to quit.  note, avoid using stdio in here,
    cuz we may be called from within stdio. */
 
-void
-askquit(void)
-{
+void askquit(void) {
     static char *prompt = "\nReally Quit? ";
     char buf[64];
     int n;

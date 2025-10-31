@@ -117,7 +117,8 @@ static char *prompt[] = {
     "I will not pledge allegiance to Bart",
     "I will not prescribe medication",
     "I will not publish the Principal's credit report",
-    "I will not re-transmit without the express permission of Major League Baseball",
+    "I will not re-transmit without the express permission of Major League "
+    "Baseball",
     "I will not say \"Springfield\" just to get applause",
     "I will not scream for ice cream",
     "I will not sell land in Florida",
@@ -199,21 +200,14 @@ static char *prompt[] = {
     "This punishment is not boring and pointless",
     "Underwear should be worn on the inside",
     "Wedgies are unhealthy for children and other living things",
-    NULL
-};
+    NULL};
 
 /* Return an integer in [0, n) */
-static int
-randint(int n)
-{
-    return lrand48() % n;
-}
+static int randint(int n) { return lrand48() % n; }
 
 /* Shuffle the prompt[] array */
 
-static void
-shuffle(void)
-{
+static void shuffle(void) {
     int k;
 
     srand48(time(NULL));
@@ -228,9 +222,7 @@ shuffle(void)
 
 static int next_prompt = 0;
 
-void
-saysomething()
-{
+void saysomething() {
     if (next_prompt == 0) {
         shuffle();
     } else if (prompt[next_prompt] == NULL) {

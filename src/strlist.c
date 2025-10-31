@@ -4,9 +4,7 @@
 
 #include "icb.h"
 
-STRLIST *
-strmakenode(int len)
-{
+STRLIST *strmakenode(int len) {
     STRLIST *p;
     if ((p = (STRLIST *) malloc(sizeof(STRLIST) - 1 + len + 1)) == NULL)
         return (NULL);
@@ -18,9 +16,7 @@ strmakenode(int len)
 
 /* link node s to the head of the list */
 
-void
-strlinkhead(STRLIST * s, STRLIST ** head, STRLIST ** tail)
-{
+void strlinkhead(STRLIST *s, STRLIST **head, STRLIST **tail) {
     if (*tail == 0) {
         s->prev = s->next = 0;
         *head = *tail = s;
@@ -34,9 +30,7 @@ strlinkhead(STRLIST * s, STRLIST ** head, STRLIST ** tail)
 
 /* link node s to the tail of the list */
 
-void
-strlinktail(STRLIST * s, STRLIST ** head, STRLIST ** tail)
-{
+void strlinktail(STRLIST *s, STRLIST **head, STRLIST **tail) {
     if (*head == 0) {
         s->prev = s->next = 0;
         *head = *tail = s;
@@ -51,9 +45,7 @@ strlinktail(STRLIST * s, STRLIST ** head, STRLIST ** tail)
 /* link node s in after node i */
 /* node i must be defined */
 
-void
-strlinkafter(STRLIST * s, STRLIST * i, STRLIST ** head, STRLIST ** tail)
-{
+void strlinkafter(STRLIST *s, STRLIST *i, STRLIST **head, STRLIST **tail) {
     s->prev = i;
     s->next = i->next;
     i->next = s;
@@ -66,9 +58,7 @@ strlinkafter(STRLIST * s, STRLIST * i, STRLIST ** head, STRLIST ** tail)
 /* link node s in before node i */
 /* node i must be defined */
 
-void
-strlinkbefore(STRLIST * s, STRLIST * i, STRLIST ** head, STRLIST ** tail)
-{
+void strlinkbefore(STRLIST *s, STRLIST *i, STRLIST **head, STRLIST **tail) {
     s->prev = i->prev;
     s->next = i;
     i->prev = s;
@@ -77,9 +67,7 @@ strlinkbefore(STRLIST * s, STRLIST * i, STRLIST ** head, STRLIST ** tail)
 
 /* unlink node s */
 
-void
-strunlink(STRLIST * s, STRLIST ** head, STRLIST ** tail)
-{
+void strunlink(STRLIST *s, STRLIST **head, STRLIST **tail) {
     if (s->prev == 0)
         if (s->next) {
             *head = s->next;
@@ -101,13 +89,11 @@ strunlink(STRLIST * s, STRLIST ** head, STRLIST ** tail)
 /* link s into the list such that it is inserted in alphabetical order */
 /* if caseindep != 0, it is done case independently */
 
-void
-strlinkalpha(STRLIST * s, STRLIST ** head, STRLIST ** tail, int caseindep)
-{
+void strlinkalpha(STRLIST *s, STRLIST **head, STRLIST **tail, int caseindep) {
     STRLIST *i;
 
     /* link into head if list is empty */
-    if (!*head)
+    if (! *head)
         strlinkhead(s, head, tail);
 
     /* otherwise, alphabetize */
@@ -136,16 +122,14 @@ strlinkalpha(STRLIST * s, STRLIST ** head, STRLIST ** tail, int caseindep)
 /* if caseindep != 0, the searching is done case insensitive */
 /* returns pointer on success, 0 on failure */
 
-STRLIST *
-strgetnode(char *str, STRLIST * head, int caseindep)
-{
+STRLIST *strgetnode(char *str, STRLIST *head, int caseindep) {
     STRLIST *p;
 
     for (p = head; p; p = p->next) {
         if (caseindep) {
-            if (!strcasecmp(str, p->str))
+            if (! strcasecmp(str, p->str))
                 break;
-        } else if (!strcmp(str, p->str))
+        } else if (! strcmp(str, p->str))
             break;
     }
 

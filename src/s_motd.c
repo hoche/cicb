@@ -4,9 +4,7 @@
 
 #include "icb.h"
 
-int
-s_motd(ARGV_TCL)
-{
+int s_motd(ARGV_TCL) {
     static char *usage = "usage: s_motd";
 
     /* check the arg count */

@@ -1,14 +1,14 @@
 #include "icb.h"
-#include <errno.h>
 #include <ctype.h>
-#include <sys/types.h>
-#include <sys/time.h>
+#include <errno.h>
 #include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-#include <readline/readline.h>  /* after stdio.h */
+#include <readline/readline.h> /* after stdio.h */
 #ifdef HAVE_READLINE_HISTORY_H
-#    include <readline/history.h>
+#include <readline/history.h>
 #endif
 
 /* When this is non-zero, we skip past [=More=] prompts
@@ -20,13 +20,9 @@ static int pause_skip_char = 0;
 /* Cbuf for the server.  XXX This really should be
    initialized by connecttoport or something. */
 
-static struct Cbuf server_buf = {
-    "", NULL, 1, 0, 0
-};
+static struct Cbuf server_buf = {"", NULL, 1, 0, 0};
 
-int
-readpacket(int fd, struct Cbuf *p)
-{
+int readpacket(int fd, struct Cbuf *p) {
     register int ret;
 
     if (p->new) {
@@ -37,17 +33,18 @@ readpacket(int fd, struct Cbuf *p)
         if (m_ssl_on) {
             int ssl_retries = 0;
             const int ssl_max_retries = 50;
-            
+
             do {
                 ret = SSL_read(ssl, p->rptr, 1);
 
                 if (ret <= 0) {
                     int ssl_error = SSL_get_error(ssl, ret);
 
-                    if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE) {
+                    if (ssl_error == SSL_ERROR_WANT_READ ||
+                        ssl_error == SSL_ERROR_WANT_WRITE) {
                         /* Need to wait for I/O - this should be handled by select in async mode */
                         if (++ssl_retries > ssl_max_retries) {
-                            return (-1);  /* Too many retries */
+                            return (-1); /* Too many retries */
                         }
                         continue;
                     } else {
@@ -55,12 +52,12 @@ readpacket(int fd, struct Cbuf *p)
                         return (-1);
                     }
                 } else {
-                    break;  /* Success */
+                    break; /* Success */
                 }
             } while (ret < 0);
         } else
 #endif
-        ret = read(fd, p->rptr, 1);
+            ret = read(fd, p->rptr, 1);
 
         if (ret < 0) {
             if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
@@ -69,7 +66,7 @@ readpacket(int fd, struct Cbuf *p)
                 return (-1);
             }
         }
-        if (!ret)
+        if (! ret)
             return (-2);
         p->size = p->remain = *(p->rptr);
         p->rptr++;
@@ -81,32 +78,33 @@ readpacket(int fd, struct Cbuf *p)
     if (m_ssl_on) {
         int ssl_retries = 0;
         const int ssl_max_retries = 50;
-        
+
         do {
             ret = SSL_read(ssl, p->rptr, p->remain);
 
             if (ret <= 0) {
                 int ssl_error = SSL_get_error(ssl, ret);
 
-                if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE) {
+                if (ssl_error == SSL_ERROR_WANT_READ ||
+                    ssl_error == SSL_ERROR_WANT_WRITE) {
                     /* Need to wait for I/O - this should be handled by select in async mode */
                     if (++ssl_retries > ssl_max_retries) {
-                        return (-1);  /* Too many retries */
+                        return (-1); /* Too many retries */
                     }
                     continue;
                 } else if (ssl_error == SSL_ERROR_ZERO_RETURN) {
-                    return (-2);  /* Connection closed */
+                    return (-2); /* Connection closed */
                 } else {
                     /* Fatal SSL error */
                     return (-1);
                 }
             } else {
-                break;  /* Success */
+                break; /* Success */
             }
         } while (ret < 0);
-    } else 
+    } else
 #endif
-    ret = read(fd, p->rptr, p->remain);
+        ret = read(fd, p->rptr, p->remain);
 
     if (ret < 0) {
         if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
@@ -115,7 +113,7 @@ readpacket(int fd, struct Cbuf *p)
             return (-1);
         }
     }
-    if (!ret)
+    if (! ret)
         return (-2);
 
     /* advance read pointer */
@@ -134,20 +132,18 @@ readpacket(int fd, struct Cbuf *p)
 }
 
 /* Eat some data from the server, and maybe dispatch it. */
-void
-read_from_server(void)
-{
+void read_from_server(void) {
     int saved_len = 0;
 
     switch (readpacket(port_fd, &server_buf)) {
-    case -1:                   /* error */
-    case -2:                   /* lost connection */
+    case -1: /* error */
+    case -2: /* lost connection */
         putl("Lost connection with the server. Quitting...", PL_ALL);
         icbexit();
         break;
-    case 0:                    /* incomplete packet */
+    case 0: /* incomplete packet */
         break;
-    case 1:                    /* complete packet */
+    case 1: /* complete packet */
         if (rl_end) {
             saved_len = rl_end;
             rl_end = 0;
@@ -170,9 +166,7 @@ read_from_server(void)
    traffic from the server socket and dispatch that if
    necessary. */
 
-int
-getc_or_dispatch(FILE * fp)
-{
+int getc_or_dispatch(FILE *fp) {
     fd_set read_fds;
     fd_set r_fds;
     int max_fd;
@@ -194,7 +188,7 @@ getc_or_dispatch(FILE * fp)
     }
 
     for (;;) {
-        static struct timeval zerot = { 0, 0 };
+        static struct timeval zerot = {0, 0};
         struct timeval *tv;
 
         /* If we're skipping pauses, return immediately
@@ -219,21 +213,21 @@ getc_or_dispatch(FILE * fp)
          * implementations. */
 #ifdef HAVE_OPENSSL
         if (m_ssl_on) {
-            port_fd_available = (SSL_pending(ssl)>0);
+            port_fd_available = (SSL_pending(ssl) > 0);
         } else
 #endif
-        /* Test if we can read from server. */
-        port_fd_available = (FD_ISSET(port_fd, &r_fds));
+            /* Test if we can read from server. */
+            port_fd_available = (FD_ISSET(port_fd, &r_fds));
 
         if (port_fd_available) {
 #ifdef HAVE_OPENSSL
             if (m_ssl_on) {
                 do {
                     read_from_server();
-                } while (SSL_pending(ssl)>0);
+                } while (SSL_pending(ssl) > 0);
             } else
 #endif
-            read_from_server();
+                read_from_server();
 
             if (pause_skip_char) {
                 /* Skip the keyboard, keep spewing output. */
@@ -253,9 +247,7 @@ getc_or_dispatch(FILE * fp)
     }
 }
 
-char *
-__getline(char *prompt)
-{
+char *__getline(char *prompt) {
     char *line = NULL;
     int eofcount = 0;
 
@@ -308,15 +300,13 @@ static int n_spaces = sizeof(spaces) - 1 - 1;
 /* if unget it set, user's character is pushed back into input buffer, unless
    it is one of the characters in except. */
 
-void
-pauseprompt(char *prompt, int Erase, int c, int unget, char *except)
-{
-    extern int _rl_meta_flag;   /* XXX private var, sigh. */
+void pauseprompt(char *prompt, int Erase, int c, int unget, char *except) {
+    extern int _rl_meta_flag; /* XXX private var, sigh. */
     char uc;
 
     /* If we're not interactive, don't pause.  If you remove this, then
        you need to make sure readlineinit gets called too. */
-    if (!gv.interactive) {
+    if (! gv.interactive) {
         return;
     }
 
@@ -359,7 +349,7 @@ pauseprompt(char *prompt, int Erase, int c, int unget, char *except)
     }
 
     /* push character back onto stream if requested */
-    if (unget && (!except || strchr(except, uc) == 0)) {
+    if (unget && (! except || strchr(except, uc) == 0)) {
         pause_skip_char = uc;
     }
 }
@@ -367,9 +357,7 @@ pauseprompt(char *prompt, int Erase, int c, int unget, char *except)
 /*
  *  keystroke handler for tab key
  */
-void
-handletab(int count, char c)
-{
+void handletab(int count, char c) {
     char mpref[256];
     int ppoint;
     int words;
@@ -423,7 +411,6 @@ handletab(int count, char c)
                 words++;
                 if (words == 2)
                     word2 = i;
-
             }
         }
         if (word2len < 0)
@@ -443,7 +430,7 @@ handletab(int count, char c)
     }
 
     /* case 4 - nickname completion */
-    if ((words == 2) && !term && rl_point == rl_end) {
+    if ((words == 2) && ! term && rl_point == rl_end) {
         if (word2len > MAX_NICKLEN) {
             printf("\007");
             return;
@@ -484,7 +471,7 @@ handletab(int count, char c)
             rl_kill_line(1, 0);
             diff = strlen(found_nick) - word2len;
             rl_point = ppoint + diff;
-            if (diff < 0) {     /* line shrunk */
+            if (diff < 0) { /* line shrunk */
                 rl_point = rl_end;
                 rl_insert(-diff, ' ');
                 putchar('\r');

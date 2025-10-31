@@ -7,9 +7,7 @@
 /* /s_register is like /p, but if you don't give it an
    argument, it will ask you for a password without echoing it. */
 
-int
-s_register(ARGV_TCL)
-{
+int s_register(ARGV_TCL) {
     if (argc == 1) {
         regnick(NULL);
     } else if (argc == 2) {
@@ -20,11 +18,9 @@ s_register(ARGV_TCL)
     return TCL_OK;
 }
 
-void
-regnick(char *password)
-{
-    if (!password) {
-        extern int _rl_meta_flag;   /* private var, sigh. */
+void regnick(char *password) {
+    if (! password) {
+        extern int _rl_meta_flag; /* private var, sigh. */
 
         /* The problem is that readline sets -icrnl in the tty, and
            getpass won't unset it, so <return> doesn't work.

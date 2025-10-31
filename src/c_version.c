@@ -1,9 +1,7 @@
 #include "icb.h"
 #include <readline/readline.h>
 
-int
-c_version(ARGV_TCL)
-{
+int c_version(ARGV_TCL) {
     static char *usage = "usage: c_version";
     char buf[BUFSIZ];
 

@@ -2,13 +2,12 @@
 
 #include "icb.h"
 
-int
-s_group(ARGV_TCL)
-{
+int s_group(ARGV_TCL) {
     static char *usage =
-        "usage: s_group cancel|change|create|invite|pass|remove|status|topic args";
+        "usage: s_group cancel|change|create|invite|pass|remove|status|topic "
+        "args";
 
-    if (argc < 2 || !*argv[1])
+    if (argc < 2 || ! *argv[1])
         TRETURNERR(usage);
 
     if (strcmp(argv[1], "cancel") == 0) {

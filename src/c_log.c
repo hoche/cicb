@@ -3,17 +3,15 @@
 /* primitive to control the session logging function */
 
 #include "icb.h"
-#include <time.h>
 #include <errno.h>
-#include <sys/stat.h>           /* for fchmod() */
+#include <sys/stat.h> /* for fchmod() */
+#include <time.h>
 
 FILE *logfp = NULL;
 
 /* start a session log */
 
-int
-startsessionlog(Tcl_Interp * interp, char *path)
-{
+int startsessionlog(Tcl_Interp *interp, char *path) {
     char *aptr;
     char buf[BUFSIZ];
     struct tm *t;
@@ -35,15 +33,15 @@ startsessionlog(Tcl_Interp * interp, char *path)
 
     /* open the session log */
     if ((logfp = fopen(path, "a")) == NULL) {
-        snprintf(buf, BUFSIZ,
-                 "c_log: can't open \"%s\": %s", path, strerror(errno));
+        snprintf(buf, BUFSIZ, "c_log: can't open \"%s\": %s", path,
+                 strerror(errno));
         TRETURNERR(buf);
     }
 
     /* protect the logfile against others */
-    if (fchmod((int)(fileno(logfp)), 0600) != 0) {
-        snprintf(buf, BUFSIZ,
-                 "c_log: can't fchmod \"%s\": %s", path, strerror(errno));
+    if (fchmod((int) (fileno(logfp)), 0600) != 0) {
+        snprintf(buf, BUFSIZ, "c_log: can't fchmod \"%s\": %s", path,
+                 strerror(errno));
         fclose(logfp);
         logfp = NULL;
         TRETURNERR(buf);
@@ -57,8 +55,8 @@ startsessionlog(Tcl_Interp * interp, char *path)
         aptr++;
 
     /* timestamp it */
-    sprintf(mbuf, "Session log \"%s\" started at %d/%02d/%02d %s.",
-            path, t->tm_mon + 1, t->tm_mday, t->tm_year % 100, aptr);
+    sprintf(mbuf, "Session log \"%s\" started at %d/%02d/%02d %s.", path,
+            t->tm_mon + 1, t->tm_mday, t->tm_year % 100, aptr);
     putl(mbuf, PL_SL);
 
     return (0);
@@ -66,9 +64,7 @@ startsessionlog(Tcl_Interp * interp, char *path)
 
 /* close the logfile */
 
-void
-closesessionlog()
-{
+void closesessionlog() {
     char *aptr;
     struct tm *t;
     time_t clock;
@@ -85,8 +81,8 @@ closesessionlog()
         aptr++;
 
     /* timestamp it */
-    sprintf(mbuf, "Session log closed at %d/%02d/%02d %s.",
-            t->tm_mon + 1, t->tm_mday, t->tm_year % 100, aptr);
+    sprintf(mbuf, "Session log closed at %d/%02d/%02d %s.", t->tm_mon + 1,
+            t->tm_mday, t->tm_year % 100, aptr);
     putl(mbuf, PL_SL);
 
     /* close it */
@@ -97,22 +93,18 @@ closesessionlog()
 
 /* return 1 if session logging is in effect, otherwise return 0 */
 
-int
-logging()
-{
+int logging() {
     if (logfp == NULL)
         return (0);
     return (1);
 }
 
-int
-c_log(ARGV_TCL)
-{
+int c_log(ARGV_TCL) {
     /* disallow use in restricted mode */
     if (gv.restricted)
         TRETURNERR("c_log: logging not allowed in restricted mode");
 
-    if (argc == 1 || !argv[1]) {
+    if (argc == 1 || ! argv[1]) {
         if (logging()) {
             closesessionlog();
             return (TCL_OK);
@@ -123,5 +115,4 @@ c_log(ARGV_TCL)
         TRETURNERR("c_log: session logging already on");
     }
     return startsessionlog(interp, argv[1]);
-
 }

@@ -8,48 +8,29 @@
    04/86	Mark Dapoz	Converted to C for UNIX
    12/79-12/82	Mike Cowlishaw */
 
-static char *eng_1min[] = {
-    "",
-    "just after ",
-    "a little after ",
-    "nearly ",
-    "just about "
-};
+static char *eng_1min[] = {"", "just after ", "a little after ", "nearly ",
+                           "just about "};
 
-static char *eng_5min[] = {
-    "",
-    "five past ",
-    "ten past ",
-    "a quarter past ",
-    "twenty past ",
-    "twenty-five past ",
-    "half past ",
-    "twenty-five to ",
-    "twenty to ",
-    "a quarter to ",
-    "ten to ",
-    "five to ",
-    ""
-};
+static char *eng_5min[] = {"",
+                           "five past ",
+                           "ten past ",
+                           "a quarter past ",
+                           "twenty past ",
+                           "twenty-five past ",
+                           "half past ",
+                           "twenty-five to ",
+                           "twenty to ",
+                           "a quarter to ",
+                           "ten to ",
+                           "five to ",
+                           ""};
 
 static char *eng_hour[] = {
-    "",
-    "one",
-    "two",
-    "three",
-    "four",
-    "five",
-    "six",
-    "seven",
-    "eight",
-    "nine",
-    "ten",
-    "eleven",
+    "",    "one",   "two",   "three", "four", "five",
+    "six", "seven", "eight", "nine",  "ten",  "eleven",
 };
 
-static void
-put_cute_time(struct tm *now)
-{
+static void put_cute_time(struct tm *now) {
     char buf[256];
     int m;
     int h;
@@ -115,9 +96,7 @@ put_cute_time(struct tm *now)
     }
 }
 
-static void
-put_time(struct tm *now, char *format)
-{
+static void put_time(struct tm *now, char *format) {
     char buf[256];
     int n = strftime(buf, sizeof buf, format, now);
 
@@ -129,9 +108,7 @@ put_time(struct tm *now, char *format)
     }
 }
 
-int
-c_time(ARGV_TCL)
-{
+int c_time(ARGV_TCL) {
     time_t t;
     struct tm *now;
     char *style = gv.timedisplay;
@@ -143,7 +120,7 @@ c_time(ARGV_TCL)
         if (safe_atoi(argv[1], &time_val) != 0) {
             RETURN_ERR_ARGC("?timeval?");
         }
-        t = (time_t)time_val;
+        t = (time_t) time_val;
     } else {
         RETURN_ERR_ARGC("?timeval?");
     }
@@ -169,9 +146,7 @@ c_time(ARGV_TCL)
 /* returns a pointer to a statically allocated buffer containing an 
  * updated timestamp (including a trailing space).
  */
-char *
-gettimestamp(void)
-{
+char *gettimestamp(void) {
     static char tsbuf[128];
     time_t t;
     struct tm *now;
@@ -179,9 +154,7 @@ gettimestamp(void)
     t = time(NULL);
     now = localtime(&t);
 
-    sprintf(tsbuf,
-            "%s[%02d:%02d]%s ",
-            printcolor(ColTIMESTAMP, ColSANE),
+    sprintf(tsbuf, "%s[%02d:%02d]%s ", printcolor(ColTIMESTAMP, ColSANE),
             now->tm_hour, now->tm_min, printcolor(ColSANE, ColSANE));
     /*COLOR*/ return tsbuf;
 }

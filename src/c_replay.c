@@ -1,7 +1,7 @@
 /* $Id: c_replay.c,v 1.15 2009/03/23 06:53:02 hoche Exp $ */
 
-#include "icb.h"
 #include "getswitch.h"
+#include "icb.h"
 
 STRLIST *bufhead = NULL, *buftail = NULL;
 int bufmessages = 0;
@@ -17,9 +17,7 @@ static enum { BUF_UNKNOWN, BUF_PUBLIC, BUF_PERSONAL } buftype;
 
 /* add a line of text to the replay buffer */
 
-void
-bufferadd(char *text)
-{
+void bufferadd(char *text) {
     STRLIST *bp;
     char *timestamp = NULL;
     int len;
@@ -35,7 +33,7 @@ bufferadd(char *text)
     /* add this line to the buffer */
     if ((bp = strmakenode(len)) == NULL) {
         putl("icb: not enough memory for buffer", PL_SCR);
-        return;  /* Early return on allocation failure to prevent NULL pointer dereference */
+        return; /* Early return on allocation failure to prevent NULL pointer dereference */
     }
 
     /* We already calculated len and allocated space, so these operations are safe */
@@ -59,9 +57,7 @@ bufferadd(char *text)
     }
 }
 
-void
-bufparse(char *str)
-{
+void bufparse(char *str) {
     char cc;
     char cleaned_str[MESSAGE_BUF_SIZE];
     int copy = 1;
@@ -97,9 +93,7 @@ bufparse(char *str)
     return;
 }
 
-int
-bufmatch(char *str)
-{
+int bufmatch(char *str) {
     bufparse(str);
     if (nickptr && strcasecmp(bufnick, nickptr))
         return 0;
@@ -112,9 +106,7 @@ bufmatch(char *str)
 
 /* list some or all of the replay buffer */
 
-void
-bufferlist(int lines)
-{
+void bufferlist(int lines) {
     int pl_flags;
     STRLIST *bp;
     char mbuf2[512];
@@ -124,7 +116,7 @@ bufferlist(int lines)
     /* user may want to interrupt this command */
     continued = 0;
 
-    if (!bufmessages) {
+    if (! bufmessages) {
         sprintf(mbuf, "%s[=Replay=] There are no lines in the buffer.%s",
                 printcolor(ColNOTICE, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, pl_flags);
@@ -157,8 +149,8 @@ bufferlist(int lines)
             lines--;
 
     /* print the lines */
-    for (; bp && !continued; bp = bp->next) {
-        if (!bufmatch(bp->str))
+    for (; bp && ! continued; bp = bp->next) {
+        if (! bufmatch(bp->str))
             continue;
         putl(bp->str, pl_flags);
     }
@@ -167,14 +159,15 @@ bufferlist(int lines)
     putl("[=End of review buffer=]", pl_flags);
 }
 
-int
-c_replay(ARGV_TCL)
-{
+int c_replay(ARGV_TCL) {
     static char *usage =
-        "usage: c_replay [switches] [count]\n  switches may be abbreviated.  They are:\n    -[no]log\t(don't) send output to the logfile\n    -[no]screen\t(don't) send output to the screen\n    -[no]personal\treplay only personal (public) messages\n -nickname nick\treplay only messages from nick";
-    static char *optv[] =
-        { "log", "nolog", "screen", "noscreen", "nickname:", "personal",
-"nopersonal", NULL };
+        "usage: c_replay [switches] [count]\n  switches may be abbreviated.  "
+        "They are:\n    -[no]log\t(don't) send output to the logfile\n    "
+        "-[no]screen\t(don't) send output to the screen\n    "
+        "-[no]personal\treplay only personal (public) messages\n -nickname "
+        "nick\treplay only messages from nick";
+    static char *optv[] = {"log",       "nolog",    "screen",     "noscreen",
+                           "nickname:", "personal", "nopersonal", NULL};
 
     int lines;
     char *s;
@@ -186,38 +179,38 @@ c_replay(ARGV_TCL)
     switchind = 1;
 
     while ((s = getswitch(argc, argv, optv)) != NULL) {
-        if (!strcmp(s, "nickname")) {
+        if (! strcmp(s, "nickname")) {
             safe_strncpy(replaynick, switcharg, sizeof(replaynick));
             nickptr = replaynick;
             continue;
         }
 
-        if (!strcmp(s, "personal")) {
+        if (! strcmp(s, "personal")) {
             personalflag = 1;
             continue;
         }
 
-        if (!strcmp(s, "nopersonal")) {
+        if (! strcmp(s, "nopersonal")) {
             personalflag = -1;
             continue;
         }
 
-        if (!strcmp(s, "log")) {
+        if (! strcmp(s, "log")) {
             logflag = 1;
             continue;
         }
 
-        if (!strcmp(s, "nolog")) {
+        if (! strcmp(s, "nolog")) {
             logflag = 0;
             continue;
         }
 
-        if (!strcmp(s, "screen")) {
+        if (! strcmp(s, "screen")) {
             screenflag = 1;
             continue;
         }
 
-        if (!strcmp(s, "noscreen")) {
+        if (! strcmp(s, "noscreen")) {
             screenflag = 0;
             continue;
         }
@@ -225,7 +218,7 @@ c_replay(ARGV_TCL)
         TRETURNERR(usage);
     }
 
-    if (switchind >= argc || !*argv[switchind])
+    if (switchind >= argc || ! *argv[switchind])
         lines = bufmessages;
     else {
         int lines_val;

@@ -9,25 +9,23 @@ struct Types {
     char cmdtype;
     char *description;
 } types[] = {
-    {
-    'g', "GENERAL COMMANDS"}, {
-    'i', "INFORMATION COMMANDS"}, {
-    'm', "MODERATOR COMMANDS"}, {
-    'c', "CUSTOM COMMANDS"}, {
-'\0', NULL},};
+    {'g', "GENERAL COMMANDS"},
+    {'i', "INFORMATION COMMANDS"},
+    {'m', "MODERATOR COMMANDS"},
+    {'c', "CUSTOM COMMANDS"},
+    {'\0', NULL},
+};
 
-USAGE *usagehead = 0, *usagetail = 0;   /* master pointers to list */
+USAGE *usagehead = 0, *usagetail = 0; /* master pointers to list */
 
-void
-listusage(char *name)
-{
+void listusage(char *name) {
     USAGE *u;
     int i, p;
 
     for (i = 0; types[i].cmdtype != '\0'; i++) {
         for (u = usagehead, p = 0; u; u = u->next)
             if (u->type == types[i].cmdtype) {
-                if (!p) {
+                if (! p) {
                     putl(types[i].description, PL_SCR);
                     p++;
                 }
@@ -38,9 +36,7 @@ listusage(char *name)
     }
 }
 
-void
-uline(USAGE * u)
-{
+void uline(USAGE *u) {
     sprintf(mbuf, "  %-8s %-20s %s", u->name, u->args, u->usage);
     putl(mbuf, PL_SCR);
 }
@@ -48,12 +44,10 @@ uline(USAGE * u)
 /* add a usage line */
 /* returns zero on success, -1 on failure */
 
-int
-addusage(char *name, int type, char *args, char *usage)
-{
+int addusage(char *name, int type, char *args, char *usage) {
     USAGE *u;
 
-    if ((u = (USAGE *) malloc((unsigned)sizeof(USAGE))) == NULL)
+    if ((u = (USAGE *) malloc((unsigned) sizeof(USAGE))) == NULL)
         return (-1);
 
     safe_strncpy(u->name, name, sizeof(u->name));
@@ -67,20 +61,16 @@ addusage(char *name, int type, char *args, char *usage)
 /* delete a usage line */
 /* returns zero on success, -1 on failure */
 
-int
-deleteusage(char *name)
-{
+int deleteusage(char *name) {
     /* XXX no code? */
     return 0;
 }
 
-void
-usagelinkin(USAGE * u)
-{
+void usagelinkin(USAGE *u) {
     USAGE *i;
 
     /* link into head if list is empty */
-    if (!usagehead)
+    if (! usagehead)
         usagelinkhead(u, &usagehead, &usagetail);
 
     /* otherwise, alphabetize */
@@ -103,9 +93,7 @@ usagelinkin(USAGE * u)
 /* link a usage entry into the head of a list */
 /* call with addresses of first and last pointers */
 
-void
-usagelinkhead(USAGE * u, USAGE ** first, USAGE ** last)
-{
+void usagelinkhead(USAGE *u, USAGE **first, USAGE **last) {
     if (*first == 0) {
         u->prev = u->next = 0;
         *first = *last = u;
@@ -120,9 +108,7 @@ usagelinkhead(USAGE * u, USAGE ** first, USAGE ** last)
 /* link a usage into the tail of a list */
 /* call with addresses of first and last pointers */
 
-void
-usagelinktail(USAGE * u, USAGE ** first, USAGE ** last)
-{
+void usagelinktail(USAGE *u, USAGE **first, USAGE **last) {
     if (*first == 0) {
         u->prev = u->next = 0;
         *first = *last = u;
@@ -136,9 +122,7 @@ usagelinktail(USAGE * u, USAGE ** first, USAGE ** last)
 
 /* call with addresses of first and last pointers */
 
-void
-gunlink(USAGE * u, USAGE ** first, USAGE ** last)
-{
+void gunlink(USAGE *u, USAGE **first, USAGE **last) {
     if (u->prev == 0)
         if (u->next) {
             *first = u->next;
@@ -160,9 +144,7 @@ gunlink(USAGE * u, USAGE ** first, USAGE ** last)
 /* link a usage into a list at a certain point */
 /* IMPORTANT - node i must be defined */
 
-void
-usagelinkafter(USAGE * u, USAGE * i, USAGE ** first, USAGE ** last)
-{
+void usagelinkafter(USAGE *u, USAGE *i, USAGE **first, USAGE **last) {
     u->prev = i;
     u->next = i->next;
     i->next = u;
@@ -175,9 +157,7 @@ usagelinkafter(USAGE * u, USAGE * i, USAGE ** first, USAGE ** last)
 /* link a usage a list before a certain point */
 /* IMPORTANT - node i and i->prev must be defined */
 
-void
-usagelinkbefore(USAGE * u, USAGE * i, USAGE ** first, USAGE ** last)
-{
+void usagelinkbefore(USAGE *u, USAGE *i, USAGE **first, USAGE **last) {
     u->prev = i->prev;
     u->next = i;
     i->prev = u;

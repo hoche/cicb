@@ -4,9 +4,7 @@
 
 #include "icb.h"
 
-int
-s_version(ARGV_TCL)
-{
+int s_version(ARGV_TCL) {
     static char *usage = "usage: s_version";
 
     /* check the arg count */

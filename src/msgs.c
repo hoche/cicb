@@ -3,13 +3,13 @@
 /* handle various messages from the server */
 
 #include "icb.h"
-#include <ctype.h>
 #include "version.h"
+#include <ctype.h>
 
 /* later, these routines should buffer up text to be sent to the user and */
 /* only send them when the user isn't typing */
 
-      /* why??  wouldn't this completely defeat asynchronous i/o?  -- alaric */
+/* why??  wouldn't this completely defeat asynchronous i/o?  -- alaric */
 
 /* perhaps we should stat the tty and only send when it's been idle for */
 /* a second and there is no FIONREAD */
@@ -22,25 +22,23 @@ typedef struct urlinfo {
 
 void find_url(char *s, char *p, struct urlinfo *b);
 
-static void
-run_trigger(char *msg, char *proc, char *arg)
-{
+static void run_trigger(char *msg, char *proc, char *arg) {
     Tcl_CmdInfo cmdinfo;
 
     /* If the proc isn't defined, don't do anything. */
-    if (!Tcl_GetCommandInfo(interp, proc, &cmdinfo)) {
+    if (! Tcl_GetCommandInfo(interp, proc, &cmdinfo)) {
         return;
     }
 
     /* Bind global var theMessage. */
     if (msg) {
-        Tcl_LinkVar(interp, "theMessage", (char *)&msg,
+        Tcl_LinkVar(interp, "theMessage", (char *) &msg,
                     TCL_LINK_STRING | TCL_LINK_READ_ONLY);
     }
 
-    if (Tcl_VarEval(interp, proc, " ", arg, (char *)NULL) != TCL_OK) {
-        printf("Error in trigger %s: %s\r\n",
-               proc, Tcl_GetStringResult(interp));
+    if (Tcl_VarEval(interp, proc, " ", arg, (char *) NULL) != TCL_OK) {
+        printf("Error in trigger %s: %s\r\n", proc,
+               Tcl_GetStringResult(interp));
     }
 
     /* Unbind theMessage. */
@@ -51,9 +49,7 @@ run_trigger(char *msg, char *proc, char *arg)
 
 /* open message */
 
-void
-copenmsg(char *pkt)
-{
+void copenmsg(char *pkt) {
     char nick[MAX_NICKLEN + 1];
 
     if (split(pkt) != 2) {
@@ -70,7 +66,7 @@ copenmsg(char *pkt)
         safe_strncpy(nick, fields[0], sizeof(nick));
     }
 
-    if (!strcmp(gv.alert, "all")) {
+    if (! strcmp(gv.alert, "all")) {
         /* ding! */
         putchar('\007');
         fflush(stdout);
@@ -86,14 +82,11 @@ copenmsg(char *pkt)
 
 /* personal message */
 
-void
-cpersonalmsg(char *pkt)
-{
+void cpersonalmsg(char *pkt) {
     char nick[MAX_NICKLEN + 1];
 
     if (split(pkt) != 2) {
-        sprintf(mbuf,
-                "%s[=Error=] got bad personal message packet%s",
+        sprintf(mbuf, "%s[=Error=] got bad personal message packet%s",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
@@ -124,9 +117,7 @@ cpersonalmsg(char *pkt)
 
 /* the url grabber function */
 
-void
-grab_url(char *msg)
-{
+void grab_url(char *msg) {
     char *msgbuf = NULL, *purl = NULL, *p = NULL;
     struct urlinfo infobuf, *puinfo;
 
@@ -158,19 +149,19 @@ grab_url(char *msg)
 
         lcaseit(msgbuf);
 
-        purl = strstr(msgbuf, (const char *)"://");
+        purl = strstr(msgbuf, (const char *) "://");
         if (purl) {
             find_url(msgbuf, purl, puinfo);
         } else {
             purl = NULL;
-            purl = strstr(msgbuf, (const char *)"www");
+            purl = strstr(msgbuf, (const char *) "www");
             /*
                we need to check for both www.<rest of url> and www[0-9].<rest of url>
              */
 
-            if (purl && ((purl[3] == '.' && purl[4] != '.' && purl[4] != ' ')
-                         || ('0' <= purl[3] && purl[3] <= '9' && purl[4] == '.'
-                             && purl[5] != '.' && purl[5] != ' '))) {
+            if (purl && ((purl[3] == '.' && purl[4] != '.' && purl[4] != ' ') ||
+                         ('0' <= purl[3] && purl[3] <= '9' && purl[4] == '.' &&
+                          purl[5] != '.' && purl[5] != ' '))) {
                 if (purl > msgbuf) {
                     /* if we're not at the beginning of the message and we
                        don't have a protocol descriptor, then we need to
@@ -190,8 +181,8 @@ grab_url(char *msg)
             /*
                let's just slam the door on trivial localhost:// and file:// 'sploit attempts right here....
              */
-            if (!strstr(infobuf.s, (const char *)"localhost://")
-                && !strstr(infobuf.s, (const char *)"file://")) {
+            if (! strstr(infobuf.s, (const char *) "localhost://") &&
+                ! strstr(infobuf.s, (const char *) "file://")) {
                 /*
                    Now that we've *GOT* our start and end pointers to our URL, we're
                    going to copy back the non-lowercased version, then chop it out 
@@ -213,9 +204,7 @@ grab_url(char *msg)
    provided the message buffer meets our prequalification standards
 */
 
-void
-find_url(char *s, char *p, struct urlinfo *b)
-{
+void find_url(char *s, char *p, struct urlinfo *b) {
     char *c = p;
     char *e = p;
 
@@ -230,16 +219,13 @@ find_url(char *s, char *p, struct urlinfo *b)
     return;
 }
 
-     /* beep message */
+/* beep message */
 
-void
-beep(char *pkt)
-{
+void beep(char *pkt) {
     char nick[MAX_NICKLEN + 1];
 
     if (split(pkt) != 1) {
-        sprintf(mbuf,
-                "%s[=Error=] got bad beep message packet%s",
+        sprintf(mbuf, "%s[=Error=] got bad beep message packet%s",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
@@ -253,30 +239,23 @@ beep(char *pkt)
         return;
 
     if (gv.beeps) {
-        sprintf(mbuf,
-                "%c%s[=Beep!=] %s%s%s sent you a beep!%s",
-                '\007',
-                printcolor(ColBEEP, ColSANE),
-                printcolor(ColNICKNAME, ColSANE),
-                fields[0],
-                printcolor(ColBEEP, ColSANE), printcolor(ColSANE, ColSANE));
+        sprintf(mbuf, "%c%s[=Beep!=] %s%s%s sent you a beep!%s", '\007',
+                printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
+                fields[0], printcolor(ColBEEP, ColSANE),
+                printcolor(ColSANE, ColSANE));
     } else {
-        sprintf(mbuf,
-                "%s[=Beep!=] %s%s%s sent you a beep!%s",
-                printcolor(ColBEEP, ColSANE),
-                printcolor(ColNICKNAME, ColSANE),
-                fields[0],
-                printcolor(ColBEEP, ColSANE), printcolor(ColSANE, ColSANE));
+        sprintf(mbuf, "%s[=Beep!=] %s%s%s sent you a beep!%s",
+                printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
+                fields[0], printcolor(ColBEEP, ColSANE),
+                printcolor(ColSANE, ColSANE));
     }
     putl(mbuf, PL_SCR | PL_TS);
 
     /* logs and review buffers don't get audible beeps */
-    sprintf(mbuf,
-            "%s[=Beep!=] %s%s%s sent you a beep!%s",
-            printcolor(ColBEEP, ColSANE),
-            printcolor(ColNICKNAME, ColSANE),
-            fields[0],
-            printcolor(ColBEEP, ColSANE), printcolor(ColSANE, ColSANE));
+    sprintf(mbuf, "%s[=Beep!=] %s%s%s sent you a beep!%s",
+            printcolor(ColBEEP, ColSANE), printcolor(ColNICKNAME, ColSANE),
+            fields[0], printcolor(ColBEEP, ColSANE),
+            printcolor(ColSANE, ColSANE));
     putl(mbuf, (PL_BUF | PL_LOG | PL_TS));
     if (gv.tabreply)
         histput(nick);
@@ -286,23 +265,16 @@ beep(char *pkt)
 
 /* "please drop the connection" message */
 
-void
-exitmsg()
-{
-    icbexit();
-}
+void exitmsg() { icbexit(); }
 
 /* protocol version message */
 
-void
-protomsg(char *pkt)
-{
+void protomsg(char *pkt) {
     char *p;
     int proto_level;
 
     if (split(pkt) != 3) {
-        sprintf(mbuf,
-                "%s[=Error=]  got bad proto message packet%s",
+        sprintf(mbuf, "%s[=Error=]  got bad proto message packet%s",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
@@ -311,9 +283,10 @@ protomsg(char *pkt)
     {
         int proto_val;
         if (safe_atoi(fields[0], &proto_val) != 0) {
-            sprintf(mbuf,
-                    "%s[=Error=] got bad protocol level in proto message packet%s",
-                    printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+            sprintf(
+                mbuf,
+                "%s[=Error=] got bad protocol level in proto message packet%s",
+                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_ALL ^ PL_TS);
             return;
         }
@@ -322,17 +295,16 @@ protomsg(char *pkt)
     if (PROTO_LEVEL != proto_level) {
         fprintf(stderr,
                 "\r\nThis forum client does not know the same protocol as\r\n");
-        fprintf(stderr,
-                "the server. I know protocol level %d and the server",
+        fprintf(stderr, "the server. I know protocol level %d and the server",
                 PROTO_LEVEL);
         fprintf(stderr, " is at\r\nlevel %d.\r\n", proto_level);
         fprintf(stderr,
                 "I am proceeding, but you may get weird results.\r\n\n");
     }
 
-    if (!whoflg) {
-        sprintf(mbuf, "Connected to the %s ICB server (%s).",
-                fields[1], fields[2]);
+    if (! whoflg) {
+        sprintf(mbuf, "Connected to the %s ICB server (%s).", fields[1],
+                fields[2]);
         putl(mbuf, PL_SCR);
     }
 
@@ -351,9 +323,7 @@ protomsg(char *pkt)
 
 /* server is telling us we are logged in */
 
-void
-loginokmsg(char *pkt)
-{
+void loginokmsg(char *pkt) {
     connected = 1;
 
     /* FIXME: some of this should be moved to after the server banner */
@@ -364,9 +334,7 @@ loginokmsg(char *pkt)
 
 /* system status update message */
 
-void
-statusmsg(char *pkt)
-{
+void statusmsg(char *pkt) {
     if (split(pkt) != 2) {
         sprintf(mbuf, "%s[=Error=] got bad status message packet%s",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
@@ -374,46 +342,42 @@ statusmsg(char *pkt)
         return;
     }
 
-    if (gv.autoregister &&
-        strcmp(fields[0], "Register") == 0 &&
+    if (gv.autoregister && strcmp(fields[0], "Register") == 0 &&
         strncmp(fields[1], "Send pass", sizeof("Send pass") - 1) == 0) {
         regnick(NULL);
         return;
     }
 
-    if (!strcmp(fields[0], "Pass")) {
-        if (!strncmp(fields[1], "Password changed to", 19)) {
-            sprintf(mbuf,
-                    "%s[=%sPass%s=]%s Password successfully changed%s",
-                    printcolor(ColSBRKT, ColNOTICE),
-                    printcolor(ColNOTICE, ColSANE),
-                    printcolor(ColSBRKT, ColNOTICE),
-                    printcolor(ColNOTICE, ColSANE),
-                    printcolor(ColSANE, ColSANE));
+    if (! strcmp(fields[0], "Pass")) {
+        if (! strncmp(fields[1], "Password changed to", 19)) {
+            sprintf(
+                mbuf, "%s[=%sPass%s=]%s Password successfully changed%s",
+                printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
+                printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
+                printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_ALL ^ PL_TS);
             return;
-        } else if (!strncmp(fields[1], "Password set to", 15)) {
-            sprintf(mbuf,
-                    "%s[=%sPass%s=]%s Password set%s",
-                    printcolor(ColSBRKT, ColNOTICE),
-                    printcolor(ColNOTICE, ColSANE),
-                    printcolor(ColSBRKT, ColNOTICE),
-                    printcolor(ColNOTICE, ColSANE),
-                    printcolor(ColSANE, ColSANE));
+        } else if (! strncmp(fields[1], "Password set to", 15)) {
+            sprintf(
+                mbuf, "%s[=%sPass%s=]%s Password set%s",
+                printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
+                printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
+                printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_ALL ^ PL_TS);
             return;
         }
     }
 
-    if (!strcmp(fields[0], "RSVP")) {
+    if (! strcmp(fields[0], "RSVP")) {
         char *user;
-        if (strncmp(fields[1], "You are", 7) == 0) {    /* Unix server */
+        if (strncmp(fields[1], "You are", 7) == 0) { /* Unix server */
             int i;
             user = fields[1];
             for (i = 0; i < 7; ++i) {
-                while (*user++ != ' ') ;
+                while (*user++ != ' ')
+                    ;
             }
-        } else                  /* VMS server */
+        } else /* VMS server */
             user = getword(fields[1]);
 
         if (ishushed(user))
@@ -425,7 +389,7 @@ statusmsg(char *pkt)
         run_trigger(NULL, "Trig_invitemsg", "");
     }
 
-    if (!strcmp(fields[0], "Arrive")) {
+    if (! strcmp(fields[0], "Arrive")) {
         char *user;
 
         user = getword(fields[1]);
@@ -436,66 +400,61 @@ statusmsg(char *pkt)
         run_trigger(NULL, "Trig_arrivemsg", user);
     }
 
-    if (!strcmp(fields[0], "Drop")) {
+    if (! strcmp(fields[0], "Drop")) {
         run_trigger(NULL, "Trig_dropmsg", "");
     }
 
-    if (!strcmp(fields[0], "Name")) {
+    if (! strcmp(fields[0], "Name")) {
         char nick[13], newnick[13];
 
-        if (sscanf(fields[1],
-                   " %s changed nickname to %s",
-                   (char *)&nick, (char *)&newnick) == 2) {
-            if (!strcmp(nick, mynick)) {
+        if (sscanf(fields[1], " %s changed nickname to %s", (char *) &nick,
+                   (char *) &newnick) == 2) {
+            if (! strcmp(nick, mynick)) {
                 /* mynick points to nick[] buffer, safe to update */
                 safe_strncpy(mynick, newnick, MAX_NICKLEN + 1);
             }
         }
     }
 
-    if (!strcmp(fields[0], "Status")) {
+    if (! strcmp(fields[0], "Status")) {
         char group[9];
 
-        if (sscanf(fields[1], " You are now in group %s", (char *)&group) == 1) {
+        if (sscanf(fields[1], " You are now in group %s", (char *) &group) ==
+            1) {
             /* mygroup points to group[] buffer, safe to update */
             safe_strncpy(mygroup, group, MAX_NICKLEN + 2);
         }
         run_trigger(fields[1], "Trig_statusmsg", "");
     }
 
-    if (!strcmp(fields[0], "Change")) {
+    if (! strcmp(fields[0], "Change")) {
         char group[9];
 
-        if (sscanf(fields[1], " Group is now named %s", (char *)&group) == 1) {
+        if (sscanf(fields[1], " Group is now named %s", (char *) &group) == 1) {
             /* mygroup points to group[] buffer, safe to update */
             safe_strncpy(mygroup, group, MAX_NICKLEN + 2);
         }
     }
 
-    if (!strcmp(fields[0], "Boot") || !strcmp(fields[0], "Idle-Boot")) {
+    if (! strcmp(fields[0], "Boot") || ! strcmp(fields[0], "Idle-Boot")) {
         run_trigger(fields[1], "Trig_bootmsg", "");
     }
 
-    if (!strcmp(fields[0], "PONG")) {
+    if (! strcmp(fields[0], "PONG")) {
         run_trigger(fields[1], "Trig_pongmsg", "");
         if (gv.mutepongs) {
             return;
         }
     }
 
-
-    if (!strcmp(gv.alert, "all")) {
+    if (! strcmp(gv.alert, "all")) {
         putchar('\007');
         fflush(stdout);
     }
 
-    sprintf(mbuf,
-            "%s[=%s%s%s=]%s %s%s",
-            printcolor(ColSBRKT, ColNOTICE),
-            printcolor(ColNOTICE, ColSANE),
-            fields[0],
-            printcolor(ColSBRKT, ColNOTICE),
-            printcolor(ColNOTICE, ColSANE),
+    sprintf(mbuf, "%s[=%s%s%s=]%s %s%s", printcolor(ColSBRKT, ColNOTICE),
+            printcolor(ColNOTICE, ColSANE), fields[0],
+            printcolor(ColSBRKT, ColNOTICE), printcolor(ColNOTICE, ColSANE),
             fields[1], printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL);
 }
@@ -503,9 +462,7 @@ statusmsg(char *pkt)
 /* command output message */
 /* this should eventually parse things according to command requested */
 
-void
-cmdoutmsg(char *pkt)
-{
+void cmdoutmsg(char *pkt) {
     char *idlestr(), *response(), *ampm();
     char mbuf2[512];
 
@@ -520,30 +477,21 @@ cmdoutmsg(char *pkt)
             sprintf(mbuf2, " ");
 
         /* body of a who listing */
-        sprintf(mbuf,
-                "  %s%s%-10s%s %s%9s%s   %s%s%s  %s%s@%s%s %s%s",
-                mbuf2,
-                printcolor(ColNICKNAME, ColSANE),
-                fields[2],
-                printcolor(ColSANE, ColSANE),
-                printcolor(ColIDLETIME, ColSANE),
-                idlestr(fields[3]),
-                printcolor(ColSANE, ColSANE),
+        sprintf(mbuf, "  %s%s%-10s%s %s%9s%s   %s%s%s  %s%s@%s%s %s%s", mbuf2,
+                printcolor(ColNICKNAME, ColSANE), fields[2],
+                printcolor(ColSANE, ColSANE), printcolor(ColIDLETIME, ColSANE),
+                idlestr(fields[3]), printcolor(ColSANE, ColSANE),
                 printcolor(ColLOGINTIME, ColSANE),
-                ampm((time_t) atol(fields[5]), 0),
-                printcolor(ColSANE, ColSANE),
-                printcolor(ColADDRESS, ColSANE),
-                fields[6],
-                fields[7],
-                printcolor(ColUNREG, ColADDRESS),
-                fields[8], printcolor(ColSANE, ColSANE));
+                ampm((time_t) atol(fields[5]), 0), printcolor(ColSANE, ColSANE),
+                printcolor(ColADDRESS, ColSANE), fields[6], fields[7],
+                printcolor(ColUNREG, ColADDRESS), fields[8],
+                printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_SL ^ PL_TS);
 
     } else if (strcmp(fields[0], "gh") == 0) {
         /* header for a grouplisting */
         if (m_groupheader) {
-            sprintf(mbuf,
-                    "%sGroup     ## S  Moderator    Topic%s",
+            sprintf(mbuf, "%sGroup     ## S  Moderator    Topic%s",
                     printcolor(ColWHEAD, ColSANE),
                     printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
@@ -552,8 +500,7 @@ cmdoutmsg(char *pkt)
     } else if (strcmp(fields[0], "wh") == 0) {
         /* header for a who listing */
         if (m_whoheader) {
-            sprintf(mbuf,
-                    "%s   Nickname        Idle  Sign-On  Account%s",
+            sprintf(mbuf, "%s   Nickname        Idle  Sign-On  Account%s",
                     printcolor(ColWSUB, ColSANE), printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
         }
@@ -566,14 +513,11 @@ cmdoutmsg(char *pkt)
         }
 
         if (*fields[2] == '\0') {
-            sprintf(mbuf,
-                    "%sGroup: %s%s",
-                    printcolor(ColWHEAD, ColSANE),
+            sprintf(mbuf, "%sGroup: %s%s", printcolor(ColWHEAD, ColSANE),
                     fields[1], printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
         } else {
-            sprintf(mbuf, "%sGroup: %-9s %s%s",
-                    printcolor(ColWHEAD, ColSANE),
+            sprintf(mbuf, "%sGroup: %-9s %s%s", printcolor(ColWHEAD, ColSANE),
                     fields[1], fields[2], printcolor(ColSANE, ColSANE));
             putl(mbuf, PL_SL ^ PL_TS);
         }
@@ -590,64 +534,54 @@ cmdoutmsg(char *pkt)
 
 /* error message */
 
-void
-errormsg(char *pkt)
-{
+void errormsg(char *pkt) {
     char nick[MAX_NICKLEN + 1];
     int index;
 
-    sprintf(mbuf, "%s[=Server Error=] %s%s",
-            printcolor(ColERROR, ColSANE), pkt, printcolor(ColSANE, ColSANE));
+    sprintf(mbuf, "%s[=Server Error=] %s%s", printcolor(ColERROR, ColSANE), pkt,
+            printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL ^ PL_TS);
 
     for (index = 0;
-         pkt[index] && (!isspace(pkt[index])) && (index < MAX_NICKLEN);
+         pkt[index] && (! isspace(pkt[index])) && (index < MAX_NICKLEN);
          ++index) {
         nick[index] = pkt[index];
     }
     nick[index] = '\0';
 
-    if (!strncmp(pkt + index, " not logged on", 14) ||
-        !strncmp(pkt + index, " is not logged on", 17) ||
-        !strncmp(pkt + index, " not signed on", 14)) {
+    if (! strncmp(pkt + index, " not logged on", 14) ||
+        ! strncmp(pkt + index, " is not logged on", 17) ||
+        ! strncmp(pkt + index, " not signed on", 14)) {
         if (gv.autodel)
             histdel(nick);
     }
     run_trigger(NULL, "Trig_errormsg", "");
-
 }
 
 /* important system message */
 
-void
-importantmsg(char *pkt)
-{
+void importantmsg(char *pkt) {
     if (split(pkt) != 2) {
-        sprintf(mbuf,
-                "%s[=Error=]  got bad \"important\" message packet%s",
+        sprintf(mbuf, "%s[=Error=]  got bad \"important\" message packet%s",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_ALL ^ PL_TS);
         return;
     }
-    sprintf(mbuf, "\007%s[=%s=] %s%s",
-            printcolor(ColWARNING, ColSANE), fields[0], fields[1]
-            , printcolor(ColSANE, ColSANE));
+    sprintf(mbuf, "\007%s[=%s=] %s%s", printcolor(ColWARNING, ColSANE),
+            fields[0], fields[1], printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL ^ PL_TS);
     run_trigger(fields[1], "Trig_importantmsg", "");
-
 }
 
 /* THIS STUFF NEEDS TO BE MOVED! */
 
 /* return a string indicating idle time */
 
-char *
-idlestr(char *num)
-{
+char *idlestr(char *num) {
     int seconds;
     int days, hours, minutes, years;
     static char idletime[16];
-    
+
     /* If parsing fails, default to showing as "unknown" */
     if (safe_atoi(num, &seconds) != 0) {
         seconds = -1;
@@ -682,12 +616,10 @@ idlestr(char *num)
 
 /* return a string indicating response time */
 
-char *
-response(char *num)
-{
+char *response(char *num) {
     int secs;
     static char rtime[16];
-    
+
     /* If parsing fails, default to 0 */
     if (safe_atoi(num, &secs) != 0) {
         secs = 0;
@@ -702,9 +634,7 @@ response(char *num)
 
 /* return a time, i.e "7:45pm" */
 
-char *
-ampm(time_t secs, int style)
-{
+char *ampm(time_t secs, int style) {
     struct tm *t, *localtime();
     static char timestr[16];
     int hr, mn;

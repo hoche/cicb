@@ -1,15 +1,13 @@
 #include "icb.h"
 
+#include <libgen.h>  // basename
 #include <readline/readline.h>
-#include <libgen.h> // basename
 
 /*
  * readlineinit - set up for readline()
  */
 
-void
-readlineinit(void)
-{
+void readlineinit(void) {
     char *editor;
     int handletab();
 
@@ -25,12 +23,12 @@ readlineinit(void)
 
     rl_getc_function = getc_or_dispatch;
 
-    rl_vi_editing_mode(0, 0);   /* default to vi, dammit. */
+    rl_vi_editing_mode(0, 0); /* default to vi, dammit. */
     gv.editmode = "vi";
 
-    editor = (char *)getenv("EDITOR");
-    if (!editor)
-        editor = (char *)getenv("VISUAL");
+    editor = (char *) getenv("EDITOR");
+    if (! editor)
+        editor = (char *) getenv("VISUAL");
 
     if (editor != NULL)
         if (strcmp(basename(editor), "emacs") == 0) {

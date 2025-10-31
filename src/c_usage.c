@@ -4,13 +4,11 @@
 
 #include "icb.h"
 
-int
-c_usage(ARGV_TCL)
-{
+int c_usage(ARGV_TCL) {
     static char *usage =
         "usage: c_usage add|delete|list [name] [type args usage]";
 
-    if (argc == 1 || !*argv[1])
+    if (argc == 1 || ! *argv[1])
         TRETURNERR(usage);
 
     /* add a usage */

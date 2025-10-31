@@ -5,31 +5,19 @@
 
 #include <stddef.h>
 
-char *helpkeys[] = {
-    "groups",
-    "hush",
-    "input",
-    "intro",
-    "options",
-    "primitives",
-    "rules",
-    "tcl",
-    "variables",
-    NULL
-};
+char *helpkeys[] = {"groups",     "hush",  "input", "intro",     "options",
+                    "primitives", "rules", "tcl",   "variables", NULL};
 
-char *helptopics[] = {
-    "Group concepts and commands.",
-    "Using hush to silence annoying users.",
-    "Input and editing characters",
-    "Introduction to ICB..",
-    "Runtime options and environment variables",
-    "Primitives for building icb commands.",
-    "Rules for ICB use.",
-    "General information on Tcl.",
-    "Setting icb customization variables.",
-    NULL
-};
+char *helptopics[] = {"Group concepts and commands.",
+                      "Using hush to silence annoying users.",
+                      "Input and editing characters",
+                      "Introduction to ICB..",
+                      "Runtime options and environment variables",
+                      "Primitives for building icb commands.",
+                      "Rules for ICB use.",
+                      "General information on Tcl.",
+                      "Setting icb customization variables.",
+                      NULL};
 
 char *ht_groups[] = {
     "All ICB users are divided into \"groups\". A group may be thought of",
@@ -78,21 +66,30 @@ char *ht_groups[] = {
     "	invitation tries to enter the group, the moderator will receive a",
     "	message indicating that fact.",
     "",
-    "Creating your own group automatically makes you the moderator of that group.",
-    "Additionally, the moderator of any group may at any time decide to turn over",
+    "Creating your own group automatically makes you the moderator of that "
+    "group.",
+    "Additionally, the moderator of any group may at any time decide to turn "
+    "over",
     "moderatorship of that group to you.  ",
     "",
-    "Numeric groups are initially public, visible, and loud (pvl).  Named groups",
-    "are initially moderated, visible, and loud (mvl), with two exceptions.  If",
-    "the group name begins with a single period, the group is initially secret.",
-    "If the group names begins with two or more periods, the group is initially",
+    "Numeric groups are initially public, visible, and loud (pvl).  Named "
+    "groups",
+    "are initially moderated, visible, and loud (mvl), with two exceptions.  "
+    "If",
+    "the group name begins with a single period, the group is initially "
+    "secret.",
+    "If the group names begins with two or more periods, the group is "
+    "initially",
     "invisible.",
     "",
     "Commands",
     "",
-    "The following are the commands for manipulating groups.  Commands marked with",
-    "(m) may only be issued by the moderator if the group is moderated; otherwise",
-    "anyone may issue them.  Commands marked with (M) may only be issued by the",
+    "The following are the commands for manipulating groups.  Commands marked "
+    "with",
+    "(m) may only be issued by the moderator if the group is moderated; "
+    "otherwise",
+    "anyone may issue them.  Commands marked with (M) may only be issued by "
+    "the",
     "moderator; if there is no moderator, no-one may issue them.",
     "",
     "	group <groupname> 	change to a new group, creating it if it",
@@ -114,8 +111,7 @@ char *ht_groups[] = {
     "",
     "(M)	pass [<nickname>]	turn moderation over to someone else, or",
     "				give up moderation completely",
-    NULL
-};
+    NULL};
 
 char *ht_hush[] = {
     "ICB has a large base of diverse users. It is inevitable that there",
@@ -141,17 +137,20 @@ char *ht_hush[] = {
     "include using the moderated group facility, and when all else fails,",
     "complaining to the administration. If a user is persistent enough that",
     "hush won't take care of them, see the rules section for what to do.",
-    NULL
-};
+    NULL};
 
 char *ht_input[] = {
     "EDITING CHARACTERS",
     "",
     "ICB uses the GNU readline library for input lines.  This library lets you",
-    "edit commands as you type them and retrieve previous commands that you have",
-    "typed.  Readline will emulate either of the vi or emacs editors; you may control",
-    "which by using the 'oset' command to set the 'editmode' variable to either",
-    "\"vi\" or \"emacs\".  The original default is picked up by the setting of your",
+    "edit commands as you type them and retrieve previous commands that you "
+    "have",
+    "typed.  Readline will emulate either of the vi or emacs editors; you may "
+    "control",
+    "which by using the 'oset' command to set the 'editmode' variable to "
+    "either",
+    "\"vi\" or \"emacs\".  The original default is picked up by the setting of "
+    "your",
     "EDITOR environment variable; if that variable is not set, vi is used.",
     "",
     "",
@@ -165,16 +164,21 @@ char *ht_input[] = {
     "",
     "If you have already typed a command and part of a nickname when you hit",
     "TAB, it will attempt to complete the nickname from the list in your ",
-    "history.  If you have already typed a command, a nickname, and more text on the",
-    "line, then pressing TAB will cause the nickname to cycle through your history",
+    "history.  If you have already typed a command, a nickname, and more text "
+    "on the",
+    "line, then pressing TAB will cause the nickname to cycle through your "
+    "history",
     "without affecting the rest of your command line.",
     "",
     "You may selectively delete nicknames from your history with the \"hdel\"",
-    "command, or you may use the \"hclear\" to completely clear out this history list",
+    "command, or you may use the \"hclear\" to completely clear out this "
+    "history list",
     "and start over.",
     "",
-    "If you set the value of the \"autodel\" variable to \"true\", then any nickname",
-    "that generates a \"not signed on\" error message will be automatically removed",
+    "If you set the value of the \"autodel\" variable to \"true\", then any "
+    "nickname",
+    "that generates a \"not signed on\" error message will be automatically "
+    "removed",
     "from your history .",
     "",
     "",
@@ -182,8 +186,10 @@ char *ht_input[] = {
     "",
     "All lines starting with the command character are assumed to be commands.",
     "If you wish to send a line of text starting with the command character,",
-    "type it double at the beginning of the line.   The default command character",
-    "is '/'; you may change it by changing the value of the 'commandchar' variable.",
+    "type it double at the beginning of the line.   The default command "
+    "character",
+    "is '/'; you may change it by changing the value of the 'commandchar' "
+    "variable.",
     "",
     "",
     "TCL QUOTING",
@@ -195,8 +201,7 @@ char *ht_input[] = {
     "wish the line to be unquoted, use the \"tcl\" command, giving the line",
     "you want unquoted as the argument. Tcl will operate on the rest of the",
     "line at full functionality.",
-    NULL
-};
+    NULL};
 
 char *ht_intro[] = {
     "Welcome to ICB!",
@@ -263,8 +268,7 @@ char *ht_intro[] = {
     "",
     "Mark J. Reed",
     "<mark@cad.gatech.edu>",
-    NULL
-};
+    NULL};
 
 char *ht_options[] = {
     "Runtime options for icb (these may be abbreviated):",
@@ -300,8 +304,7 @@ char *ht_options[] = {
     "",
     "    SHELL       Shell to use for shellouts. If unspecified then /bin/sh",
     "                is assumed.",
-    NULL
-};
+    NULL};
 
 char *ht_primitives[] = {
     "ICB provides a set of primitives for building your own commands. Most",
@@ -309,22 +312,26 @@ char *ht_primitives[] = {
     "primitives, which are C functions.",
     "",
     "The primitives are divided into two categories. The first one is client",
-    "functions performed internally. Most of these start with \"c_\", except for",
+    "functions performed internally. Most of these start with \"c_\", except "
+    "for",
     "\"fset\" and \"tcl\". The second category is functions that request some",
     "action of the server, these start with \"s_\".",
     "",
     "fset    [variable [value]]",
     "",
-    "    This sets and displays icb customization variables. Without a variable",
+    "    This sets and displays icb customization variables. Without a "
+    "variable",
     "    name, it displays all the variables on the users screen. With just",
-    "    a variable name, it prints out only that variable name. With a variable",
+    "    a variable name, it prints out only that variable name. With a "
+    "variable",
     "    name and a value, the variable is set to that value. See the help",
     "    section on variables.",
     "",
     "tcl     [tcl command]",
     "",
     "    When inputting text from the terminal, this flags the beginning of a",
-    "    tcl command that is not to be specially quoted. To avoid nasty surprises,",
+    "    tcl command that is not to be specially quoted. To avoid nasty "
+    "surprises,",
     "    text handed to tcl is normally quoted to remove the meaning of tcl",
     "    special characters. This allows input without that quoting, thus",
     "    giving tcl full power to do it's thing.",
@@ -335,7 +342,8 @@ char *ht_primitives[] = {
     "",
     "c_help  [subject]",
     "",
-    "    Display the help menu. If subject is given, display the help file for that",
+    "    Display the help menu. If subject is given, display the help file for "
+    "that",
     "    subject.",
     "",
     "c_quit",
@@ -353,7 +361,8 @@ char *ht_primitives[] = {
     "",
     "c_shell [command]",
     "",
-    "    Start up a shell or run a command under a subshell. If the SHELL environment",
+    "    Start up a shell or run a command under a subshell. If the SHELL "
+    "environment",
     "    variable is set, that shell is used.",
     "",
     "c_color [color] [fg] [bg]",
@@ -369,7 +378,8 @@ char *ht_primitives[] = {
     "",
     "        add name type args usage...",
     "            Add a usage line. Name is the command name. Type is \"g\" for",
-    "            general commands, \"l\" for listing commands, \"m\" for moderator",
+    "            general commands, \"l\" for listing commands, \"m\" for "
+    "moderator",
     "            commands, \"a\" is for admin commands, and \"c\" is for user",
     "            defined custom commands.",
     "",
@@ -377,7 +387,8 @@ char *ht_primitives[] = {
     "            Delete a usage line (not currently implemented).",
     "",
     "        list",
-    "            List all the usage lines. The \"commands\" command calls this.",
+    "            List all the usage lines. The \"commands\" command calls "
+    "this.",
     "",
     "s_beep  nick",
     "",
@@ -414,8 +425,7 @@ char *ht_primitives[] = {
     "    Print a list of users in either short or long format. If group is",
     "    given, only the users in that group are listed. Short and long are",
     "    not yet implemented. Use \"long\".",
-    NULL
-};
+    NULL};
 
 char *ht_rules[] = {
     "In general, ICB is a \"free speech\" system. Users are encouraged to",
@@ -444,7 +454,8 @@ char *ht_rules[] = {
     "        to see any ICB messages that they would not normally be",
     "        permitted to see. Please don't mess it up for others.",
     "",
-    "What is \"lewd\" or \"offensive\" is up to the ICB server administrator. If",
+    "What is \"lewd\" or \"offensive\" is up to the ICB server administrator. "
+    "If",
     "you have doubts, don't use it. Harassment is also largely a matter of",
     "opinion.",
     "",
@@ -454,9 +465,9 @@ char *ht_rules[] = {
     "locked out. ",
     "",
     "If you find someone violating the rules, please contact the ICB",
-    "server administrator. The address is available with the \"version\" command.",
-    NULL
-};
+    "server administrator. The address is available with the \"version\" "
+    "command.",
+    NULL};
 
 char *ht_tcl[] = {
     "Tcl, pronounced \"tickle\", stands for \"Tool Command Language\". It is",
@@ -476,11 +487,11 @@ char *ht_tcl[] = {
     "",
     "See the help topic for info on the fnrc file, which has some sample",
     "uses of Tcl.",
-    NULL
-};
+    NULL};
 
 char *ht_variables[] = {
-    "ICB has several variables you can set to customize the way icb works. This",
+    "ICB has several variables you can set to customize the way icb works. "
+    "This",
     "is done using the \"oset\" command. There are three ways to use the oset",
     "command:",
     "",
@@ -490,8 +501,10 @@ char *ht_variables[] = {
     "ounset var	Unset a variable.",
     "",
     "The variables and their effect are listed below. Boolean (bool) fields",
-    "are either \"true\" or \"false\". Setting them to \"true\", \"on\", \"yes\" \"y\",",
-    "or \"1\", sets them to true. Setting them to \"false\", \"off\", \"no\" \"n\",",
+    "are either \"true\" or \"false\". Setting them to \"true\", \"on\", "
+    "\"yes\" \"y\",",
+    "or \"1\", sets them to true. Setting them to \"false\", \"off\", \"no\" "
+    "\"n\",",
     "or \"0\", sets them to false. \"Nneg\" fields are nonnegative integers.",
     "A \"char\" field will use the first character only of an argument.",
     "",
@@ -499,20 +512,23 @@ char *ht_variables[] = {
     "",
     "autodel		(boolean)		default: false",
     "",
-    "    If true, whenever you receive an error from the server indicating that",
+    "    If true, whenever you receive an error from the server indicating "
+    "that",
     "    a nickname is not signed on, that nickname will be deleted from your",
     "    \"tab\" history.",
     "",
     "autoreg		(boolean)		default: false",
     "",
     "   If true, whenever the server sends a message indicating that you must",
-    "   send your password to register your nickname, the client will prompt you",
+    "   send your password to register your nickname, the client will prompt "
+    "you",
     "   for your password and send it to the server.",
     "",
     "asyncread		(boolean)		default: false",
     "",
     "    When false, messages will be paused while you type."
-        "    When true, you will receive messages even while typing." "",
+    "    When true, you will receive messages even while typing."
+    "",
     "beeps           (boolean)               default: true",
     "",
     "    If true, a received beep will make your terminal beep (with a ^G).",
@@ -542,8 +558,10 @@ char *ht_variables[] = {
     "",
     "editmode	(string)		default: ${EDITOR:-vi}",
     "",
-    "    This variable may be set to either \"vi\", for vi-style input editing,",
-    "    or \"emacs\", for emacs-style input editing.  The default is determined",
+    "    This variable may be set to either \"vi\", for vi-style input "
+    "editing,",
+    "    or \"emacs\", for emacs-style input editing.  The default is "
+    "determined",
     "    from the environment variable EDITOR.  If EDITOR is not set, the",
     "    default is vi.",
     "",
@@ -564,8 +582,10 @@ char *ht_variables[] = {
     "logreplay	(boolean)		default: false",
     "",
     "   If true, then the output of the /replay or /display command will go",
-    "   into the logfile, if logging is active.  The value of this variable may",
-    "   be overridden for a single replay command by specifying -log or -nolog.",
+    "   into the logfile, if logging is active.  The value of this variable "
+    "may",
+    "   be overridden for a single replay command by specifying -log or "
+    "-nolog.",
     "",
     "pagesize        (integer)               default: -1)",
     "",
@@ -583,7 +603,8 @@ char *ht_variables[] = {
     "",
     "    If this is a nonempty string, then any text typed that is not a ",
     "    command will be sent as a personal message to the nickname contained",
-    "    in this variable.  /ounset will set this variable to the empty string,",
+    "    in this variable.  /ounset will set this variable to the empty "
+    "string,",
     "    so that non-command text will go out as a public message to your",
     "    group.",
     " ",
@@ -607,7 +628,7 @@ char *ht_variables[] = {
     "tabreply	(boolean)		default: false",
     "",
     "    If false, only people you /m will be added to the <tab> history."
-        "    If true, people who sent you personal messages will be added too.",
+    "    If true, people who sent you personal messages will be added too.",
     "",
     "timedisplay     (string)                default: \"normal\"",
     "",
@@ -620,18 +641,8 @@ char *ht_variables[] = {
     "verifyquit      (boolean)               default: false",
     "",
     "    If this is true, you are asked to verify anytime you quit icb.",
-    NULL
-};
+    NULL};
 
-char **helptexts[] = {
-    ht_groups,
-    ht_hush,
-    ht_input,
-    ht_intro,
-    ht_options,
-    ht_primitives,
-    ht_rules,
-    ht_tcl,
-    ht_variables,
-    NULL
-};
+char **helptexts[] = {ht_groups,    ht_hush,       ht_input, ht_intro,
+                      ht_options,   ht_primitives, ht_rules, ht_tcl,
+                      ht_variables, NULL};

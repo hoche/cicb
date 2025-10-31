@@ -7,9 +7,7 @@
 #include <limits.h>
 #include <pwd.h>
 
-void
-getwinsize()
-{
+void getwinsize() {
     /* Non-negative numbers are fixed sizes. */
 
     if (0 <= gv.pagesize && 0 <= gv.pagewidth) {
@@ -46,15 +44,12 @@ getwinsize()
     if (gv.pagewidth < 0) {
         gv.pagewidth = 80;
     }
-
 }
 
 /* get a user's login id */
 /* returns pointer to ID on success, 0 on failure */
 
-char *
-getloginid()
-{
+char *getloginid() {
     char *loginid;
     struct passwd *pw;
 
@@ -67,9 +62,7 @@ getloginid()
     return (loginid);
 }
 
-char *
-tildexpand(char *s)
-{
+char *tildexpand(char *s) {
     struct passwd *pw;
     char login[17];
     char *p = login;
@@ -81,7 +74,8 @@ tildexpand(char *s)
 
     /* skim off the login id */
     while (((*s >= 'A' && *s <= 'Z') || (*s >= 'a' && *s <= 'z') ||
-            strchr(".-_", *s)) && ((p - login) < 17))
+            strchr(".-_", *s)) &&
+           ((p - login) < 17))
         *p++ = *s++;
 
     /* terminate string */
@@ -93,19 +87,17 @@ tildexpand(char *s)
 
     /* Safely build path with bounds checking */
     if (strlen(pw->pw_dir) >= sizeof(path)) {
-        return (NULL);  /* Directory path too long */
+        return (NULL); /* Directory path too long */
     }
     safe_strncpy(path, pw->pw_dir, sizeof(path));
     if (safe_strncat(path, s, sizeof(path)) != 0) {
-        return (NULL);  /* Final path would be too long */
+        return (NULL); /* Final path would be too long */
     }
 
     return (path);
 }
 
-void
-clearargs(int argc, char *argv[])
-{
+void clearargs(int argc, char *argv[]) {
     int x;
     char *cp;
     for (x = 1; x <= argc - 1; x++) {

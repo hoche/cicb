@@ -6,9 +6,7 @@ extern char *helpkeys[], *helptopics[], **helptexts[];
 
 /* list the table of contents for help */
 
-static void
-helptoc()
-{
+static void helptoc() {
     int x;
 
     putl("[=Help table of contents=]", PL_SL);
@@ -22,8 +20,8 @@ helptoc()
     }
 
     putl("", PL_SL);
-    sprintf(mbuf,
-            "To get help on a particular subject: %chelp subject", gv.cmdchar);
+    sprintf(mbuf, "To get help on a particular subject: %chelp subject",
+            gv.cmdchar);
     putl(mbuf, PL_SL);
     sprintf(mbuf, "To get a list of commands: %ccommands", gv.cmdchar);
     putl(mbuf, PL_SL);
@@ -34,15 +32,13 @@ helptoc()
 /* get help on a particular subject */
 /* returns 0 upon success */
 /* returns -1 if no help for given subject */
-int
-helpme(char *subject)
-{
+int helpme(char *subject) {
     int x;
     char **text;
 
     for (x = 0; helpkeys[x] != 0; x++)
-        if (strcasecmp(subject, (char *)helpkeys[x]) == 0) {
-            text = (char **)helptexts[x];
+        if (strcasecmp(subject, (char *) helpkeys[x]) == 0) {
+            text = (char **) helptexts[x];
             sprintf(mbuf, "[=Help for %s=]", subject);
             putl(mbuf, PL_SL);
             putl("", PL_SL);
@@ -55,12 +51,10 @@ helpme(char *subject)
     return (-1);
 }
 
-int
-c_help(ARGV_TCL)
-{
+int c_help(ARGV_TCL) {
     static char *usage = "usage: c_help [subject]";
 
-    if (argc == 1 || !*argv[1]) {
+    if (argc == 1 || ! *argv[1]) {
         helptoc();
         return (TCL_OK);
     } else if (argc == 2) {

@@ -5,12 +5,10 @@
 
 #include "icb.h"
 
-int
-s_open(ARGV_TCL)
-{
+int s_open(ARGV_TCL) {
     static char *usage = "usage: s_open text ...";
 
-    if (argc < 2 || !argv[1][0])
+    if (argc < 2 || ! argv[1][0])
         TRETURNERR(usage);
 
     csendopen(catargs(&argv[1]));

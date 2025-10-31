@@ -13,9 +13,7 @@ static char *tclvar_icb_sys_datadir = ICB_SYS_DATADIR;
   Sends a command to the icb server.
 */
 
-static int
-tclproc_icb_send_command(ARGV_TCL)
-{
+static int tclproc_icb_send_command(ARGV_TCL) {
     if (argc != 3) {
         RETURN_ERR_ARGC("COMMAND ARGSTRING");
     }
@@ -27,9 +25,7 @@ tclproc_icb_send_command(ARGV_TCL)
   Run the tcl script in STRING.  NAME is used when printing errors.
 */
 
-static void
-tcl_eval_string(char *string, char *name)
-{
+static void tcl_eval_string(char *string, char *name) {
     if (Tcl_Eval(interp, string) != TCL_OK) {
         printf("%s failed:\n", name);
         printf("%s\n", Tcl_GetVar(interp, "errorInfo", 0));
@@ -42,7 +38,7 @@ tcl_eval_string(char *string, char *name)
 
 typedef struct {
     char *tc_name;
-    int (*tc_func) (ARGV_TCL);
+    int (*tc_func)(ARGV_TCL);
 } tcl_command_t;
 
 static tcl_command_t tcl_commands[] = {
@@ -89,9 +85,7 @@ static char *tcl_init_string =
 
 /* Initialize TCL interpreter. Returns 0 on success, -1 on failure.
    On failure, interp remains NULL and program continues without TCL. */
-int
-tcl_init()
-{
+int tcl_init() {
     tcl_command_t *tc;
 
     interp = Tcl_CreateInterp();
@@ -110,22 +104,22 @@ tcl_init()
                           NULL, NULL);
     }
 
-    Tcl_LinkVar(interp, "personalhilite", (char *)&personalhilite,
+    Tcl_LinkVar(interp, "personalhilite", (char *) &personalhilite,
                 TCL_LINK_STRING);
 
-    Tcl_LinkVar(interp, "myServer", (char *)&myserver,
+    Tcl_LinkVar(interp, "myServer", (char *) &myserver,
                 TCL_LINK_STRING | TCL_LINK_READ_ONLY);
 
-    Tcl_LinkVar(interp, "myGroup", (char *)&mygroup,
+    Tcl_LinkVar(interp, "myGroup", (char *) &mygroup,
                 TCL_LINK_STRING | TCL_LINK_READ_ONLY);
 
-    Tcl_LinkVar(interp, "myNick", (char *)&mynick,
+    Tcl_LinkVar(interp, "myNick", (char *) &mynick,
                 TCL_LINK_STRING | TCL_LINK_READ_ONLY);
 
-    Tcl_LinkVar(interp, "myHost", (char *)&myhost,
+    Tcl_LinkVar(interp, "myHost", (char *) &myhost,
                 TCL_LINK_STRING | TCL_LINK_READ_ONLY);
 
-    Tcl_LinkVar(interp, "icb_sys_datadir", (char *)&tclvar_icb_sys_datadir,
+    Tcl_LinkVar(interp, "icb_sys_datadir", (char *) &tclvar_icb_sys_datadir,
                 TCL_LINK_STRING | TCL_LINK_READ_ONLY);
 
     tcl_eval_string(tcl_init_string, "builtin tcl_init script");
@@ -141,17 +135,13 @@ static char *tcl_connected_string =
 #include "tcl_connected.string"
     ;
 
-void
-tcl_connected(void)
-{
+void tcl_connected(void) {
     if (interp != NULL) {
         tcl_eval_string(tcl_connected_string, "builtin tcl_connected script");
     }
 }
 
-void
-tcl_restrict()
-{
+void tcl_restrict() {
     if (interp != NULL) {
         /* delete commands that might shellout or read or write files */
         Tcl_DeleteCommand(interp, "exec");

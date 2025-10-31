@@ -2,17 +2,15 @@
 
 /* primitive to send a personal message */
 
-#include "icb.h"
 #include "getswitch.h"
+#include "icb.h"
 
 extern int _rl_last_command_was_kill;
 
-int
-s_personal(ARGV_TCL)
-{
+int s_personal(ARGV_TCL) {
     static char *usage =
         "usage: s_personal [-permanent|-clear] nick message ...";
-    static char *switches[] = { "permanent", "clear", NULL };
+    static char *switches[] = {"permanent", "clear", NULL};
     static char *personalto = NULL;
     char nick[MAX_NICKLEN + 1];
     int permanent = 0;
@@ -25,16 +23,16 @@ s_personal(ARGV_TCL)
         switch (sw[0]) {
         case 'p':
             if (clearflag) {
-                TRETURNERR
-                    ("Only one of -permanent or -clear may be specified.");
+                TRETURNERR(
+                    "Only one of -permanent or -clear may be specified.");
             }
             permanent = 1;
             break;
 
         case 'c':
             if (permanent) {
-                TRETURNERR
-                    ("Only one of -permanent or -clear may be specified.");
+                TRETURNERR(
+                    "Only one of -permanent or -clear may be specified.");
             }
             clearflag = 1;
             break;
@@ -42,14 +40,14 @@ s_personal(ARGV_TCL)
     }
 
     /* check the arg count */
-    if ((argc - switchind + 1 < 2) && (!clearflag)) {
+    if ((argc - switchind + 1 < 2) && (! clearflag)) {
         TRETURNERR(usage);
     }
 
     if (permanent) {
         if (personalto)
             free(personalto);
-        personalto = (char *)malloc(strlen(argv[switchind]) + 1);
+        personalto = (char *) malloc(strlen(argv[switchind]) + 1);
         strcpy(personalto, argv[switchind]);
         gv.personalto = personalto;
         if (argc - switchind + 1 == 2)
@@ -62,7 +60,7 @@ s_personal(ARGV_TCL)
             return TCL_OK;
     }
 
-    if (!argv[switchind])
+    if (! argv[switchind])
         return TCL_ERROR;
 
     safe_strncpy(nick, argv[switchind], sizeof(nick));
@@ -70,9 +68,7 @@ s_personal(ARGV_TCL)
     return (TCL_OK);
 }
 
-void
-sendpersonal(char *nick, char *text, int echoflag)
-{
+void sendpersonal(char *nick, char *text, int echoflag) {
     char *buf;
     int pl_flags;
 
@@ -89,10 +85,10 @@ sendpersonal(char *nick, char *text, int echoflag)
         pl_flags = PL_BUF | PL_SCR | PL_TS;
     }
 
-    if (!nick)
+    if (! nick)
         return;
 
-    if (!text || !*text) {
+    if (! text || ! *text) {
         /* This used to prompt for a line then send it.  Disable
            until I resolve an issue with getline().  Eventually
            I want to make this do a private-send mode. */
@@ -101,10 +97,9 @@ sendpersonal(char *nick, char *text, int echoflag)
 
     histput(nick);
 
-    buf = (char *)malloc(strlen(nick) + strlen(text) + 5);
-    if (!buf) {
-        sprintf(mbuf,
-                "%s[=Error=] No memory to build packet%s",
+    buf = (char *) malloc(strlen(nick) + strlen(text) + 5);
+    if (! buf) {
+        sprintf(mbuf, "%s[=Error=] No memory to build packet%s",
                 printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
         putl(mbuf, PL_SCR | PL_TS);
         return;

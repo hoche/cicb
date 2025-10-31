@@ -4,13 +4,11 @@
 
 #include "icb.h"
 
-int
-s_beep(ARGV_TCL)
-{
+int s_beep(ARGV_TCL) {
     static char *usage = "usage: s_beep nick";
 
     /* check the arg count */
-    if (argc != 2 || !*argv[1])
+    if (argc != 2 || ! *argv[1])
         TRETURNERR(usage);
 
     sendcmd("beep", argv[1]);

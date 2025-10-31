@@ -16,9 +16,7 @@ extern FILE *logfp;
  *     PL_BUF    write to the review buffer
  */
 
-void
-putl(char *s, int flags)
-{
+void putl(char *s, int flags) {
     char printbuf[128];
     char *timestamp = NULL;
     int pagesize = 0;
@@ -48,9 +46,7 @@ putl(char *s, int flags)
             pagesize = -gv.pagesize;
 
         if (pagesize > 0 && (++linenumber >= (pagesize - 1))) {
-            sprintf(printbuf,
-                    "%s[=More=]%s",
-                    printcolor(ColMORE, ColNOTICE),
+            sprintf(printbuf, "%s[=More=]%s", printcolor(ColMORE, ColNOTICE),
                     printcolor(ColSANE, ColSANE));
             /*COLOR*/ pauseprompt(printbuf, 1, 0, 1, " ");
             linenumber = 0;

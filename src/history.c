@@ -4,23 +4,21 @@
 
 /* message history routines */
 
-static STRLIST *histhead = (STRLIST *) 0;   /* head of history list */
-static STRLIST *histtail = (STRLIST *) 0;   /* tail of history list */
+static STRLIST *histhead = (STRLIST *) 0; /* head of history list */
+static STRLIST *histtail = (STRLIST *) 0; /* tail of history list */
 
-static int histnum = 0;         /* current number of history entries */
+static int histnum = 0;             /* current number of history entries */
 static STRLIST *hp = (STRLIST *) 0; /* user current location in history list */
 
 /* add a username to the list */
 /* called whenever a user sends a personal message to another */
 
-void
-histput(char *nick)
-{
+void histput(char *nick) {
     STRLIST *sp;
 
     /* hunt for user within list */
     for (sp = histhead; sp; sp = sp->next)
-        if (!strcasecmp(nick, sp->str)) {
+        if (! strcasecmp(nick, sp->str)) {
             /* found user -- put at head of list */
             strunlink(sp, &histhead, &histtail);
             strlinkhead(sp, &histhead, &histtail);
@@ -44,8 +42,7 @@ histput(char *nick)
         strunlink(sp, &histhead, &histtail);
         free(sp);
         histnum--;
-        if ((sp = (STRLIST *)
-             malloc(sizeof(STRLIST) + strlen(nick))) == NULL) {
+        if ((sp = (STRLIST *) malloc(sizeof(STRLIST) + strlen(nick))) == NULL) {
             putl("histput: out of memory for history entries", PL_SCR);
             return;
         }
@@ -59,9 +56,7 @@ histput(char *nick)
 /* return a history entry */
 /* repeatedly called, will cycle through history entries */
 
-char *
-histget()
-{
+char *histget() {
     STRLIST *p;
 
     if (hp == 0)
@@ -78,20 +73,14 @@ histget()
 
 /* return number of names in current history list */
 
-int
-histcount()
-{
-    return (histnum);
-}
+int histcount() { return (histnum); }
 
 /* delete a selected name from history list */
-void
-histdel(char *name)
-{
+void histdel(char *name) {
     STRLIST *p;
 
     for (p = histhead; p; p = p->next) {
-        if (!strcasecmp(name, p->str)) {
+        if (! strcasecmp(name, p->str)) {
             if (hp == p)
                 hp = p->next;
             strunlink(p, &histhead, &histtail);
@@ -102,9 +91,7 @@ histdel(char *name)
     }
 }
 
-void
-histclear(void)
-{
+void histclear(void) {
     STRLIST *tmp, *p = hp;
 
     while (p) {
@@ -124,9 +111,7 @@ histclear(void)
  * if no match is found, return NULL
  */
 
-char *
-histmatch(char *prefix)
-{
+char *histmatch(char *prefix) {
     static char buf[MAX_NICKLEN];
 
     STRLIST *p;
@@ -138,7 +123,7 @@ histmatch(char *prefix)
 
     for (p = histhead; p != NULL; p = p->next) {
         if (strncasecmp(prefix, p->str, len) == 0) {
-            if (!first_match) {
+            if (! first_match) {
                 first_match = p;
                 safe_strncpy(buf, p->str, sizeof(buf));
                 match = buf;

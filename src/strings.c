@@ -7,19 +7,17 @@
 
 extern char *charmap;
 
-#define OKGROUPCHARS	"-.!'$+,/?_"
-#define OKNICKCHARS	"-.!'$+,/?_"
+#define OKGROUPCHARS "-.!'$+,/?_"
+#define OKNICKCHARS "-.!'$+,/?_"
 
 /* replace illegal characters in a nickname */
 
-void
-filternickname(char *txt)
-{
+void filternickname(char *txt) {
     for (; *txt != '\0'; txt++) {
-        if ((*txt >= 'A' && *txt <= 'Z') ||
-            (*txt >= 'a' && *txt <= 'z') || (*txt >= '0' && *txt <= '9'))
+        if ((*txt >= 'A' && *txt <= 'Z') || (*txt >= 'a' && *txt <= 'z') ||
+            (*txt >= '0' && *txt <= '9'))
             continue;
-        if (!strchr(OKNICKCHARS, *txt)) {
+        if (! strchr(OKNICKCHARS, *txt)) {
             if (*txt == ' ')
                 *txt = '_';
             else
@@ -30,24 +28,20 @@ filternickname(char *txt)
 
 /* replace illegal characters in a regular line of text */
 
-void
-filtertext(char *s)
-{
+void filtertext(char *s) {
     for (; *s != '\0'; s++)
-        if (!(*s >= ' ' && *s < '\177'))
+        if (! (*s >= ' ' && *s < '\177'))
             *s = '_';
 }
 
 /* replace illegal characters from a groupname */
 
-void
-filtergroupname(char *txt)
-{
+void filtergroupname(char *txt) {
     for (; *txt != '\0'; txt++) {
-        if ((*txt >= 'A' && *txt <= 'Z') ||
-            (*txt >= 'a' && *txt <= 'z') || (*txt >= '0' && *txt <= '9'))
+        if ((*txt >= 'A' && *txt <= 'Z') || (*txt >= 'a' && *txt <= 'z') ||
+            (*txt >= '0' && *txt <= '9'))
             continue;
-        if (!strchr(OKGROUPCHARS, *txt)) {
+        if (! strchr(OKGROUPCHARS, *txt)) {
             if (*txt == ' ')
                 *txt = '_';
             else
@@ -61,24 +55,22 @@ filtergroupname(char *txt)
  * always null-terminating the result.
  * Returns 0 on success, -1 if truncation occurred.
  */
-int
-safe_strncpy(char *dest, const char *src, size_t dest_size)
-{
+int safe_strncpy(char *dest, const char *src, size_t dest_size) {
     if (dest == NULL || src == NULL || dest_size == 0) {
         return -1;
     }
-    
+
     if (dest_size == 1) {
         dest[0] = '\0';
         return (*src != '\0') ? -1 : 0;
     }
-    
+
     size_t src_len = strlen(src);
     size_t copy_len = (src_len < dest_size - 1) ? src_len : (dest_size - 1);
-    
+
     memcpy(dest, src, copy_len);
     dest[copy_len] = '\0';
-    
+
     return (src_len >= dest_size) ? -1 : 0;
 }
 
@@ -87,25 +79,23 @@ safe_strncpy(char *dest, const char *src, size_t dest_size)
  * always null-terminating the result.
  * Returns 0 on success, -1 if truncation occurred.
  */
-int
-safe_strncat(char *dest, const char *src, size_t dest_size)
-{
+int safe_strncat(char *dest, const char *src, size_t dest_size) {
     if (dest == NULL || src == NULL || dest_size == 0) {
         return -1;
     }
-    
+
     size_t dest_len = strlen(dest);
     if (dest_len >= dest_size) {
-        return -1;  /* Already at or past buffer size */
+        return -1; /* Already at or past buffer size */
     }
-    
+
     size_t available = dest_size - dest_len - 1;
     size_t src_len = strlen(src);
     size_t copy_len = (src_len < available) ? src_len : available;
-    
+
     memcpy(dest + dest_len, src, copy_len);
     dest[dest_len + copy_len] = '\0';
-    
+
     return (src_len > available) ? -1 : 0;
 }
 
@@ -115,9 +105,7 @@ safe_strncat(char *dest, const char *src, size_t dest_size)
  * On success, *result contains the parsed integer.
  * Validates that entire string is consumed and value is in int range.
  */
-int
-safe_atoi(const char *str, int *result)
-{
+int safe_atoi(const char *str, int *result) {
     char *endptr;
     long val;
 
@@ -135,7 +123,7 @@ safe_atoi(const char *str, int *result)
     }
 
     /* Check if entire string was consumed (allow trailing whitespace) */
-    while (*endptr != '\0' && isspace((unsigned char)*endptr)) {
+    while (*endptr != '\0' && isspace((unsigned char) *endptr)) {
         endptr++;
     }
     if (*endptr != '\0') {
@@ -153,16 +141,14 @@ safe_atoi(const char *str, int *result)
         return -1;
     }
 
-    *result = (int)val;
+    *result = (int) val;
     return 0;
 }
 
 /* return 1 if a string is a number */
 /* else return 0 */
 
-char *
-findspace(char *s)
-{
+char *findspace(char *s) {
     /* find EOS or whitespace */
     while (*s != '\0' && *s != ' ' && *s != '\t')
         s++;
@@ -178,9 +164,7 @@ findspace(char *s)
 }
 
 /* convert a string to lower case */
-void
-lcaseit(char *s)
-{
+void lcaseit(char *s) {
     for (; *s; s++)
         if (*s >= 'A' && *s <= 'Z')
             *s |= 040;
@@ -193,9 +177,7 @@ lcaseit(char *s)
 char *special = "{}[]\";$\\";
 
 /* Safe version with bounds checking */
-void
-quoteify(char *a, char *b)
-{
+void quoteify(char *a, char *b) {
     /* Legacy call - assume buffer is large enough */
     /* For new code, use quoteify_safe() with explicit size */
     if (a == NULL || b == NULL) {
@@ -203,7 +185,7 @@ quoteify(char *a, char *b)
             b[0] = '\0';
         return;
     }
-    
+
     while (*a != '\0') {
         if (strchr(special, *a)) {
             *b++ = '\\';
@@ -216,17 +198,15 @@ quoteify(char *a, char *b)
 }
 
 /* Safe version with bounds checking */
-void
-quoteify_safe(char *a, char *b, size_t b_size)
-{
+void quoteify_safe(char *a, char *b, size_t b_size) {
     if (a == NULL || b == NULL || b_size == 0) {
         if (b && b_size > 0)
             b[0] = '\0';
         return;
     }
-    
-    size_t remaining = b_size - 1;  /* Reserve space for null terminator */
-    
+
+    size_t remaining = b_size - 1; /* Reserve space for null terminator */
+
     while (*a != '\0' && remaining > 0) {
         if (strchr(special, *a)) {
             if (remaining < 2) {
@@ -247,9 +227,7 @@ quoteify_safe(char *a, char *b, size_t b_size)
 
 static char *catargsbuf = NULL;
 
-char *
-catargs(char **argv)
-{
+char *catargs(char **argv) {
     char *s, **ap, *p;
     int len = 0;
 
@@ -260,7 +238,7 @@ catargs(char **argv)
     if (catargsbuf)
         free(catargsbuf);
 
-    if ((catargsbuf = (char *)malloc(len + 1)) == NULL) {
+    if ((catargsbuf = (char *) malloc(len + 1)) == NULL) {
         fprintf(stderr, "Out of memory in catargs().\n");
         icbexit();
     }
@@ -288,14 +266,11 @@ catargs(char **argv)
  * from is the nick from which the message came
  * s is the message itself, NULL terminated
  */
-void
-mbreakprint(int per, char *from, char *s)
-{
+void mbreakprint(int per, char *from, char *s) {
     int width;
     int padlen;
     char **pieces;
     char **p;
-
 
     if (per) {
         padlen = 2 + 3; /* pad nick with "<*" and "*> " */
@@ -330,52 +305,42 @@ mbreakprint(int per, char *from, char *s)
     msplit_free(pieces);
 }
 
-void
-mprint(int per, char *from, char *s)
-{
+void mprint(int per, char *from, char *s) {
 
-/*	In here, we want to test for the existance of from in the tcl
+    /*	In here, we want to test for the existance of from in the tcl
  *	variable personalhilite, and if they exist, printcolor(ColPERSHILITE)
  *	instead.   This means, we should probably have this variable linked
  *	at all times. 
  */
 
     if (per)
-        if ((personalhilite != NULL) &&
-            (strlen((char *)personalhilite)) &&
-            (strcasestr((const char *)personalhilite, (const char *)from)))
+        if ((personalhilite != NULL) && (strlen((char *) personalhilite)) &&
+            (strcasestr((const char *) personalhilite, (const char *) from)))
             sprintf(mbuf, "%s<*%s%s%s*>%s %s%s%s",
                     printcolor(ColPERSFROMHILITE, ColPERSFROM),
-                    printcolor(ColPERSFROMHILITE, ColPERSFROM),
-                    from,
+                    printcolor(ColPERSFROMHILITE, ColPERSFROM), from,
                     printcolor(ColPERSFROMHILITE, ColPERSFROM),
                     printcolor(ColSANE, ColSANE),
-                    printcolor(ColPERSHILITE, ColPERSONAL),
-                    s, printcolor(ColSANE, ColSANE));
+                    printcolor(ColPERSHILITE, ColPERSONAL), s,
+                    printcolor(ColSANE, ColSANE));
         else
             sprintf(mbuf, "%s<*%s%s%s*>%s %s%s%s",
                     printcolor(ColPBRKT, ColPERSFROM),
-                    printcolor(ColPERSFROM, ColPERSFROM),
-                    from,
+                    printcolor(ColPERSFROM, ColPERSFROM), from,
                     printcolor(ColPBRKT, ColPERSFROM),
                     printcolor(ColSANE, ColSANE),
-                    printcolor(ColPERSONAL, ColPERSONAL),
-                    s, printcolor(ColSANE, ColSANE));
+                    printcolor(ColPERSONAL, ColPERSONAL), s,
+                    printcolor(ColSANE, ColSANE));
     else
-        sprintf(mbuf, "%s<%s%s%s>%s %s%s%s",
-                printcolor(ColABRKT, ColNICKNAME),
-                printcolor(ColNICKNAME, ColNICKNAME),
-                from,
-                printcolor(ColABRKT, ColNICKNAME),
-                printcolor(ColSANE, ColSANE),
-                printcolor(ColNORMAL, ColNORMAL),
-                s, printcolor(ColSANE, ColSANE));
+        sprintf(mbuf, "%s<%s%s%s>%s %s%s%s", printcolor(ColABRKT, ColNICKNAME),
+                printcolor(ColNICKNAME, ColNICKNAME), from,
+                printcolor(ColABRKT, ColNICKNAME), printcolor(ColSANE, ColSANE),
+                printcolor(ColNORMAL, ColNORMAL), s,
+                printcolor(ColSANE, ColSANE));
     putl(mbuf, PL_ALL);
 }
 
-int
-wordcmp(char *s1, char *s2)
-{
+int wordcmp(char *s1, char *s2) {
     while (*s1 == *s2++)
         if (*s1 == '\0' || *s1 == ' ' || *s1++ == '\t')
             return (0);
@@ -384,9 +349,7 @@ wordcmp(char *s1, char *s2)
     return (*s1 - *--s2);
 }
 
-char *
-getword(char *s)
-{
+char *getword(char *s) {
     static char word[64];
     char *w = word;
     while (*s != ' ' && *s != '\t' && *s != '\0' && ((w - word) < 64))
@@ -400,9 +363,7 @@ getword(char *s)
 
 char *fields[MAX_FIELDS];
 
-int
-split(char *s)
-{
+int split(char *s) {
     char *p = s;
     int i = 0;
 
@@ -427,9 +388,7 @@ split(char *s)
 /* malloc a new string copy of the N chars starting at S,
    possibly adding a '-' if HYPHEN is nonzero */
 
-static char *
-msplit_dup(char *s, int n, int hyphen)
-{
+static char *msplit_dup(char *s, int n, int hyphen) {
     char *dup = malloc(n + (hyphen != 0) + 1);
     if (dup != NULL) {
         memcpy(dup, s, n);
@@ -458,9 +417,7 @@ msplit_dup(char *s, int n, int hyphen)
  *     if there's no convenient space, force a split at the hard point.
  */
 
-static int
-msplit_internal(char *string, int soft, int hard, char **frags)
-{
+static int msplit_internal(char *string, int soft, int hard, char **frags) {
     int n_frags;
     int string_len;
 
@@ -479,7 +436,7 @@ msplit_internal(char *string, int soft, int hard, char **frags)
             char *p = string + soft;
 
             /* find last space prior to our current position */
-            while (string < p && !isspace(*p)) {
+            while (string < p && ! isspace(*p)) {
                 --p;
             }
 
@@ -488,7 +445,7 @@ msplit_internal(char *string, int soft, int hard, char **frags)
 
                 /* find next space */
                 p = string + soft;
-                while (*p != '\0' && !isspace(*p)) {
+                while (*p != '\0' && ! isspace(*p)) {
                     ++p;
                 }
 
@@ -547,9 +504,7 @@ msplit_internal(char *string, int soft, int hard, char **frags)
  *
  * If the split point is a space, the space isn't included in the fragments.
  */
-char **
-msplit(char *string, int soft, int hard)
-{
+char **msplit(char *string, int soft, int hard) {
     char **frags;
     int n_frags;
     int k;
@@ -561,7 +516,7 @@ msplit(char *string, int soft, int hard)
     }
 
     /* Allocate the array. */
-    frags = (char **)malloc(sizeof(char *) * (n_frags + 1));
+    frags = (char **) malloc(sizeof(char *) * (n_frags + 1));
     if (frags == NULL) {
         return NULL;
     }
@@ -583,9 +538,7 @@ msplit(char *string, int soft, int hard)
 
 /* Calls free() on a STRINGS array as returned by msplit(). */
 
-void
-msplit_free(char **strings)
-{
+void msplit_free(char **strings) {
     if (strings != NULL) {
         char **p = strings;
         for (; *p != NULL; ++p) {

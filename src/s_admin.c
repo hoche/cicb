@@ -4,12 +4,10 @@
 
 #include "icb.h"
 
-int
-s_admin(ARGV_TCL)
-{
+int s_admin(ARGV_TCL) {
     static char *usage = "usage: s_admin drop|shutdown|wall args";
 
-    if (argc < 2 || !*argv[1])
+    if (argc < 2 || ! *argv[1])
         TRETURNERR(usage);
 
     if (strcmp(argv[1], "drop") == 0) {

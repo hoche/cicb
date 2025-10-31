@@ -4,14 +4,12 @@
 
 #include "icb.h"
 
-int
-c_rand(ARGV_TCL)
-{
+int c_rand(ARGV_TCL) {
     static char *usage = "usage: c_rand number";
     int range;
     char num[64];
 
-    if (argc != 2 || !*argv[1])
+    if (argc != 2 || ! *argv[1])
         TRETURNERR(usage);
 
     if (safe_atoi(argv[1], &range) != 0 || range == 0)

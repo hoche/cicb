@@ -3,9 +3,7 @@
 #include "icb.h"
 #include <sys/wait.h>
 
-int
-c_shell(ARGV_TCL)
-{
+int c_shell(ARGV_TCL) {
     static char *usage = "usage: c_shell [command]";
     int w, pid;
     int shellout = 0;
@@ -18,7 +16,7 @@ c_shell(ARGV_TCL)
         TRETURNERR("c_shell: no shell commands in restricted mode");
 
     /* is this a shellout or a command? */
-    if (argc == 1 || !*argv[1])
+    if (argc == 1 || ! *argv[1])
         shellout++;
 
     /* get shell to use */
@@ -55,7 +53,8 @@ c_shell(ARGV_TCL)
 
     /* wait for the child(ren) to die */
 
-    while ((w = wait(&status)) != pid && w != -1) ;
+    while ((w = wait(&status)) != pid && w != -1)
+        ;
 
 #if 0
     /* restore signal processing */

@@ -4,9 +4,7 @@
 
 #include "icb.h"
 
-int
-c_quit(ARGV_TCL)
-{
+int c_quit(ARGV_TCL) {
     static char *usage = "usage: c_quit";
 
     if (argc != 1) {

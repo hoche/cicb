@@ -4,13 +4,11 @@
 
 #include "icb.h"
 
-int
-s_who(ARGV_TCL)
-{
+int s_who(ARGV_TCL) {
     static char *usage = "usage: s_who long|short [group]";
 
     /* check the arg count */
-    if (argc < 2 || !*argv[1])
+    if (argc < 2 || ! *argv[1])
         TRETURNERR(usage);
 
     /* FIXME - right now, only long reports are is valid */
