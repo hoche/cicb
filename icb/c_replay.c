@@ -35,6 +35,7 @@ bufferadd(char *text)
     /* add this line to the buffer */
     if ((bp = strmakenode(len)) == NULL) {
         putl("icb: not enough memory for buffer", PL_SCR);
+        return;  /* Early return on allocation failure to prevent NULL pointer dereference */
     }
 
     if (gv.timestamp) {
