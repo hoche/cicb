@@ -209,19 +209,7 @@ static int tcl_has_handler(const char *cmd) {
         return 1;
     }
 
-    /* Check for abbreviations using TCL eval - this is compatible with older TCL versions */
-    char eval_cmd[256];
-    snprintf(eval_cmd, sizeof(eval_cmd),
-             "set matches [info commands %s*]; llength $matches", cmd);
-
-    if (Tcl_Eval(interp, eval_cmd) == TCL_OK) {
-        const char *result_str = Tcl_GetStringResult(interp);
-        int matches;
-        if (safe_atoi(result_str, &matches) == 0) {
-            return (matches == 1); /* Unique abbreviation */
-        }
-    }
-
+    /* Do not attempt Tcl-side abbreviation matching to avoid unsafe eval. */
     return 0;
 }
 
@@ -234,28 +222,9 @@ static int call_tcl_handler(const char *cmd, const char *args_str) {
     Tcl_CmdInfo cmdinfo;
     const char *actual_cmd = cmd;
 
-    /* Check for exact match */
+    /* Check for exact match only (no Tcl-side abbreviation resolution). */
     if (! Tcl_GetCommandInfo(interp, cmd, &cmdinfo)) {
-        /* Try abbreviation - use TCL eval for compatibility */
-        char eval_cmd[256];
-        snprintf(eval_cmd, sizeof(eval_cmd),
-                 "set matches [info commands %s*]; if {[llength $matches] == "
-                 "1} {lindex $matches 0} else {}",
-                 cmd);
-
-        if (Tcl_Eval(interp, eval_cmd) == TCL_OK) {
-            const char *match_str = Tcl_GetStringResult(interp);
-            if (match_str && *match_str) {
-                actual_cmd = match_str;
-                if (! Tcl_GetCommandInfo(interp, actual_cmd, &cmdinfo)) {
-                    return TCL_ERROR;
-                }
-            } else {
-                return TCL_ERROR;
-            }
-        } else {
-            return TCL_ERROR;
-        }
+        return TCL_ERROR;
     }
 
     /* Build command string */
