@@ -4,6 +4,7 @@
 #include "getswitch.h"
 
 #include <readline/readline.h>
+#include <time.h>
 
 #ifdef HAVE_OPENSSL
 #    include <openssl/crypto.h>
@@ -12,6 +13,8 @@
 #    include <openssl/ssl.h>
 #    include <openssl/err.h>
 #    include <openssl/conf.h>
+#    include <sys/select.h>
+#    include <sys/time.h>
 #endif
 
 char *optv[] = {
@@ -35,16 +38,50 @@ char *optv[] = {
 };
 
 #ifdef HAVE_OPENSSL
+/* Modern OpenSSL initialization (OpenSSL 1.1.0+) */
 int init_openssl_library(void)
 {
-    OPENSSL_init_ssl(0, NULL);
+    /* OPENSSL_init_ssl() initializes the SSL library and error strings */
+    if (OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, NULL) == 0) {
+        return 0;
+    }
+    
+    /* Additional configuration can be done here if needed */
+    return 1;
+}
 
-    SSL_load_error_strings();
-    /*OPENSSL_config(NULL); */
+/* Check if socket is ready for I/O with timeout */
+static int ssl_wait_for_io(SSL *ssl, int want_read, int timeout_sec)
+{
+    int fd = SSL_get_fd(ssl);
+    fd_set read_fds, write_fds;
+    struct timeval timeout, *timeout_ptr = NULL;
+    int ret;
 
-    OpenSSL_add_ssl_algorithms();
+    if (timeout_sec > 0) {
+        timeout.tv_sec = timeout_sec;
+        timeout.tv_usec = 0;
+        timeout_ptr = &timeout;
+    }
 
-    return(1);
+    FD_ZERO(&read_fds);
+    FD_ZERO(&write_fds);
+
+    if (want_read) {
+        FD_SET(fd, &read_fds);
+    } else {
+        FD_SET(fd, &write_fds);
+    }
+
+    ret = select(fd + 1, &read_fds, &write_fds, NULL, timeout_ptr);
+    
+    if (ret < 0) {
+        return -1;  /* Error */
+    }
+    if (ret == 0) {
+        return 0;   /* Timeout */
+    }
+    return 1;       /* Ready */
 }
 #endif
 
@@ -253,15 +290,18 @@ main(int argc, char *argv[])
             set_restricted();
     }
 #ifdef HAVE_OPENSSL
-    init_openssl_library();
-    if (m_ssl_on && myport == DEFAULT_PORT)
-        myport = DEFAULT_SSL_PORT;
-    SSL_load_error_strings();
-    SSLeay_add_ssl_algorithms();
-    ctx = SSL_CTX_new(TLS_client_method());
-    if (!ctx) {
-        fprintf(stderr, "Error setting up the SSL context.\n");
-        exit(1);
+    if (m_ssl_on) {
+        if (init_openssl_library() == 0) {
+            fprintf(stderr, "Error initializing OpenSSL library.\n");
+            exit(1);
+        }
+        if (myport == DEFAULT_PORT)
+            myport = DEFAULT_SSL_PORT;
+        ctx = SSL_CTX_new(TLS_client_method());
+        if (!ctx) {
+            fprintf(stderr, "Error setting up the SSL context.\n");
+            exit(1);
+        }
     }
 #endif
 
@@ -284,60 +324,122 @@ main(int argc, char *argv[])
     }
 #ifdef HAVE_OPENSSL
     if (m_ssl_on) {
-        int result, ssl_error = SSL_ERROR_WANT_READ;
+        int result;
+        int ssl_error;
+        int retries = 0;
+        const int max_retries = 100;  /* Maximum number of retry attempts */
+        const int timeout_sec = 30;    /* 30 second timeout total */
+        time_t start_time = time(NULL);
 
         ssl = SSL_new(ctx);
+        if (!ssl) {
+            fprintf(stderr, "Error creating SSL structure.\n");
+            SSL_CTX_free(ctx);
+            exit(1);
+        }
+
         SSL_set_fd(ssl, port_fd);
         result = SSL_connect(ssl);
 
-        /* XXX we retry infinitely. We should set a max-number-of-tries and
-         * a timeout and give up after awhile if we can't establish the
-         * SSL connection.
-         */
+        /* Modern SSL connect with timeout and retry limit */
+        while (result < 0 && retries < max_retries) {
+            time_t current_time = time(NULL);
+            
+            /* Check for timeout */
+            if (current_time - start_time > timeout_sec) {
+                fprintf(stderr, "SSL connection timeout after %d seconds.\n", timeout_sec);
+                SSL_free(ssl);
+                SSL_CTX_free(ctx);
+                exit(1);
+            }
 
-        while (result < 0 && (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)) {
             ssl_error = SSL_get_error(ssl, result);
 
             switch (ssl_error) {
                 case SSL_ERROR_WANT_READ:
-                case SSL_ERROR_WANT_WRITE:
+                    /* Wait for socket to be readable */
+                    if (ssl_wait_for_io(ssl, 1, 5) <= 0) {
+                        fprintf(stderr, "SSL connection timeout waiting for read.\n");
+                        SSL_free(ssl);
+                        SSL_CTX_free(ctx);
+                        exit(1);
+                    }
                     result = SSL_connect(ssl);
+                    retries++;
+                    break;
+
+                case SSL_ERROR_WANT_WRITE:
+                    /* Wait for socket to be writable */
+                    if (ssl_wait_for_io(ssl, 0, 5) <= 0) {
+                        fprintf(stderr, "SSL connection timeout waiting for write.\n");
+                        SSL_free(ssl);
+                        SSL_CTX_free(ctx);
+                        exit(1);
+                    }
+                    result = SSL_connect(ssl);
+                    retries++;
                     break;
 
                 case SSL_ERROR_ZERO_RETURN:
-                    fprintf(stderr, "SSL_ERROR_ZERO_RETURN at SSL_connect().\n");
+                    fprintf(stderr, "SSL connection closed by peer during handshake.\n");
                     SSL_free(ssl);
+                    SSL_CTX_free(ctx);
                     exit(1);
 
                 case SSL_ERROR_WANT_X509_LOOKUP:
-                    fprintf(stderr, "SSL_connect() wants X509 lookup.\n");
+                    fprintf(stderr, "SSL handshake requires X509 certificate lookup (not supported).\n");
                     SSL_free(ssl);
+                    SSL_CTX_free(ctx);
                     exit(1);
 
                 case SSL_ERROR_SYSCALL:
-                    fprintf(stderr, "SSL_ERROR_SYSCALL at SSL_connect().\n");
+                    fprintf(stderr, "SSL connection system call error.\n");
+                    if (ERR_peek_error() != 0) {
+                        char err_buf[256];
+                        unsigned long err = ERR_get_error();
+                        ERR_error_string_n(err, err_buf, sizeof(err_buf));
+                        fprintf(stderr, "OpenSSL error: %s\n", err_buf);
+                    }
                     SSL_free(ssl);
+                    SSL_CTX_free(ctx);
                     exit(1);
 
                 case SSL_ERROR_SSL:
-                    ssl_error = ERR_get_error();
-                    if (ssl_error == 0) {
-                        if (result == 0) {
-                            fprintf(stderr, "SSL_connect got bad EOF.\n");
-                        } else {
-                            fprintf(stderr, "SSL_connect got socket I/O error.\n");
+                    {
+                        char err_buf[512];
+                        unsigned long err;
+                        while ((err = ERR_get_error()) != 0) {
+                            ERR_error_string_n(err, err_buf, sizeof(err_buf));
+                            fprintf(stderr, "SSL error: %s\n", err_buf);
                         }
-                    } else {
-                        char err_buf[256];
-                        ERR_error_string(ssl_error, &err_buf[0]);
-                        fprintf(stderr, "SSL_connect error: %s", err_buf);
                     }
                     SSL_free(ssl);
+                    SSL_CTX_free(ctx);
+                    exit(1);
+
+                default:
+                    fprintf(stderr, "Unknown SSL error: %d\n", ssl_error);
+                    SSL_free(ssl);
+                    SSL_CTX_free(ctx);
                     exit(1);
             }
         }
 
-        printf("SSL connection using %s\n", SSL_get_cipher(ssl));
+        if (result < 0) {
+            fprintf(stderr, "SSL connection failed after %d retries.\n", retries);
+            SSL_free(ssl);
+            SSL_CTX_free(ctx);
+            exit(1);
+        }
+
+        if (retries >= max_retries) {
+            fprintf(stderr, "SSL connection exceeded maximum retries (%d).\n", max_retries);
+            SSL_free(ssl);
+            SSL_CTX_free(ctx);
+            exit(1);
+        }
+
+        printf("SSL connection established using %s\n", SSL_get_cipher(ssl));
     }
 #endif
 
@@ -376,3 +478,4 @@ icbexit()
 
     exit(0);
 }
+

@@ -6,6 +6,7 @@
 
 #ifdef HAVE_OPENSSL
 #    include <openssl/ssl.h>
+#    include <openssl/err.h>
 #endif
 
 extern char *findspace();
@@ -38,15 +39,42 @@ send_packet(char *pkt)
 
 #ifdef HAVE_OPENSSL
     if (m_ssl_on) {
+        int ssl_retries = 0;
+        const int ssl_max_retries = 50;
+        
         do {
             ret = SSL_write(ssl, pkt, len);
 
             if (ret <= 0) {
                 int ssl_error = SSL_get_error(ssl, ret);
 
-                if (ssl_error != SSL_ERROR_WANT_READ && ssl_error != SSL_ERROR_WANT_WRITE) {
-                    abort(); /* XXX error handling */
+                if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE) {
+                    /* Need to wait for I/O - in blocking mode this should retry */
+                    if (++ssl_retries > ssl_max_retries) {
+                        fprintf(stderr, "SSL write failed: too many retries.\n");
+                        icbexit();
+                        return;
+                    }
+                    continue;
+                } else if (ssl_error == SSL_ERROR_ZERO_RETURN) {
+                    fprintf(stderr, "SSL connection closed by peer during write.\n");
+                    icbexit();
+                    return;
+                } else {
+                    /* Fatal SSL error */
+                    char err_buf[256];
+                    unsigned long err = ERR_get_error();
+                    if (err != 0) {
+                        ERR_error_string_n(err, err_buf, sizeof(err_buf));
+                        fprintf(stderr, "SSL write error: %s\n", err_buf);
+                    } else {
+                        fprintf(stderr, "SSL write error: %d\n", ssl_error);
+                    }
+                    icbexit();
+                    return;
                 }
+            } else {
+                break;  /* Success */
             }
         } while(ret < 0);
     } else

@@ -35,15 +35,27 @@ readpacket(int fd, struct Cbuf *p)
         /* read the length of the command packet */
 #ifdef HAVE_OPENSSL
         if (m_ssl_on) {
+            int ssl_retries = 0;
+            const int ssl_max_retries = 50;
+            
             do {
                 ret = SSL_read(ssl, p->rptr, 1);
 
                 if (ret <= 0) {
                     int ssl_error = SSL_get_error(ssl, ret);
 
-                    if (ssl_error != SSL_ERROR_WANT_READ && ssl_error != SSL_ERROR_WANT_WRITE) {
-                        abort(); /* XXX error handling */
+                    if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE) {
+                        /* Need to wait for I/O - this should be handled by select in async mode */
+                        if (++ssl_retries > ssl_max_retries) {
+                            return (-1);  /* Too many retries */
+                        }
+                        continue;
+                    } else {
+                        /* Fatal SSL error */
+                        return (-1);
                     }
+                } else {
+                    break;  /* Success */
                 }
             } while (ret < 0);
         } else
@@ -67,15 +79,29 @@ readpacket(int fd, struct Cbuf *p)
     /* read as much of the command as we can get */
 #ifdef HAVE_OPENSSL
     if (m_ssl_on) {
+        int ssl_retries = 0;
+        const int ssl_max_retries = 50;
+        
         do {
             ret = SSL_read(ssl, p->rptr, p->remain);
 
             if (ret <= 0) {
                 int ssl_error = SSL_get_error(ssl, ret);
 
-                if (ssl_error != SSL_ERROR_WANT_READ && ssl_error != SSL_ERROR_WANT_WRITE) {
-                    abort(); /* XXX error handling */
+                if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE) {
+                    /* Need to wait for I/O - this should be handled by select in async mode */
+                    if (++ssl_retries > ssl_max_retries) {
+                        return (-1);  /* Too many retries */
+                    }
+                    continue;
+                } else if (ssl_error == SSL_ERROR_ZERO_RETURN) {
+                    return (-2);  /* Connection closed */
+                } else {
+                    /* Fatal SSL error */
+                    return (-1);
                 }
+            } else {
+                break;  /* Success */
             }
         } while (ret < 0);
     } else 
