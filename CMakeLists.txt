@@ -1,5 +1,21 @@
-cmake_minimum_required(VERSION 3.10)
-project(icb C)
+cmake_minimum_required(VERSION 3.14)
+project(icb C CXX)
+
+# Enable testing
+enable_testing()
+
+# Fetch GoogleTest
+include(FetchContent)
+
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.17.0
+)
+
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 find_package(TCL COMPONENTS Tcl)
 if(NOT TCL_INCLUDE_PATH OR NOT TCL_LIBRARY)
@@ -138,3 +154,6 @@ target_link_libraries(icb ${TCL_LIBRARY} ${READLINE_LIBRARY})
 
 # Install rule
 install(TARGETS icb RUNTIME DESTINATION bin)
+
+# Unit tests
+add_subdirectory(tests)
