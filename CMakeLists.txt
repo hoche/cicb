@@ -1,4 +1,16 @@
 cmake_minimum_required(VERSION 3.14)
+
+# Prefer clang/clang++ if available and no compiler explicitly set
+if(NOT CMAKE_C_COMPILER AND NOT CMAKE_CXX_COMPILER)
+    find_program(CLANG_BIN clang)
+    find_program(CLANGXX_BIN clang++)
+    if(CLANG_BIN AND CLANGXX_BIN)
+        message(STATUS "Preferring clang: ${CLANG_BIN}, ${CLANGXX_BIN}")
+        set(CMAKE_C_COMPILER "${CLANG_BIN}" CACHE STRING "C compiler" FORCE)
+        set(CMAKE_CXX_COMPILER "${CLANGXX_BIN}" CACHE STRING "C++ compiler" FORCE)
+    endif()
+endif()
+
 project(icb C CXX)
 
 # Enable testing
@@ -47,6 +59,20 @@ if(ENABLE_SSL)
     endif()
 else()
     message(STATUS "SSL support disabled via ENABLE_SSL=OFF")
+endif()
+
+# Sanitizers (enabled by default for Debug builds)
+option(ENABLE_SANITIZERS "Enable sanitizers" ON)
+set(SANITIZERS "address,undefined" CACHE STRING "List of sanitizers to enable")
+if(ENABLE_SANITIZERS AND NOT MSVC)
+    if (CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo")
+        add_compile_options(-fno-omit-frame-pointer -g)
+        add_link_options(-fno-omit-frame-pointer)
+        if (CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
+            add_compile_options("-fsanitize=${SANITIZERS}")
+            add_link_options("-fsanitize=${SANITIZERS}")
+        endif()
+    endif()
 endif()
 
 # Define the custom command to generate the C file from the text file

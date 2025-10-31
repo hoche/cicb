@@ -472,7 +472,7 @@ void statusmsg(char *pkt) {
 /* this should eventually parse things according to command requested */
 
 void cmdoutmsg(char *pkt) {
-    char *idlestr(), *response(), *ampm();
+    /* prototypes are declared in protos.h via icb.h */
     char mbuf2[512];
 
     /* THIS IS REALLY BAD CODING - it should be cleaned up */
@@ -653,7 +653,7 @@ char *response(char *num) {
 /* return a time, i.e "7:45pm" */
 
 char *ampm(time_t secs, int style) {
-    struct tm *t, *localtime();
+    struct tm *t;
     static char timestr[16];
     int hr, mn;
 

@@ -9,7 +9,7 @@
 #include <openssl/ssl.h>
 #endif
 
-extern char *findspace();
+/* findspace prototype is declared in protos.h via icb.h */
 
 /* Send an icb packet to the server. */
 
