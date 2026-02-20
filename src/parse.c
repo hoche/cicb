@@ -276,9 +276,16 @@ static int tcl_execl(Tcl_Interp *interp, ...) {
 
 static int do_command(Tcl_Interp *interp, char *line) {
     int status = TCL_OK;
-    char *cmd = line;
+    char *cmd  = NULL;
     char *args = NULL;
     char *args_copy = NULL;
+    char *line_copy = strdup(line);
+
+    if (line_copy == NULL) {
+        return TCL_ERROR;
+    }
+
+    cmd = line_copy;
 
     /* find start of command name */
     while (*cmd && isspace((unsigned char) *cmd))
@@ -303,14 +310,17 @@ static int do_command(Tcl_Interp *interp, char *line) {
 
     /* ignore null commands. */
     if (*cmd == '\0') {
+        free(line_copy);
         return TCL_OK;
     }
 
     /* Make a copy of args for safety since we might modify it */
     if (args && *args) {
         args_copy = strdup(args);
-        if (args_copy == NULL)
+        if (args_copy == NULL) {
+	    free(line_copy);
             return TCL_ERROR;
+        }
     }
 
     /* Inverted dispatch: Check TCL handler first (if TCL is available),
@@ -322,6 +332,7 @@ static int do_command(Tcl_Interp *interp, char *line) {
         status = call_tcl_handler(cmd, args_copy);
         if (args_copy)
             free(args_copy);
+        free(line_copy);
         return status;
     }
 
@@ -342,6 +353,7 @@ static int do_command(Tcl_Interp *interp, char *line) {
             status = c_handler->handler(NULL, interp, 2, argv_buf);
             if (args_copy)
                 free(args_copy);
+	    free(line_copy);
             return status;
         }
 
@@ -357,6 +369,7 @@ static int do_command(Tcl_Interp *interp, char *line) {
             }
             if (args_copy)
                 free(args_copy);
+	    free(line_copy);
             return TCL_ERROR;
         }
 
@@ -378,6 +391,7 @@ static int do_command(Tcl_Interp *interp, char *line) {
         free(handler_argv);
         if (args_copy)
             free(args_copy);
+        free(line_copy);
         return status;
     }
 
@@ -391,6 +405,7 @@ static int do_command(Tcl_Interp *interp, char *line) {
         send_command(cmd, args ? args : "");
     }
 
+    free(line_copy);
     return TCL_OK;
 }
 
