@@ -192,6 +192,13 @@ void sendcmd(char *cmd, char *args) {
     if ((strcasecmp(cmd, "write") == 0) || (strcasecmp(cmd, "m") == 0)) {
         nick = args;
         args = findspace(args);
+        if (args == NULL) {
+            /* No argument after nick - error */
+            fprintf(stderr, "%s[=Error=] Missing argument after nick.%s\n",
+                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+            msplit_free(p);
+            return;
+        }
         maxlen = maxlen - strlen(nick) - 1;
     } else
         nick = NULL;
