@@ -246,8 +246,16 @@ void sendcmd(char *cmd, char *args) {
 
 void send_command(char *cmd, char *arg) {
     size_t pbuf_size = PACKET_BUF_SIZE - 1;
-    size_t needed =
-        strlen(cmd) + strlen(arg) + 3; /* M_COMMAND + cmd + \001 + arg + null */
+    size_t needed;
+    
+    /* Validate inputs */
+    if (!cmd || !arg) {
+        fprintf(stderr, "%s[=Error=] Invalid arguments to send_command.%s\n",
+                printcolor(ColERROR, ColSANE), printcolor(ColSANE, ColSANE));
+        return;
+    }
+    
+    needed = strlen(cmd) + strlen(arg) + 3; /* M_COMMAND + cmd + \001 + arg + null */
 
     if (needed > pbuf_size) {
         fprintf(stderr, "%s[=Error=] Command too long.%s\n",
