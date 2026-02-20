@@ -384,7 +384,13 @@ static int do_command(Tcl_Interp *interp, char *line) {
     /* Step 3: No handler found - send command to server */
     if (args_copy)
         free(args_copy);
-    send_command(cmd, args);
+
+    /* Only send to server if we have a valid command */
+    if (cmd && *cmd != '\0') {
+        /* Provide empty string if no args */
+        send_command(cmd, args ? args : "");
+    }
+
     return TCL_OK;
 }
 
